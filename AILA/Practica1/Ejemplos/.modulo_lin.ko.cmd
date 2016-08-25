@@ -1,0 +1,1 @@
+cmd_/home/barfelix/AILA/Practica1/Ejemplos/modulo_lin.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.16.0-4-common/scripts/module-common.lds --build-id  -o /home/barfelix/AILA/Practica1/Ejemplos/modulo_lin.ko /home/barfelix/AILA/Practica1/Ejemplos/modulo_lin.o /home/barfelix/AILA/Practica1/Ejemplos/modulo_lin.mod.o
