@@ -11,10 +11,111 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Modlist module - FDI-UCM");
 MODULE_AUTHOR("Roumen Daton");
 
+#define BUFFER_LENGTH  PAGE_SIZE
 
 
-//entrada en proc
-static struct proc_dir_entry *proc_entry;
+//http://stackoverflow.com/questions/19647356/linux-kernel-linked-list
+//http://isis.poly.edu/kulesh/stuff/src/klist/
+//https://www.cs.uic.edu/~hnagaraj/articles/linked-list/
+//
+//entrada en procf
+static struct proc_dir_entry *proc_entry ;
+
+//variables locales
+
+/* Tipo de nodo */
+typedef struct tNodo{
+struct list_head list;
+int data;
+} tNodo;
+
+/* Lista enlazada */
+struct list_head modlist;
+
+
+
+//operaciones internas
+//
+static void add (int valor)
+{
+  tNodo unNodo;
+  unNodo.data = 1;
+  list_add_tail(&unNodo.list, &modlist);
+}
+
+/*
+static void rem (int valor)
+{
+	tNodo* actual=modlist;
+	bool enc=false;
+	int i=
+	while (!enc && !empty(modlist))
+	{
+		actual=modlist.
+	}
+}*/
+
+
+int GetNumber(const char *str) {
+  int number=0;
+  while (!(*str >= '0' && *str <= '9') && (*str != '-') && (*str != '+')) str++;  
+  if (sscanf(str, "%d", &number) == 1) {
+    return number;
+  }
+  // No int found
+  return -1; 
+}
+
+
+static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
+	int r;
+	char* unBuffer;
+	  if ((*off) > 0) /* The application can write in this entry just once !! */
+		return 0;
+	  
+	  
+	  /* Transfer data from user to kernel space */
+	  unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
+	  if (copy_from_user( &unBuffer, buf, len ))  
+		return -EFAULT;
+	  r=GetNumber(unBuffer);
+	//  add(r);
+	  off+=len;            /* Update the file pointer */
+	  vfree(unBuffer);
+	  trace_printk("He insertado: %d\n",r);
+	  
+	  return 0;
+};
+
+
+void print_list(struct list_head* list) {
+	tNodo* item=NULL;
+	tNodo* cur_node=NULL;
+	
+	//list_for_each(cur_node, list) 
+	//{
+	/* item points to the structure wherein the links are embedded */
+	//item = list_entry(cur_node, struct list_item, links);
+	//trace_printk(KERN_INFO "%i\n",item->data);
+	//}
+	
+}
+
+static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
+  
+  
+  
+	  if ((*off) > 0) /* Tell the application that there is nothing left to read */
+	      return 0;
+	  print_list(&modlist);
+	  return 0;
+};
+
+
+
+
+
+
 
 //operaciones de entrada salida
 static const struct file_operations proc_entry_fops = {
@@ -22,130 +123,38 @@ static const struct file_operations proc_entry_fops = {
     .write = modlist_write,    
 };
 
-
-//variables locales
-
-/* Tipo de nodos */
-
-typedef struct {
-struct list_head links;
-int data;
-}list_item_t;
-
-#define TAM_ELEM sizeof(
-
-static LIST_HEAD(modlist); /* Lista enlazada */
-
-//operaciones internas
-//http://stackoverflow.com/questions/33933344/adding-items-in-kernel-linked-list
-static void inserta (int valor)
-{
-	struct list_item_t* nuevo_elemento = (list_item_t*) vmalloc(sizeof(*nuevo_elemento));
-	nuevo_elemento->data=valor;
-	list_add_tail(nuevo_elemento,modList);
-	
-}
-
-static list_item_t dameElemento(int valor)
-{
-	
-}
-
-
-//API del módulo
-static const struct file_operations proc_entry_fops = {
-    .read = modlist_read,
-    .write = modlist_write,
-};
-
-
-
-
-
-static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
-  //int available_space = BUFFER_LENGTH-1;
-  
-  if ((*off) > 0) /* The application can write in this entry just once !! */
-    return 0;
-  
-  /*if (len > available_space) {
-    printk(KERN_INFO "clipboard: not enough space!!\n");
-    return -ENOSPC;
-  }
-  */
-  /* Transfer data from user to kernel space */
-  /*
-  if (copy_from_user( &clipboard[0], buf, len ))  
-    return -EFAULT;
-*/
- // clipboard[len] = '\0'; /* Add the `\0' */  
-  
-  //*off+=len;            /* Update the file pointer */
-  
-  //trace_printk("Current value of clipboard: %s\n",clipboard);
-  
-  return 0;
-}
-
-static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
-  
-  int nr_bytes;
-  
-  //if ((*off) > 0) /* Tell the application that there is nothing left to read */
-  //    return 0;
-    
-  //nr_bytes=strlen(clipboard);
-    
-  //if (len<nr_bytes)
-  //  return -ENOSPC;
-  
-    /* Transfer data from the kernel to userspace */  
-  //if (copy_to_user(buf, clipboard,nr_bytes))
-  //  return -EINVAL;
-    
-  //(*off)+=len;  /* Update the file pointer */
-
-  //return nr_bytes; 
-  return 0
-}
-
-
-
-
-
-
 //Constructora
-module_init( init_modlist_module );
-
-
-
 int init_modlist_module( void )
 {
+  
   int ret = 0;
+  INIT_LIST_HEAD(&modlist); /* Initialize the list */
   proc_entry = proc_create( "modlist", 0666, NULL, &proc_entry_fops);
   if (proc_entry == NULL) {
   ret = -ENOMEM;
-  vfree(modlist);
-  printk(KERN_INFO "modlist: Can't create /proc entry\n");
-  } else 
-  
-  printk(KERN_INFO "modlist: Module loaded\n");
-  
-  }
-  
-  
- 
+  trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
+  } else   
+  trace_printk(KERN_INFO "modlist: Module loaded\n");
   return ret;
 
-}
+ return 0;
+};
 
+module_init( init_modlist_module );
 
 //Destructora
-module_exit( exit_modlist_module );
+
 
 void exit_modlist_module( void )
 {
   remove_proc_entry("modlist", NULL);
-  vfree(modlist);
-  printk(KERN_INFO "modlist: Module unloaded.\n");
-}
+  trace_printk(KERN_INFO "modlist: Module unloaded.\n");
+
+};
+module_exit( exit_modlist_module );
+
+
+
+
+
+

@@ -1,9 +1,8 @@
-cmd_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.o :=  gcc-4.8 -Wp,-MD,/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/.modulo_lin.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include -Iarch/x86/include/generated  -I/usr/src/linux-headers-3.16.0-4-common/include -Iinclude -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/usr/src/linux-headers-3.16.0-4-common/include/uapi -Iinclude/generated/uapi -include /usr/src/linux-headers-3.16.0-4-common/include/linux/kconfig.h   -I/home/barfelix/LIN2015/AILA/Practica1/Ejemplos -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -m64 -mno-mmx -mno-sse -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -fno-delete-null-pointer-checks -O2 -Wframe-larger-than=2048 -fstack-protector -Wno-unused-but-set-variable -fno-var-tracking-assignments -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(modulo_lin.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(modulo_lin)" -DMODULE  -c -o /home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.o /home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.c
+cmd_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modlist.o :=  gcc-4.8 -Wp,-MD,/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/.modlist.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include -Iarch/x86/include/generated  -I/usr/src/linux-headers-3.16.0-4-common/include -Iinclude -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/usr/src/linux-headers-3.16.0-4-common/include/uapi -Iinclude/generated/uapi -include /usr/src/linux-headers-3.16.0-4-common/include/linux/kconfig.h   -I/home/barfelix/LIN2015/AILA/Practica1/Ejemplos -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -m64 -mno-mmx -mno-sse -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -fno-delete-null-pointer-checks -O2 -Wframe-larger-than=2048 -fstack-protector -Wno-unused-but-set-variable -fno-var-tracking-assignments -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(modlist)"  -D"KBUILD_MODNAME=KBUILD_STR(modlist)" -c -o /home/barfelix/LIN2015/AILA/Practica1/Ejemplos/.tmp_modlist.o /home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modlist.c
 
-source_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.o := /home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.c
+source_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modlist.o := /home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modlist.c
 
-deps_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.o := \
-    $(wildcard include/config/module/unload.h) \
+deps_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modlist.o := \
   /usr/src/linux-headers-3.16.0-4-common/include/linux/module.h \
     $(wildcard include/config/sysfs.h) \
     $(wildcard include/config/modules.h) \
@@ -16,6 +15,7 @@ deps_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.o := \
     $(wildcard include/config/tracing.h) \
     $(wildcard include/config/event/tracing.h) \
     $(wildcard include/config/ftrace/mcount/record.h) \
+    $(wildcard include/config/module/unload.h) \
     $(wildcard include/config/constructors.h) \
     $(wildcard include/config/debug/set/module/ronx.h) \
   /usr/src/linux-headers-3.16.0-4-common/include/linux/list.h \
@@ -581,9 +581,206 @@ deps_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.o := \
     $(wildcard include/config/have/mod/arch/specific.h) \
     $(wildcard include/config/modules/use/elf/rel.h) \
     $(wildcard include/config/modules/use/elf/rela.h) \
-  /usr/src/linux-headers-3.16.0-4-common/include/linux/vermagic.h \
-  include/generated/utsrelease.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/proc_fs.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/fs.h \
+    $(wildcard include/config/fs/posix/acl.h) \
+    $(wildcard include/config/security.h) \
+    $(wildcard include/config/ima.h) \
+    $(wildcard include/config/quota.h) \
+    $(wildcard include/config/fsnotify.h) \
+    $(wildcard include/config/epoll.h) \
+    $(wildcard include/config/file/locking.h) \
+    $(wildcard include/config/auditsyscall.h) \
+    $(wildcard include/config/block.h) \
+    $(wildcard include/config/fs/xip.h) \
+    $(wildcard include/config/migration.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/kdev_t.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/kdev_t.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/dcache.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/rculist.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/rculist_bl.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/list_bl.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/bit_spinlock.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/lockref.h \
+    $(wildcard include/config/arch/use/cmpxchg/lockref.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/path.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/list_lru.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/radix-tree.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/pid.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/capability.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/capability.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/semaphore.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/fiemap.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/shrinker.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/migrate_mode.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/percpu-rwsem.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/blk_types.h \
+    $(wildcard include/config/blk/cgroup.h) \
+    $(wildcard include/config/blk/dev/integrity.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/fs.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/limits.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/quota.h \
+    $(wildcard include/config/quota/netlink/interface.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/percpu_counter.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/dqblk_xfs.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/dqblk_v1.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/dqblk_v2.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/dqblk_qtree.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/projid.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/quota.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/nfs_fs_i.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/fcntl.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/fcntl.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi/asm/fcntl.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/asm-generic/fcntl.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/asm-generic/uaccess.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/sched.h \
+    $(wildcard include/config/sched/debug.h) \
+    $(wildcard include/config/no/hz/common.h) \
+    $(wildcard include/config/lockup/detector.h) \
+    $(wildcard include/config/detect/hung/task.h) \
+    $(wildcard include/config/core/dump/default/elf/headers.h) \
+    $(wildcard include/config/sched/autogroup.h) \
+    $(wildcard include/config/virt/cpu/accounting/native.h) \
+    $(wildcard include/config/bsd/process/acct.h) \
+    $(wildcard include/config/taskstats.h) \
+    $(wildcard include/config/audit.h) \
+    $(wildcard include/config/cgroups.h) \
+    $(wildcard include/config/inotify/user.h) \
+    $(wildcard include/config/fanotify.h) \
+    $(wildcard include/config/posix/mqueue.h) \
+    $(wildcard include/config/keys.h) \
+    $(wildcard include/config/perf/events.h) \
+    $(wildcard include/config/schedstats.h) \
+    $(wildcard include/config/task/delay/acct.h) \
+    $(wildcard include/config/sched/mc.h) \
+    $(wildcard include/config/fair/group/sched.h) \
+    $(wildcard include/config/rt/group/sched.h) \
+    $(wildcard include/config/cgroup/sched.h) \
+    $(wildcard include/config/blk/dev/io/trace.h) \
+    $(wildcard include/config/rcu/boost.h) \
+    $(wildcard include/config/compat/brk.h) \
+    $(wildcard include/config/virt/cpu/accounting/gen.h) \
+    $(wildcard include/config/sysvipc.h) \
+    $(wildcard include/config/rt/mutexes.h) \
+    $(wildcard include/config/task/xacct.h) \
+    $(wildcard include/config/cpusets.h) \
+    $(wildcard include/config/futex.h) \
+    $(wildcard include/config/fault/injection.h) \
+    $(wildcard include/config/latencytop.h) \
+    $(wildcard include/config/function/graph/tracer.h) \
+    $(wildcard include/config/bcache.h) \
+    $(wildcard include/config/have/unstable/sched/clock.h) \
+    $(wildcard include/config/irq/time/accounting.h) \
+    $(wildcard include/config/no/hz/full.h) \
+    $(wildcard include/config/stack/growsup.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/sched.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/sched/prio.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/plist.h \
+    $(wildcard include/config/debug/pi/list.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/cputime.h \
+  arch/x86/include/generated/asm/cputime.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/asm-generic/cputime.h \
+    $(wildcard include/config/virt/cpu/accounting.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/asm-generic/cputime_jiffies.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/sem.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/sem.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/ipc.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/ipc.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi/asm/ipcbuf.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/asm-generic/ipcbuf.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi/asm/sembuf.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/signal.h \
+    $(wildcard include/config/old/sigaction.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/signal.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/signal.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi/asm/signal.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/asm-generic/signal-defs.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi/asm/siginfo.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/asm-generic/siginfo.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/asm-generic/siginfo.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/proportions.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/seccomp.h \
+    $(wildcard include/config/seccomp.h) \
+    $(wildcard include/config/seccomp/filter.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/seccomp.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/seccomp.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/seccomp_64.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/unistd.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/unistd.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi/asm/unistd.h \
+  arch/x86/include/generated/uapi/asm/unistd_64.h \
+  arch/x86/include/generated/asm/unistd_64_x32.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/ia32_unistd.h \
+  arch/x86/include/generated/asm/unistd_32_ia32.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/rtmutex.h \
+    $(wildcard include/config/debug/rt/mutexes.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/resource.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/resource.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi/asm/resource.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/asm-generic/resource.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/asm-generic/resource.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/hrtimer.h \
+    $(wildcard include/config/high/res/timers.h) \
+    $(wildcard include/config/timerfd.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/timerqueue.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/task_io_accounting.h \
+    $(wildcard include/config/task/io/accounting.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/latencytop.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/cred.h \
+    $(wildcard include/config/debug/credentials.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/key.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/assoc_array.h \
+    $(wildcard include/config/associative/array.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/selinux.h \
+    $(wildcard include/config/security/selinux.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/ftrace.h \
+    $(wildcard include/config/have/function/trace/mcount/test.h) \
+    $(wildcard include/config/function/tracer.h) \
+    $(wildcard include/config/dynamic/ftrace/with/regs.h) \
+    $(wildcard include/config/dynamic/ftrace.h) \
+    $(wildcard include/config/stack/tracer.h) \
+    $(wildcard include/config/frame/pointer.h) \
+    $(wildcard include/config/ftrace/syscalls.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/trace_clock.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/trace_clock.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/kallsyms.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/ptrace.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/pid_namespace.h \
+    $(wildcard include/config/pid/ns.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/mm.h \
+    $(wildcard include/config/ppc.h) \
+    $(wildcard include/config/parisc.h) \
+    $(wildcard include/config/metag.h) \
+    $(wildcard include/config/ksm.h) \
+    $(wildcard include/config/shmem.h) \
+    $(wildcard include/config/debug/vm/rb.h) \
+    $(wildcard include/config/debug/pagealloc.h) \
+    $(wildcard include/config/hugetlbfs.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/debug_locks.h \
+    $(wildcard include/config/debug/locking/api/selftests.h) \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/pgtable.h \
+    $(wildcard include/config/have/arch/soft/dirty.h) \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/pgtable_64.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/asm-generic/pgtable.h \
+    $(wildcard include/config/arch/uses/numa/prot/none.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/page-flags.h \
+    $(wildcard include/config/pageflags/extended.h) \
+    $(wildcard include/config/arch/uses/pg/uncached.h) \
+    $(wildcard include/config/memory/failure.h) \
+    $(wildcard include/config/swap.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/huge_mm.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/vmstat.h \
+    $(wildcard include/config/vm/event/counters.h) \
+    $(wildcard include/config/debug/tlbflush.h) \
+    $(wildcard include/config/debug/vm/vmacache.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/vm_event_item.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/nsproxy.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/ptrace.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/ftrace.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/compat.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/user32.h \
 
-/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.o: $(deps_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.o)
+/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modlist.o: $(deps_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modlist.o)
 
-$(deps_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.mod.o):
+$(deps_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modlist.o):
