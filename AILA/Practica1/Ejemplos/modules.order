@@ -1,4 +1,4 @@
-kernel//home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.ko
-kernel//home/barfelix/LIN2015/AILA/Practica1/Ejemplos/hello5.ko
-kernel//home/barfelix/LIN2015/AILA/Practica1/Ejemplos/clipboard.ko
-kernel//home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modlist.ko
+kernel//home/osboxes/LIN2015/AILA/Practica1/Ejemplos/modulo_lin.ko
+kernel//home/osboxes/LIN2015/AILA/Practica1/Ejemplos/hello5.ko
+kernel//home/osboxes/LIN2015/AILA/Practica1/Ejemplos/clipboard.ko
+kernel//home/osboxes/LIN2015/AILA/Practica1/Ejemplos/modlist.ko
