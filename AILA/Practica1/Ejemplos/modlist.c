@@ -23,22 +23,24 @@ static struct proc_dir_entry *proc_entry ;
 
 //variables locales
 
-//tipo de lista enlazada
-typedef struct miLista{
+/* Tipo de nodo */
+typedef struct tNodo{
 struct list_head list;
 int data;
-} miLista ;
-//una instanciación de dicha lista
-miLista modlist;
+} tNodo;
+
+/* Lista enlazada */
+struct list_head modlist;
+
+
 
 //operaciones internas
 //
 static void add (int valor)
 {
-  miLista* unNodo;
-  unNodo=(miLista*) vmalloc(sizeof(miLista));
-  unNodo->data = 1;
-  list_add(&(unNodo->list),&(modlist.list));
+  tNodo unNodo;
+  unNodo.data = 1;
+  list_add_tail(&unNodo.list, &modlist);
 }
 
 /*
@@ -66,36 +68,36 @@ int GetNumber(const char *str) {
 
 
 static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
-	int r=0;
+	int r;
 	char* unBuffer;
 	  if ((*off) > 0) /* The application can write in this entry just once !! */
-		return 0;	  
+		return 0;
+	  
+	  
 	  /* Transfer data from user to kernel space */
 	  unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
-	  if (copy_from_user( &unBuffer[0], buf, len ))  
+	  if (copy_from_user( &unBuffer, buf, len ))  
 		return -EFAULT;
-	  unBuffer[len] = '\0'; /* Add the `\0' */  
-	
-	  *off+=len;            /* Update the file pointer */
-	    r=GetNumber(unBuffer);
-	  add(r);
-	 vfree(unBuffer);
+	  r=GetNumber(unBuffer);
+	//  add(r);
+	  off+=len;            /* Update the file pointer */
+	  vfree(unBuffer);
 	  trace_printk("He insertado: %d\n",r);
 	  
 	  return 0;
-}
-//http://www.makelinux.net/books/lkd2/app01lev1sec4
-//https://isis.poly.edu/kulesh/stuff/src/klist/
- void imprime(void)
- {
-	struct list_head* pos=NULL;
-	miLista* tmp=NULL;
-	list_for_each(pos,&(modlist.list)) 
-	{
-	//tmp=list_entry(pos,modlist,list);
-	trace_printk("Numero %d\n",1);//,tmp->data);
+};
+
+
+void print_list(struct list_head* list) {
+	tNodo* item=NULL;
+	tNodo* cur_node=NULL;
 	
-	}
+	//list_for_each(cur_node, list) 
+	//{
+	/* item points to the structure wherein the links are embedded */
+	//item = list_entry(cur_node, struct list_item, links);
+	//trace_printk(KERN_INFO "%i\n",item->data);
+	//}
 	
 }
 
@@ -105,7 +107,7 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
   
 	  if ((*off) > 0) /* Tell the application that there is nothing left to read */
 	      return 0;
-	  imprime();
+	  print_list(&modlist);
 	  return 0;
 };
 
@@ -126,7 +128,7 @@ int init_modlist_module( void )
 {
   
   int ret = 0;
-  INIT_LIST_HEAD(&modlist.list); /* Initialize the list */
+  INIT_LIST_HEAD(&modlist); /* Initialize the list */
   proc_entry = proc_create( "modlist", 0666, NULL, &proc_entry_fops);
   if (proc_entry == NULL) {
   ret = -ENOMEM;
