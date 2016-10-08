@@ -78,10 +78,6 @@ static void rem (int valor)
 
 
 int GetNumber(const char *str, size_t len) {
-
- 
-
-
  char* comando;
  comando=(char*)vmalloc(sizeof(size_t)*len);
  trace_printk("\nempiezo a copiar\n");
