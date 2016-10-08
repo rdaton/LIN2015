@@ -1,0 +1,1 @@
+cmd_/home/kernel/LIN2015/Yu/lista/lista_version1_prueba.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.14.1.lin/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Yu/lista/lista_version1_prueba.ko /home/kernel/LIN2015/Yu/lista/lista_version1_prueba.o /home/kernel/LIN2015/Yu/lista/lista_version1_prueba.mod.o
