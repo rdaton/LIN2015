@@ -23,7 +23,6 @@ __attribute__((section("__versions"))) = {
 	{ 0x245505fd, __VMLINUX_SYMBOL_STR(proc_create_data) },
 	{ 0xd6ee688f, __VMLINUX_SYMBOL_STR(vmalloc) },
 	{ 0xc72e1233, __VMLINUX_SYMBOL_STR(__trace_bprintk) },
-	{ 0xb1e25684, __VMLINUX_SYMBOL_STR(__trace_bputs) },
 	{ 0x27e1a049, __VMLINUX_SYMBOL_STR(printk) },
 	{ 0xbdfb6dbb, __VMLINUX_SYMBOL_STR(__fentry__) },
 };

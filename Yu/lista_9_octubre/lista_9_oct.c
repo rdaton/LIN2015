@@ -36,6 +36,8 @@ struct list_head modlist;
 
 //operaciones internas
 //
+
+
 static int add (int valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
@@ -45,8 +47,6 @@ static int add (int valor)
   list_add_tail(&(unNodo->list), &modlist);
   return 0;
 }
-
-
 
 static void limpiar(struct list_head* list){
 	tNodo* item=NULL;
@@ -122,31 +122,18 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	  
 	  /* Transfer data from user to kernel space */
 	  unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
-	  if (copy_from_user( &unBuffer, buf, len ))  
+	  if (copy_from_user( &unBuffer[0], buf, len ))  
 		return -EFAULT;
 
+	
 	  r=GetNumber(unBuffer);
 		add(r);
 	  *off+=len;            /* Update the file pointer */
 	  vfree(unBuffer);
 	  trace_printk("He insertado: %d\n",r);
 	  
-	  return 0;
+	  return len;
 };
-
-
-void print_list(struct list_head *list) {
-        tNodo* item=NULL;
-	struct list_head* cur_node=NULL;
-	trace_printk(KERN_INFO "%s\n","imprimiendo");
-	list_for_each(cur_node, list) 
-	{
-	/* item points to the structure wherein the links are embedded */
-	item = list_entry(cur_node,tNodo, list);
-	trace_printk(KERN_INFO "%i\n",item->data);
-	}
-	
-}
 
 
 
@@ -171,9 +158,23 @@ static int remove (int valor,struct list_head* list){
 
 }
 
-/*
-void generaVector(char* unBuffer){
-	struct list_head* list=&Modlist;
+void print_list(struct list_head *list) {
+        tNodo* item=NULL;
+	struct list_head* cur_node=NULL;
+	trace_printk(KERN_INFO "%s\n","imprimiendo");
+	list_for_each(cur_node, list) 
+	{
+	/* item points to the structure wherein the links are embedded */
+	item = list_entry(cur_node,tNodo, list);
+	trace_printk(KERN_INFO "%i\n",item->data);
+	}
+	
+}
+
+
+
+void generaVector(char* unBuffer,struct list_head* list){
+	//struct list_head* list=&Modlist;
 	  tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
 	trace_printk(KERN_INFO "%s\n","imprimiendo");
@@ -181,7 +182,7 @@ void generaVector(char* unBuffer){
 
 	int i;
 	i=0;
-	char c=NULL;
+	
 	list_for_each(cur_node, list) 
 	{
 	// item points to the structure wherein the links are embedded 
@@ -190,19 +191,20 @@ void generaVector(char* unBuffer){
 	trace_printk(KERN_INFO "%i\n",item->data);
 	int temp=item->data;
 	//AQUI HAY QUE HACER UNA CONVERSION ASIGNANDO EL VALOR A LA VARIABLE C
+	sprintf(unBuffer[i],"%d",temp);
 	
-	unBuffer[i]=c;
 	}
 }
-*/
 
 
 static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
     int nr_bytes;
+    //!!!!!!!!tipo de unBuffer igual podemos declararlo directamente con tipo int que facilita luego al rellenarlo con
+    //los valores de tipo int. Es mas, Supongo que el metodo copy_to_user recibe cualquier tipo 
 	char* unBuffer;
 	  if ((*off) > 0) /* Tell the application that there is nothing left to read */
 	      return 0;
-	 unBuffer=(char *)vmalloc( BUFFER_LENGTH );
+	 unBuffer=(char *)vmalloc( BUFFER_LENGTH+sizeof(char));//aqui somo uno mas es para poder poner final de array un '\0'
  	
  	//generaVector(unBuffer);
  	
@@ -210,7 +212,8 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
 
 	if (len<nr_bytes)
     return -ENOSPC;
-  
+
+  unBuffer[nr_bytes]='\0';
     /* Transfer data from the kernel to userspace */  
   if (copy_to_user(buf, unBuffer,nr_bytes))
     return -EINVAL;

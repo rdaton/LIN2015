@@ -20,6 +20,7 @@ __attribute__((section("__versions"))) = {
 	{ 0xdca08a4c, __VMLINUX_SYMBOL_STR(module_layout) },
 	{ 0x8819b6c1, __VMLINUX_SYMBOL_STR(remove_proc_entry) },
 	{ 0x245505fd, __VMLINUX_SYMBOL_STR(proc_create_data) },
+	{ 0x91715312, __VMLINUX_SYMBOL_STR(sprintf) },
 	{ 0xc72e1233, __VMLINUX_SYMBOL_STR(__trace_bprintk) },
 	{ 0x999e8297, __VMLINUX_SYMBOL_STR(vfree) },
 	{ 0x20c55ae0, __VMLINUX_SYMBOL_STR(sscanf) },
