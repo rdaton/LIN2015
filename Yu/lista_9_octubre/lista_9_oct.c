@@ -41,11 +41,50 @@ struct list_head modlist;
 static int add (int valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
-  if (unNodo==NULL)
-	return -ENOMEM;	
+  if (unNodo==NULL){
+  	vfree(unNodo);
+  	return -ENOMEM;	
+  }
+	
   unNodo->data = valor;
   list_add_tail(&(unNodo->list), &modlist);
   return 0;
+}
+
+static int push (int valor)
+{
+  tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
+  if (unNodo==NULL){
+  	vfree(unNodo);
+  	return -ENOMEM;	
+  }
+	
+  unNodo->data = valor;
+  list_add(&(unNodo->list), &modlist);
+  return 0;
+}
+
+
+static void pop(struct list_head* list){
+	tNodo* item=NULL;
+	struct list_head* cur_node=NULL;
+	struct list_head* lista_aux=NULL;
+	trace_printk(KERN_INFO "%s\n","limpiando");
+
+	int i=0;
+	list_for_each_safe(cur_node,lista_aux,list) 
+	{
+		if(i==1){
+			return;
+		}
+	/* item points to the structure wherein the links are embedded */
+	item = list_entry(cur_node,tNodo, list);
+	list_del(cur_node);
+		vfree(item);	
+		i++;
+		
+	}
+
 }
 
 static void limpiar(struct list_head* list){
@@ -63,79 +102,6 @@ static void limpiar(struct list_head* list){
 	}
 
 }
-
-/*
-static void rem (int valor)
-{
-	tNodo* actual=modlist;
-	bool enc=false;
-	int i=
-	while (!enc && !empty(modlist))
-	{
-		actual=modlist.
-	}
-}*/
-
-
-int GetNumber(const char *str) {
- 
- trace_printk("\nempiezo a copiar\n");
- 
-	int numero=NULL;
-	
- if(sscanf(str,"add %i",&numero)==1){
- 	
- 		trace_printk("es add");
- 		return numero;
- 		
- 	}
- else if(sscanf(str,"r %i",&numero)==1){
- 
- 		trace_printk("es remove");
- 			return numero;
- }	
- else{
- 	trace_printk("es nada");
- }
- 
- 	return -1;
- }
-
- 
-  /*while (!(*str >= '0' && *str <= '9') && (*str != '-') && (*str != '+')) str++;  
-  if (sscanf(str, "%d", &number) == 1) {
-    return number;
-  }*/
-  // No int found
-
-	
-		
-  
-
-
-static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
-	int r;
-	char* unBuffer;
-	  if ((*off) > 0) /* The application can write in this entry just once !! */
-		return 0;
-	  
-	  
-	  /* Transfer data from user to kernel space */
-	  unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
-	  if (copy_from_user( &unBuffer[0], buf, len ))  
-		return -EFAULT;
-
-	
-	  r=GetNumber(unBuffer);
-		add(r);
-	  *off+=len;            /* Update the file pointer */
-	  vfree(unBuffer);
-	  trace_printk("He insertado: %d\n",r);
-	  
-	  return len;
-};
-
-
 
 static int remove (int valor,struct list_head* list){
 	tNodo* item=NULL;
@@ -158,6 +124,8 @@ static int remove (int valor,struct list_head* list){
 
 }
 
+
+
 void print_list(struct list_head *list) {
         tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
@@ -171,58 +139,172 @@ void print_list(struct list_head *list) {
 	
 }
 
+/*
+static void rem (int valor)
+{
+	tNodo* actual=modlist;
+	bool enc=false;
+	int i=
+	while (!enc && !empty(modlist))
+	{
+		actual=modlist.
+	}
+}*/
+
+/*
+int GetNumber(const char *str) {
+ 
+ trace_printk("\nempiezo a copiar\n");
+ 
+	int numero=-1;
+	
+ if(sscanf(str,"add %i",&numero)==1){
+ 	
+ 		trace_printk("es add");
+ 		return numero;
+ 		
+ 	}
+ else if(sscanf(str,"remove %i",&numero)==1){
+ 
+ 		trace_printk("es remove");
+ 			return numero;
+ }	
+ else{
+ 	trace_printk("es nada");
+ }
+ 
+ 	return -1;
+ }*/
+
+ 
+  /*while (!(*str >= '0' && *str <= '9') && (*str != '-') && (*str != '+')) str++;  
+  if (sscanf(str, "%d", &number) == 1) {
+    return number;
+  }*/
+  // No int found
+
+	
+		
+  
 
 
-void generaVector(char* unBuffer,struct list_head* list){
+static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
+	int r;
+	
+	char* unBuffer;
+	  if ((*off) > 0) /* The application can write in this entry just once !! */
+		return 0;
+	  
+	  
+	  /* Transfer data from user to kernel space */
+	  unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
+	  if (copy_from_user( &unBuffer[0], buf, len )){
+	  	vfree(unBuffer);
+	  	return -EFAULT;
+	  }  
+		
+
+	unBuffer[len]="\0";
+		trace_printk(unBuffer);
+
+	 // r=GetNumber(unBuffer);
+	  if(sscanf(unBuffer,"add %i",&r)==1){
+	  		add(r);
+	  		trace_printk("He insertado: %d\n",r);
+
+	  }
+
+
+	  else if(sscanf(unBuffer,"remove %i",&r)==1){
+	  		remove(r,&modlist);
+	  		trace_printk("intentando a borrar: %d\n",r);
+	  		print_list(&modlist);
+	  }
+	  else if(strcmp(unBuffer,"cleanup\n")==0){
+	  		limpiar(&modlist);
+	  		trace_printk("intentando a limpiar: %d\n",r);
+	  		print_list(&modlist);
+	  }
+
+	  else{
+	  	vfree(unBuffer);
+	  	return -EFAULT;
+	  };
+		
+
+	  *off+=len;            /* Update the file pointer */
+	  vfree(unBuffer);
+	 // 
+	  
+	  return len;
+};
+
+
+
+
+
+
+
+
+
+int generaVector(char* unBuffer,struct list_head* list){
 	//struct list_head* list=&Modlist;
 	  tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
 	trace_printk(KERN_INFO "%s\n","imprimiendo");
 
 
-	int i;
-	i=0;
 	
+	char* dest=unBuffer;
 	list_for_each(cur_node, list) 
 	{
 	// item points to the structure wherein the links are embedded 
 
 	item = list_entry(cur_node,tNodo, list);
 	trace_printk(KERN_INFO "%i\n",item->data);
-	int temp=item->data;
+	
 	//AQUI HAY QUE HACER UNA CONVERSION ASIGNANDO EL VALOR A LA VARIABLE C
-	sprintf(unBuffer[i],"%d",temp);
+	dest+=sprintf(dest,"%i\n",item->data);
 	
 	}
+	return dest-unBuffer;
 }
 
 
 static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
-    int nr_bytes;
+    int num_elem;
     //!!!!!!!!tipo de unBuffer igual podemos declararlo directamente con tipo int que facilita luego al rellenarlo con
     //los valores de tipo int. Es mas, Supongo que el metodo copy_to_user recibe cualquier tipo 
 	char* unBuffer;
 	  if ((*off) > 0) /* Tell the application that there is nothing left to read */
 	      return 0;
-	 unBuffer=(char *)vmalloc( BUFFER_LENGTH+sizeof(char));//aqui somo uno mas es para poder poner final de array un '\0'
- 	
- 	//generaVector(unBuffer);
- 	
- 	nr_bytes=strlen(unBuffer);
 
-	if (len<nr_bytes)
-    return -ENOSPC;
+	 unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
+ 	
+ 	num_elem=generaVector(unBuffer,&modlist);
+ 	
+ 	//nr_bytes=strlen(unBuffer);
 
-  unBuffer[nr_bytes]='\0';
+	if (len<num_elem){
+		vfree(unBuffer);
+		return -ENOSPC;
+	}
+    
+
+  //unBuffer[nr_bytes]='\0';
     /* Transfer data from the kernel to userspace */  
-  if (copy_to_user(buf, unBuffer,nr_bytes))
-    return -EINVAL;
+  if (copy_to_user(buf, unBuffer,num_elem)){
+  		vfree(unBuffer);
+  	 return -EINVAL;
+  }
+   
 
-  
+  print_list(&modlist);
     
   (*off)+=len;  /* Update the file pointer */
 
-  return nr_bytes; 
+	vfree(unBuffer);
+  return num_elem; 
 
 
 	 
@@ -251,8 +333,8 @@ int init_modlist_module( void )
   ret = -ENOMEM;
   trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
   } else   
-  trace_printk(KERN_INFO "modlist: Module loaded, es aquiiiii?\n");
-add(1);
+  trace_printk(KERN_INFO "modlist: Module loaded\n");
+/*add(1);
 add(2);
 add(3);
 trace_printk(KERN_INFO "entra metodo remove\n");
@@ -261,11 +343,11 @@ trace_printk(KERN_INFO "sele metodo remove\n");
 print_list(&modlist);
 
 GetNumber("r3");
-
+*/
   return ret;
  
 
- return 0;
+ 
 };
 
 module_init( init_modlist_module );
