@@ -48,7 +48,7 @@ deps_/home/barfelix/LIN2015/AILA/Practica1/Ejemplos/modlist.mod.o := \
   /usr/src/linux-headers-3.16.0-4-common/include/linux/compiler-gcc.h \
     $(wildcard include/config/arch/supports/optimized/inlining.h) \
     $(wildcard include/config/optimize/inlining.h) \
-  /usr/src/linux-headers-3.16.0-4-common/include/linux/compiler-gcc4.h \
+    $(wildcard include/config/gcov/kernel.h) \
     $(wildcard include/config/arch/use/builtin/bswap.h) \
   /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/posix_types.h \
     $(wildcard include/config/x86/32.h) \
