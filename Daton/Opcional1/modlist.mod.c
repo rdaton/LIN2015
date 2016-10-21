@@ -21,14 +21,11 @@ __attribute__((section("__versions"))) = {
 	{ 0xd791cc7, __VMLINUX_SYMBOL_STR(remove_proc_entry) },
 	{ 0x308992c, __VMLINUX_SYMBOL_STR(proc_create_data) },
 	{ 0x91715312, __VMLINUX_SYMBOL_STR(sprintf) },
+	{ 0xe2d5255a, __VMLINUX_SYMBOL_STR(strcmp) },
 	{ 0x20c55ae0, __VMLINUX_SYMBOL_STR(sscanf) },
-	{ 0xb1e25684, __VMLINUX_SYMBOL_STR(__trace_bputs) },
-	{ 0x2d41e6f5, __VMLINUX_SYMBOL_STR(__trace_puts) },
-	{ 0x754d539c, __VMLINUX_SYMBOL_STR(strlen) },
 	{ 0x69acdf38, __VMLINUX_SYMBOL_STR(memcpy) },
 	{ 0xd6ee688f, __VMLINUX_SYMBOL_STR(vmalloc) },
 	{ 0x999e8297, __VMLINUX_SYMBOL_STR(vfree) },
-	{ 0xc72e1233, __VMLINUX_SYMBOL_STR(__trace_bprintk) },
 	{ 0xbdfb6dbb, __VMLINUX_SYMBOL_STR(__fentry__) },
 };
 
