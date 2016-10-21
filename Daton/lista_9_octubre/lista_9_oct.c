@@ -41,7 +41,7 @@ struct list_head modlist;
 //operaciones internas
 //
 
-
+#ifdef PARTE_OPCIONAL
 static int add(char* valor) //para String
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
@@ -56,7 +56,7 @@ static int add(char* valor) //para String
   list_add_tail(&(unNodo->list), &modlist);
   return 0;
 }
-
+#else
 static int add (int valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
@@ -69,8 +69,9 @@ static int add (int valor)
   list_add_tail(&(unNodo->list), &modlist);
   return 0;
 }
+#endif
 
-
+#ifdef PARTE_OPCIONAL
 static int push (char* valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
@@ -86,8 +87,7 @@ static int push (char* valor)
   return 0;
 }
 
-
-
+#else
 static int push (int valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
@@ -100,6 +100,7 @@ static int push (int valor)
   list_add(&(unNodo->list), &modlist);
   return 0;
 }
+#endif
 
 
 static void pop(struct list_head* list){
@@ -172,6 +173,7 @@ static void sort(struct list_head *list) {
 	}
 }
 
+#ifdef PARTE_OPCIONAL
 static int remove (char* valor,struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
@@ -182,7 +184,7 @@ static int remove (char* valor,struct list_head* list){
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
 
-	if(strcmp(item->data,valor){
+	if(strcmp(item->data,valor)==0){
 		trace_printk(KERN_INFO "el valor que va a eliminar es %i\n",valor);
 		list_del(cur_node);
 		if (item->data=NULL)
@@ -194,10 +196,7 @@ static int remove (char* valor,struct list_head* list){
 
 }
 
-
-
-
-
+#else
 static int remove (int valor,struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
@@ -218,7 +217,7 @@ static int remove (int valor,struct list_head* list){
 	return 0;
 
 }
-
+#endif
 
 
 void print_list(struct list_head *list) {
