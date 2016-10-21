@@ -1,0 +1,3 @@
+#!/bin/bash
+EXTRA_CFLAGS=-DPARTE_OPCIONAL make
+
