@@ -9,7 +9,7 @@
  
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Modlist module - FDI-UCM");
-MODULE_AUTHOR("Roumen Daton");
+MODULE_AUTHOR(" Yu Liu; Roumen Daton");
 
 #define BUFFER_LENGTH  PAGE_SIZE
 
@@ -26,7 +26,11 @@ static struct proc_dir_entry *proc_entry ;
 /* Tipo de nodo */
 typedef struct{
 struct list_head list;
+#ifdef PARTE_OPCIONAL
+char* data;
+#else
 int data;
+#endif
 } tNodo;
 
 /* Lista enlazada */
@@ -38,18 +42,51 @@ struct list_head modlist;
 //
 
 
-static int add (int valor)
+static int add(char* valor) //para String
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
+	if (valor!=NULL)
+		vfree(valor);
   	vfree(unNodo);
-  	return -ENOMEM;	
+ 	 return -ENOMEM;	
   }
 	
   unNodo->data = valor;
   list_add_tail(&(unNodo->list), &modlist);
   return 0;
 }
+
+static int add (int valor)
+{
+  tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
+  if (unNodo==NULL){
+  	vfree(unNodo);
+  return -ENOMEM;	
+  }
+	
+  unNodo->data = valor;
+  list_add_tail(&(unNodo->list), &modlist);
+  return 0;
+}
+
+
+static int push (char* valor)
+{
+  tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
+  if (unNodo==NULL){
+	if (valor!=NULL)
+		vfree(valor);
+  	vfree(unNodo);
+  	return -ENOMEM;	
+  }
+	
+  unNodo->data = valor;
+  list_add(&(unNodo->list), &modlist);
+  return 0;
+}
+
+
 
 static int push (int valor)
 {
@@ -99,6 +136,9 @@ static void limpiar(struct list_head* list){
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
 	list_del(cur_node);
+		#ifdef PARTE_OPCIONAL
+		vfree (item->data);
+		#endif
 		vfree(item);	
 		
 	}
@@ -131,6 +171,33 @@ static void sort(struct list_head *list) {
 	
 	}
 }
+
+static int remove (char* valor,struct list_head* list){
+	tNodo* item=NULL;
+	struct list_head* cur_node=NULL;
+	struct list_head* lista_aux=NULL;
+	trace_printk(KERN_INFO "Entra metodo de remove\n");
+	list_for_each_safe(cur_node,lista_aux,list) 
+	{
+	/* item points to the structure wherein the links are embedded */
+	item = list_entry(cur_node,tNodo, list);
+
+	if(strcmp(item->data,valor){
+		trace_printk(KERN_INFO "el valor que va a eliminar es %i\n",valor);
+		list_del(cur_node);
+		if (item->data=NULL)
+			vfree(item->data);
+		vfree(item);
+		}
+	}
+	return 0;
+
+}
+
+
+
+
+
 static int remove (int valor,struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
@@ -172,7 +239,11 @@ void print_list(struct list_head *list) {
 
 
 static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
+#ifdef PARTE_OPCIONAL
+	char* r=(char *)vmalloc( BUFFER_LENGTH ); 
+#else
 	int r;
+#endif
 	
 	char* unBuffer;
 	  if ((*off) > 0) /* The application can write in this entry just once !! */
@@ -183,23 +254,41 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	  unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
 	  if (copy_from_user( &unBuffer[0], buf, len )){
 	  	vfree(unBuffer);
+		#ifdef PARTE_OPCIONAL
+		vfree(r); 
+		#endif
 	  	return -EFAULT;
 	  }  
 		
 
 	unBuffer[len]='\0';
 		trace_printk(unBuffer);
+	#ifdef PARTE_OPCIONAL
+	  if(sscanf(unBuffer,"add %s",&r)==1){
+	#else
 	  if(sscanf(unBuffer,"add %i",&r)==1){
+	#endif
 	  		add(r);
 	  		trace_printk("He insertado: %d\n",r);
 
 	  }
-	  else if(sscanf(unBuffer,"remove %i\n",&r)==1){
+	  else 
+	  #ifdef PARTE_OPCIONAL	
+		if(sscanf(unBuffer,"remove %s\n",&r)==1){
+	  #else
+		if(sscanf(unBuffer,"remove %i\n",&r)==1){
+	  #endif
 	  		remove(r,&modlist);
 	  		trace_printk("intentando a borrar: %d\n",r);
 	  		print_list(&modlist);
 	  }
-	   else if(sscanf(unBuffer,"push %i\n",&r)==1){
+	  
+	   else 
+	 #ifdef PARTE_OPCIONAL
+		if(sscanf(unBuffer,"push %s\n",&r)==1){
+	 #else
+		if(sscanf(unBuffer,"push %i\n",&r)==1){
+	 #endif
 	  		push(r);
 	  		trace_printk("intentando a push: %d\n",r);
 	  		print_list(&modlist);
@@ -224,6 +313,9 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	  	trace_printk(unBuffer);
 	  	trace_printk("error de introccion de comando");
 	  	vfree(unBuffer);
+		#ifdef PARTE_OPCIONAL
+		vfree(r); 
+		#endif
 	  	return -EFAULT;
 	  };
 		
@@ -259,8 +351,12 @@ int generaVector(char* unBuffer,struct list_head* list){
 	item = list_entry(cur_node,tNodo, list);
 	trace_printk(KERN_INFO "%i\n",item->data);
 	
+	#ifdef PARTE_OPCIONAL
+	dest+=sprintf(dest,"%s\n",item->data);
+	#else
 	//AQUI HAY QUE HACER UNA CONVERSION ASIGNANDO EL VALOR A LA VARIABLE C
 	dest+=sprintf(dest,"%i\n",item->data);
+	#endif
 	
 	}
 	return dest-unBuffer;
@@ -269,8 +365,7 @@ int generaVector(char* unBuffer,struct list_head* list){
 
 static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
     int num_elem;
-    //!!!!!!!!tipo de unBuffer igual podemos declararlo directamente con tipo int que facilita luego al rellenarlo con
-    //los valores de tipo int. Es mas, Supongo que el metodo copy_to_user recibe cualquier tipo 
+   
 	char* unBuffer;
 	  if ((*off) > 0) /* Tell the application that there is nothing left to read */
 	      return 0;
@@ -307,11 +402,6 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
 };
 
 
-
-
-
-
-
 //operaciones de entrada salida
 static const struct file_operations proc_entry_fops = {
     .read = modlist_read,
@@ -330,27 +420,6 @@ int init_modlist_module( void )
   trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
   } else   
   trace_printk(KERN_INFO "modlist: Module loaded\n");
-/*add(1);
-add(2);
-add(3);
-trace_printk(KERN_INFO "entra metodo remove\n");
-remove(2,&modlist);
-trace_printk(KERN_INFO "sele metodo remove\n");
-print_list(&modlist);
-
-GetNumber("r3");
-*/
-/*push(11);
-push(2);
-push(3);
-push(8);
-print_list(&modlist);
-pop(&modlist);
-print_list(&modlist);
-push(4);
-sort(&modlist);
-print_list(&modlist);
-  */
   return ret;
  
 
