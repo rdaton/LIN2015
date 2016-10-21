@@ -144,7 +144,7 @@ int a, int b
      )
 {
 #ifdef PARTE_OPCIONAL
-  return true;
+  return (strcmp(a,b)==1);
 #else
 return (a>b);
 #endif

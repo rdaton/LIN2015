@@ -26,11 +26,11 @@ static struct proc_dir_entry *proc_entry ;
 /* Tipo de nodo */
 typedef struct{
 struct list_head list;
-#IFDEF PARTE_OPCIONAL
+#ifdef PARTE_OPCIONAL
 char* data;
-#ELSE
+#else
 int data;
-#ENDIF
+#endif
 } tNodo;
 
 /* Lista enlazada */
@@ -40,15 +40,21 @@ struct list_head modlist;
 
 //operaciones internas
 //
-
-#IFDEF PARTE_OPCIONAL
-static int add(char* valor) //para String
+static int add(
+#ifdef PARTE_OPCIONAL
+char* 
+#else
+int
+#endif
+valor) 
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
+#ifdef PARTE_OPCIONAL
 	if (valor!=NULL)
 		vfree(valor);
-  	vfree(unNodo);
+#endif
+  	 vfree(unNodo);
  	 return -ENOMEM;	
   }
 	
@@ -56,28 +62,21 @@ static int add(char* valor) //para String
   list_add_tail(&(unNodo->list), &modlist);
   return 0;
 }
-#ELSE
-static int add (int valor)
-{
-  tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
-  if (unNodo==NULL){
-  	vfree(unNodo);
-  return -ENOMEM;	
-  }
-	
-  unNodo->data = valor;
-  list_add_tail(&(unNodo->list), &modlist);
-  return 0;
-}
-#ENDIF
 
-#IFDEF PARTE_OPCIONAL
-static int push (char* valor)
+static int push (
+#ifdef PARTE_OPCIONAL
+char* 
+#else
+int
+#endif
+valor) 
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
+#ifdef PARTE_OPCIONAL
 	if (valor!=NULL)
 		vfree(valor);
+#endif
   	vfree(unNodo);
   	return -ENOMEM;	
   }
@@ -86,28 +85,13 @@ static int push (char* valor)
   list_add(&(unNodo->list), &modlist);
   return 0;
 }
-
-#ELSE
-static int push (int valor)
-{
-  tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
-  if (unNodo==NULL){
-  	vfree(unNodo);
-  	return -ENOMEM;	
-  }
-	
-  unNodo->data = valor;
-  list_add(&(unNodo->list), &modlist);
-  return 0;
-}
-#ENDIF
 
 
 static void pop(struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
 	struct list_head* lista_aux=NULL;
-	trace_printk(KERN_INFO "%s\n","limpiando con pop");
+	//trace_printk(KERN_INFO "%s\n","limpiando con pop");
 
 	int i=0;
 	list_for_each_safe(cur_node,lista_aux,list) 
@@ -116,6 +100,10 @@ static void pop(struct list_head* list){
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
 	list_del(cur_node);
+		#ifdef PARTE_OPCIONAL
+		if (item->data!=NULL)
+		  vfree (item->data);
+		#endif
 		vfree(item);	
 		i++;
 
@@ -131,26 +119,47 @@ static void limpiar(struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
 	struct list_head* lista_aux=NULL;
-	trace_printk(KERN_INFO "%s\n","limpiando");
+	//trace_printk(KERN_INFO "%s\n","limpiando");
 	list_for_each_safe(cur_node,lista_aux,list) 
 	{
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
 	list_del(cur_node);
-		#IFDEF PARTE_OPCIONAL
-		vfree (item->data);
-		#ENDIF
+		#ifdef PARTE_OPCIONAL
+		if (item->data!=NULL)
+		  vfree (item->data);
+		#endif
 		vfree(item);	
 		
 	}
 
 }
 
+int mayor (
+#ifdef PARTE_OPCIONAL
+char* a, char *b
+#else
+int a, int b
+#endif
+     )
+{
+#ifdef PARTE_OPCIONAL
+  return (strcmp(a,b)==1);
+#else
+return (a>b);
+#endif
+}
+  
+
 static void sort(struct list_head *list) {
-     tNodo* item=NULL;
+	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
-	trace_printk(KERN_INFO "%s\n","imprimiendo");
+	//trace_printk(KERN_INFO "%s\n","imprimiendo");
+#ifdef PARTE_OPCIONAL
+	char* aux;
+#else	
 	int aux=0;
+#endif
 	list_for_each(cur_node, list) 
 	{
 	/* item points to the structure wherein the links are embedded */
@@ -162,73 +171,56 @@ static void sort(struct list_head *list) {
 		{
 			/* item points to the structure wherein the links are embedded */
 			item2 = list_entry(cur_node2,tNodo,list);
-			if(item2->data > item->data){
+			if(mayor(item2->data,item->data)){
 				aux=item->data;
 				item->data=item2->data;
 				item2->data=aux;
 			}
-
 		}
 	
 	}
 }
 
-#IFDEF PARTE_OPCIONAL
-static int remove (char* valor,struct list_head* list){
+static int remove (
+#ifdef PARTE_OPCIONAL
+char* 
+#else
+int
+#endif
+valor,  
+struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
 	struct list_head* lista_aux=NULL;
-	trace_printk(KERN_INFO "Entra metodo de remove\n");
+	//trace_printk(KERN_INFO "Entra metodo de remove\n");
 	list_for_each_safe(cur_node,lista_aux,list) 
 	{
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
 
 	if(strcmp(item->data,valor)==0){
-		trace_printk(KERN_INFO "el valor que va a eliminar es %i\n",valor);
+		//trace_printk(KERN_INFO "el valor que va a eliminar es %i\n",valor);
 		list_del(cur_node);
-		if (item->data=NULL)
+#ifdef PARTE_OPCIONAL
+		if (item->data!=NULL)
 			vfree(item->data);
+#endif
 		vfree(item);
 		}
 	}
 	return 0;
 
 }
-
-#ELSE
-static int remove (int valor,struct list_head* list){
-	tNodo* item=NULL;
-	struct list_head* cur_node=NULL;
-	struct list_head* lista_aux=NULL;
-	trace_printk(KERN_INFO "Entra metodo de remove\n");
-	list_for_each_safe(cur_node,lista_aux,list) 
-	{
-	/* item points to the structure wherein the links are embedded */
-	item = list_entry(cur_node,tNodo, list);
-
-	if((item->data) == valor){
-		trace_printk(KERN_INFO "el valor que va a eliminar es %i\n",valor);
-		list_del(cur_node);
-		vfree(item);
-
-		}
-	}
-	return 0;
-
-}
-#ENDIF
-
 
 void print_list(struct list_head *list) {
         tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
-	trace_printk(KERN_INFO "%s\n","imprimiendo");
+	//trace_printk(KERN_INFO "%s\n","imprimiendo");
 	list_for_each(cur_node, list) 
 	{
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
-	trace_printk(KERN_INFO "%i\n",item->data);
+	//trace_printk(KERN_INFO "%i\n",item->data);
 	}
 	
 }
@@ -238,11 +230,11 @@ void print_list(struct list_head *list) {
 
 
 static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
-#IFDEF PARTE_OPCIONAL
+#ifdef PARTE_OPCIONAL
 	char* r=(char *)vmalloc( BUFFER_LENGTH ); 
-#ELSE
+#else
 	int r;
-#ENDIF
+#endif
 	
 	char* unBuffer;
 	  if ((*off) > 0) /* The application can write in this entry just once !! */
@@ -253,74 +245,74 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	  unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
 	  if (copy_from_user( &unBuffer[0], buf, len )){
 	  	vfree(unBuffer);
-		#IFDEF PARTE_OPCIONAL
+		#ifdef PARTE_OPCIONAL
 		vfree(r); 
-		#ENDIF
+		#endif
 	  	return -EFAULT;
 	  }  
 		
 
 	unBuffer[len]='\0';
-		trace_printk(unBuffer);
-	#IFDEF PARTE_OPCIONAL
-		trace_printk("add opt"); 
-	  if(sscanf(unBuffer,"add %s",&r)==1){
-	#ELSE
-	  	trace_printk("add norm");
+		//trace_printk(unBuffer);
+	#ifdef PARTE_OPCIONAL
+		//trace_printk("add opt"); 
+	  if(sscanf(unBuffer,"add %s",r)==1){
+	#else
+	  	//trace_printk("add norm");
 	  if(sscanf(unBuffer,"add %i",&r)==1){
-	#ENDIF
+	#endif
 	  		add(r);
-	  		trace_printk("He insertado: %d\n",r);
+	  		//trace_printk("He insertado: %d\n",r);
 
 	  }
 	  else 
-	  #IFDEF PARTE_OPCIONAL	
-	  	trace_printk("rem opt");
-		if(sscanf(unBuffer,"remove %s\n",&r)==1){
-	  #ELSE
-		trace_printk("rem norm");
+	  #ifdef PARTE_OPCIONAL	
+	  	//trace_printk("rem opt");
+		if(sscanf(unBuffer,"remove %s\n",r)==1){
+	  #else
+		//trace_printk("rem norm");
 		if(sscanf(unBuffer,"remove %i\n",&r)==1){
-	  #ENDIF
+	  #endif
 	  		remove(r,&modlist);
-	  		trace_printk("intentando a borrar: %d\n",r);
+	  		//trace_printk("intentando a borrar: %d\n",r);
 	  		print_list(&modlist);
 	  }
 	  
 	   else 
-	 #IFDEF PARTE_OPCIONAL
-	   	trace_printk("push opt");
-		if(sscanf(unBuffer,"push %s\n",&r)==1){
-	 #ELSE
-		trace_printk("push norm");
+	 #ifdef PARTE_OPCIONAL
+	   	//trace_printk("push opt");
+		if(sscanf(unBuffer,"push %s\n",r)==1){
+	 #else
+		//trace_printk("push norm");
 		if(sscanf(unBuffer,"push %i\n",&r)==1){
-	 #ENDIF
+	 #endif
 	  		push(r);
-	  		trace_printk("intentando a push: %d\n",r);
+	  		//trace_printk("intentando a push: %d\n",r);
 	  		print_list(&modlist);
 	  }
 	   else if(strcmp(unBuffer,"cleanup\n")==0){
 	  		limpiar(&modlist);
-	  		trace_printk("intentando a limpiar todo");
+	  		//trace_printk("intentando a limpiar todo");
 	  		print_list(&modlist);
 	  }
 	   else if(strcmp(unBuffer,"pop\n")==0){
 	  		pop(&modlist);
-	  		trace_printk("intentando a hacer pop");
+	  		//trace_printk("intentando a hacer pop");
 	  		print_list(&modlist);
 	  }
 	  else if(strcmp(unBuffer,"sort\n")==0){
 	  		sort(&modlist);
-	  		trace_printk("intentando a ordenar");
+	  		//trace_printk("intentando a ordenar");
 	  		print_list(&modlist);
 	  }
 
 	  else{
-	  	trace_printk(unBuffer);
-	  	trace_printk("error de introccion de comando");
+	  	//trace_printk(unBuffer);
+	  	//trace_printk("error de introccion de comando");
 	  	vfree(unBuffer);
-		#IFDEF PARTE_OPCIONAL
+		#ifdef PARTE_OPCIONAL
 		vfree(r); 
-		#ENDIF
+		#endif
 	  	return -EFAULT;
 	  };
 		
@@ -344,7 +336,7 @@ int generaVector(char* unBuffer,struct list_head* list){
 	//struct list_head* list=&Modlist;
 	  tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
-	trace_printk(KERN_INFO "%s\n","imprimiendo");
+	//trace_printk(KERN_INFO "%s\n","imprimiendo");
 
 
 	
@@ -354,14 +346,14 @@ int generaVector(char* unBuffer,struct list_head* list){
 	// item points to the structure wherein the links are embedded 
 
 	item = list_entry(cur_node,tNodo, list);
-	trace_printk(KERN_INFO "%i\n",item->data);
+	//trace_printk(KERN_INFO "%i\n",item->data);
 	
-	#IFDEF PARTE_OPCIONAL
+	#ifdef PARTE_OPCIONAL
 	dest+=sprintf(dest,"%s\n",item->data);
-	#ELSE
+	#else
 	//AQUI HAY QUE HACER UNA CONVERSION ASIGNANDO EL VALOR A LA VARIABLE C
 	dest+=sprintf(dest,"%i\n",item->data);
-	#ENDIF
+	#endif
 	
 	}
 	return dest-unBuffer;
@@ -422,9 +414,9 @@ int init_modlist_module( void )
   proc_entry = proc_create( "modlist", 0666, NULL, &proc_entry_fops);
   if (proc_entry == NULL) {
   ret = -ENOMEM;
-  trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
-  } else   
-  trace_printk(KERN_INFO "modlist: Module loaded\n");
+  //trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
+  }// else   
+  //trace_printk(KERN_INFO "modlist: Module loaded\n");
   return ret;
  
 
@@ -440,7 +432,7 @@ void exit_modlist_module( void )
 {
   remove_proc_entry("modlist", NULL);
   limpiar(&modlist);
-  trace_printk(KERN_INFO "modlist: Module unloaded.\n");
+  //trace_printk(KERN_INFO "modlist: Module unloaded.\n");
   print_list(&modlist);
 
 };
