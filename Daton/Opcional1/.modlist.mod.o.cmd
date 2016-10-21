@@ -1,8 +1,8 @@
-cmd_/home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.o :=  gcc-4.8 -Wp,-MD,/home/osboxes/LIN2015/Daton/lista_9_octubre/.lista_9_oct.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include -Iarch/x86/include/generated  -I/usr/src/linux-headers-3.16.0-4-common/include -Iinclude -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/usr/src/linux-headers-3.16.0-4-common/include/uapi -Iinclude/generated/uapi -include /usr/src/linux-headers-3.16.0-4-common/include/linux/kconfig.h   -I/home/osboxes/LIN2015/Daton/lista_9_octubre -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -m64 -mno-mmx -mno-sse -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -fno-delete-null-pointer-checks -O2 -Wframe-larger-than=2048 -fstack-protector -Wno-unused-but-set-variable -fno-var-tracking-assignments -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(lista_9_oct.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(lista_9_oct)" -DMODULE  -c -o /home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.o /home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.c
+cmd_/home/barfelix/LIN2015/Daton/Opcional1/modlist.mod.o :=  gcc-4.8 -Wp,-MD,/home/barfelix/LIN2015/Daton/Opcional1/.modlist.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include -Iarch/x86/include/generated  -I/usr/src/linux-headers-3.16.0-4-common/include -Iinclude -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/usr/src/linux-headers-3.16.0-4-common/include/uapi -Iinclude/generated/uapi -include /usr/src/linux-headers-3.16.0-4-common/include/linux/kconfig.h   -I/home/barfelix/LIN2015/Daton/Opcional1 -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -m64 -mno-mmx -mno-sse -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -fno-delete-null-pointer-checks -O2 -Wframe-larger-than=2048 -fstack-protector -Wno-unused-but-set-variable -fno-var-tracking-assignments -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(modlist.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(modlist)" -DMODULE  -c -o /home/barfelix/LIN2015/Daton/Opcional1/modlist.mod.o /home/barfelix/LIN2015/Daton/Opcional1/modlist.mod.c
 
-source_/home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.o := /home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.c
+source_/home/barfelix/LIN2015/Daton/Opcional1/modlist.mod.o := /home/barfelix/LIN2015/Daton/Opcional1/modlist.mod.c
 
-deps_/home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.o := \
+deps_/home/barfelix/LIN2015/Daton/Opcional1/modlist.mod.o := \
     $(wildcard include/config/module/unload.h) \
   /usr/src/linux-headers-3.16.0-4-common/include/linux/module.h \
     $(wildcard include/config/sysfs.h) \
@@ -48,7 +48,7 @@ deps_/home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.o := \
   /usr/src/linux-headers-3.16.0-4-common/include/linux/compiler-gcc.h \
     $(wildcard include/config/arch/supports/optimized/inlining.h) \
     $(wildcard include/config/optimize/inlining.h) \
-  /usr/src/linux-headers-3.16.0-4-common/include/linux/compiler-gcc4.h \
+    $(wildcard include/config/gcov/kernel.h) \
     $(wildcard include/config/arch/use/builtin/bswap.h) \
   /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/asm/posix_types.h \
     $(wildcard include/config/x86/32.h) \
@@ -584,6 +584,6 @@ deps_/home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.o := \
   /usr/src/linux-headers-3.16.0-4-common/include/linux/vermagic.h \
   include/generated/utsrelease.h \
 
-/home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.o: $(deps_/home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.o)
+/home/barfelix/LIN2015/Daton/Opcional1/modlist.mod.o: $(deps_/home/barfelix/LIN2015/Daton/Opcional1/modlist.mod.o)
 
-$(deps_/home/osboxes/LIN2015/Daton/lista_9_octubre/lista_9_oct.mod.o):
+$(deps_/home/barfelix/LIN2015/Daton/Opcional1/modlist.mod.o):

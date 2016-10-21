@@ -263,8 +263,10 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	unBuffer[len]='\0';
 		trace_printk(unBuffer);
 	#ifdef PARTE_OPCIONAL
+		trace_printk("add opt"); 
 	  if(sscanf(unBuffer,"add %s",&r)==1){
 	#else
+	  	trace_printk("add norm");
 	  if(sscanf(unBuffer,"add %i",&r)==1){
 	#endif
 	  		add(r);
@@ -273,8 +275,10 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	  }
 	  else 
 	  #ifdef PARTE_OPCIONAL	
+	  	trace_printk("rem opt");
 		if(sscanf(unBuffer,"remove %s\n",&r)==1){
 	  #else
+		trace_printk("rem norm");
 		if(sscanf(unBuffer,"remove %i\n",&r)==1){
 	  #endif
 	  		remove(r,&modlist);
@@ -284,8 +288,10 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	  
 	   else 
 	 #ifdef PARTE_OPCIONAL
+	   	trace_printk("push opt");
 		if(sscanf(unBuffer,"push %s\n",&r)==1){
 	 #else
+		trace_printk("push norm");
 		if(sscanf(unBuffer,"push %i\n",&r)==1){
 	 #endif
 	  		push(r);

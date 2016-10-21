@@ -1,4 +1,4 @@
-obj-m =  lista_9_oct.o
+obj-m =  modlist.o
 
 all:
 	make  -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules 
