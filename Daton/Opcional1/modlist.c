@@ -197,8 +197,13 @@ struct list_head* list){
 	{
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
-
-	if(strcmp(item->data,valor)==0){
+#ifdef PARTE_OPCIONAL
+	if(strcmp(item->data,valor)==0)
+#else
+	if(item->data==valor)
+#endif
+	
+	{
 		//trace_printk(KERN_INFO "el valor que va a eliminar es %i\n",valor);
 		list_del(cur_node);
 #ifdef PARTE_OPCIONAL
