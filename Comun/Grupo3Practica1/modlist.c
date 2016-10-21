@@ -69,7 +69,7 @@ static void pop(struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
 	struct list_head* lista_aux=NULL;
-	trace_printk(KERN_INFO "%s\n","limpiando con pop");
+	//trace_printk(KERN_INFO "%s\n","limpiando con pop");
 
 	int i=0;
 	list_for_each_safe(cur_node,lista_aux,list) 
@@ -93,7 +93,7 @@ static void limpiar(struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
 	struct list_head* lista_aux=NULL;
-	trace_printk(KERN_INFO "%s\n","limpiando");
+	//trace_printk(KERN_INFO "%s\n","limpiando");
 	list_for_each_safe(cur_node,lista_aux,list) 
 	{
 	/* item points to the structure wherein the links are embedded */
@@ -108,7 +108,7 @@ static void limpiar(struct list_head* list){
 static void sort(struct list_head *list) {
      tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
-	trace_printk(KERN_INFO "%s\n","imprimiendo");
+	//trace_printk(KERN_INFO "%s\n","imprimiendo");
 	int aux=0;
 	list_for_each(cur_node, list) 
 	{
@@ -135,14 +135,14 @@ static int remove (int valor,struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
 	struct list_head* lista_aux=NULL;
-	trace_printk(KERN_INFO "Entra metodo de remove\n");
+	//trace_printk(KERN_INFO "Entra metodo de remove\n");
 	list_for_each_safe(cur_node,lista_aux,list) 
 	{
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
 
 	if((item->data) == valor){
-		trace_printk(KERN_INFO "el valor que va a eliminar es %i\n",valor);
+		//trace_printk(KERN_INFO "el valor que va a eliminar es %i\n",valor);
 		list_del(cur_node);
 		vfree(item);
 
@@ -157,12 +157,12 @@ static int remove (int valor,struct list_head* list){
 void print_list(struct list_head *list) {
         tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
-	trace_printk(KERN_INFO "%s\n","imprimiendo");
+	//trace_printk(KERN_INFO "%s\n","imprimiendo");
 	list_for_each(cur_node, list) 
 	{
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
-	trace_printk(KERN_INFO "%i\n",item->data);
+	//trace_printk(KERN_INFO "%i\n",item->data);
 	}
 	
 }
@@ -188,41 +188,41 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 		
 
 	unBuffer[len]='\0';
-		trace_printk(unBuffer);
+		//trace_printk(unBuffer);
 	  if(sscanf(unBuffer,"add %i",&r)==1){
 	  		add(r);
-	  		trace_printk("He insertado: %d\n",r);
+	  		//trace_printk("He insertado: %d\n",r);
 
 	  }
 	  else if(sscanf(unBuffer,"remove %i\n",&r)==1){
 	  		remove(r,&modlist);
-	  		trace_printk("intentando a borrar: %d\n",r);
+	  		//trace_printk("intentando a borrar: %d\n",r);
 	  		print_list(&modlist);
 	  }
 	   else if(sscanf(unBuffer,"push %i\n",&r)==1){
 	  		push(r);
-	  		trace_printk("intentando a push: %d\n",r);
+	  		//trace_printk("intentando a push: %d\n",r);
 	  		print_list(&modlist);
 	  }
 	   else if(strcmp(unBuffer,"cleanup\n")==0){
 	  		limpiar(&modlist);
-	  		trace_printk("intentando a limpiar todo");
+	  		//trace_printk("intentando a limpiar todo");
 	  		print_list(&modlist);
 	  }
 	   else if(strcmp(unBuffer,"pop\n")==0){
 	  		pop(&modlist);
-	  		trace_printk("intentando a hacer pop");
+	  		//trace_printk("intentando a hacer pop");
 	  		print_list(&modlist);
 	  }
 	  else if(strcmp(unBuffer,"sort\n")==0){
 	  		sort(&modlist);
-	  		trace_printk("intentando a ordenar");
+	  		//trace_printk("intentando a ordenar");
 	  		print_list(&modlist);
 	  }
 
 	  else{
-	  	trace_printk(unBuffer);
-	  	trace_printk("error de introccion de comando");
+	  	//trace_printk(unBuffer);
+	  	//trace_printk("error de introccion de comando");
 	  	vfree(unBuffer);
 	  	return -EFAULT;
 	  };
@@ -247,7 +247,7 @@ int generaVector(char* unBuffer,struct list_head* list){
 	//struct list_head* list=&Modlist;
 	  tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
-	trace_printk(KERN_INFO "%s\n","imprimiendo");
+	//trace_printk(KERN_INFO "%s\n","imprimiendo");
 
 
 	
@@ -257,7 +257,7 @@ int generaVector(char* unBuffer,struct list_head* list){
 	// item points to the structure wherein the links are embedded 
 
 	item = list_entry(cur_node,tNodo, list);
-	trace_printk(KERN_INFO "%i\n",item->data);
+	//trace_printk(KERN_INFO "%i\n",item->data);
 	
 	//AQUI HAY QUE HACER UNA CONVERSION ASIGNANDO EL VALOR A LA VARIABLE C
 	dest+=sprintf(dest,"%i\n",item->data);
@@ -327,15 +327,15 @@ int init_modlist_module( void )
   proc_entry = proc_create( "modlist", 0666, NULL, &proc_entry_fops);
   if (proc_entry == NULL) {
   ret = -ENOMEM;
-  trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
+  //trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
   } else   
-  trace_printk(KERN_INFO "modlist: Module loaded\n");
+  //trace_printk(KERN_INFO "modlist: Module loaded\n");
 /*add(1);
 add(2);
 add(3);
-trace_printk(KERN_INFO "entra metodo remove\n");
+//trace_printk(KERN_INFO "entra metodo remove\n");
 remove(2,&modlist);
-trace_printk(KERN_INFO "sele metodo remove\n");
+//trace_printk(KERN_INFO "sele metodo remove\n");
 print_list(&modlist);
 
 GetNumber("r3");
@@ -366,7 +366,7 @@ void exit_modlist_module( void )
 {
   remove_proc_entry("modlist", NULL);
   limpiar(&modlist);
-  trace_printk(KERN_INFO "modlist: Module unloaded.\n");
+  //trace_printk(KERN_INFO "modlist: Module unloaded.\n");
   print_list(&modlist);
 
 };
