@@ -26,11 +26,11 @@ static struct proc_dir_entry *proc_entry ;
 /* Tipo de nodo */
 typedef struct{
 struct list_head list;
-#ifdef PARTE_OPCIONAL
+#IFDEF PARTE_OPCIONAL
 char* data;
-#else
+#ELSE
 int data;
-#endif
+#ENDIF
 } tNodo;
 
 /* Lista enlazada */
@@ -41,7 +41,7 @@ struct list_head modlist;
 //operaciones internas
 //
 
-#ifdef PARTE_OPCIONAL
+#IFDEF PARTE_OPCIONAL
 static int add(char* valor) //para String
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
@@ -56,7 +56,7 @@ static int add(char* valor) //para String
   list_add_tail(&(unNodo->list), &modlist);
   return 0;
 }
-#else
+#ELSE
 static int add (int valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
@@ -69,9 +69,9 @@ static int add (int valor)
   list_add_tail(&(unNodo->list), &modlist);
   return 0;
 }
-#endif
+#ENDIF
 
-#ifdef PARTE_OPCIONAL
+#IFDEF PARTE_OPCIONAL
 static int push (char* valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
@@ -87,7 +87,7 @@ static int push (char* valor)
   return 0;
 }
 
-#else
+#ELSE
 static int push (int valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
@@ -100,7 +100,7 @@ static int push (int valor)
   list_add(&(unNodo->list), &modlist);
   return 0;
 }
-#endif
+#ENDIF
 
 
 static void pop(struct list_head* list){
@@ -137,9 +137,9 @@ static void limpiar(struct list_head* list){
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
 	list_del(cur_node);
-		#ifdef PARTE_OPCIONAL
+		#IFDEF PARTE_OPCIONAL
 		vfree (item->data);
-		#endif
+		#ENDIF
 		vfree(item);	
 		
 	}
@@ -173,7 +173,7 @@ static void sort(struct list_head *list) {
 	}
 }
 
-#ifdef PARTE_OPCIONAL
+#IFDEF PARTE_OPCIONAL
 static int remove (char* valor,struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
@@ -196,7 +196,7 @@ static int remove (char* valor,struct list_head* list){
 
 }
 
-#else
+#ELSE
 static int remove (int valor,struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
@@ -217,7 +217,7 @@ static int remove (int valor,struct list_head* list){
 	return 0;
 
 }
-#endif
+#ENDIF
 
 
 void print_list(struct list_head *list) {
@@ -238,11 +238,11 @@ void print_list(struct list_head *list) {
 
 
 static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
-#ifdef PARTE_OPCIONAL
+#IFDEF PARTE_OPCIONAL
 	char* r=(char *)vmalloc( BUFFER_LENGTH ); 
-#else
+#ELSE
 	int r;
-#endif
+#ENDIF
 	
 	char* unBuffer;
 	  if ((*off) > 0) /* The application can write in this entry just once !! */
@@ -253,41 +253,47 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	  unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
 	  if (copy_from_user( &unBuffer[0], buf, len )){
 	  	vfree(unBuffer);
-		#ifdef PARTE_OPCIONAL
+		#IFDEF PARTE_OPCIONAL
 		vfree(r); 
-		#endif
+		#ENDIF
 	  	return -EFAULT;
 	  }  
 		
 
 	unBuffer[len]='\0';
 		trace_printk(unBuffer);
-	#ifdef PARTE_OPCIONAL
+	#IFDEF PARTE_OPCIONAL
+		trace_printk("add opt"); 
 	  if(sscanf(unBuffer,"add %s",&r)==1){
-	#else
+	#ELSE
+	  	trace_printk("add norm");
 	  if(sscanf(unBuffer,"add %i",&r)==1){
-	#endif
+	#ENDIF
 	  		add(r);
 	  		trace_printk("He insertado: %d\n",r);
 
 	  }
 	  else 
-	  #ifdef PARTE_OPCIONAL	
+	  #IFDEF PARTE_OPCIONAL	
+	  	trace_printk("rem opt");
 		if(sscanf(unBuffer,"remove %s\n",&r)==1){
-	  #else
+	  #ELSE
+		trace_printk("rem norm");
 		if(sscanf(unBuffer,"remove %i\n",&r)==1){
-	  #endif
+	  #ENDIF
 	  		remove(r,&modlist);
 	  		trace_printk("intentando a borrar: %d\n",r);
 	  		print_list(&modlist);
 	  }
 	  
 	   else 
-	 #ifdef PARTE_OPCIONAL
+	 #IFDEF PARTE_OPCIONAL
+	   	trace_printk("push opt");
 		if(sscanf(unBuffer,"push %s\n",&r)==1){
-	 #else
+	 #ELSE
+		trace_printk("push norm");
 		if(sscanf(unBuffer,"push %i\n",&r)==1){
-	 #endif
+	 #ENDIF
 	  		push(r);
 	  		trace_printk("intentando a push: %d\n",r);
 	  		print_list(&modlist);
@@ -312,9 +318,9 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	  	trace_printk(unBuffer);
 	  	trace_printk("error de introccion de comando");
 	  	vfree(unBuffer);
-		#ifdef PARTE_OPCIONAL
+		#IFDEF PARTE_OPCIONAL
 		vfree(r); 
-		#endif
+		#ENDIF
 	  	return -EFAULT;
 	  };
 		
@@ -350,12 +356,12 @@ int generaVector(char* unBuffer,struct list_head* list){
 	item = list_entry(cur_node,tNodo, list);
 	trace_printk(KERN_INFO "%i\n",item->data);
 	
-	#ifdef PARTE_OPCIONAL
+	#IFDEF PARTE_OPCIONAL
 	dest+=sprintf(dest,"%s\n",item->data);
-	#else
+	#ELSE
 	//AQUI HAY QUE HACER UNA CONVERSION ASIGNANDO EL VALOR A LA VARIABLE C
 	dest+=sprintf(dest,"%i\n",item->data);
-	#endif
+	#ENDIF
 	
 	}
 	return dest-unBuffer;
