@@ -46,7 +46,7 @@ int main(void)
     while((read_chars=syscall(SYS_read,fd,buf,BUFSIZE))>0){
         buf[read_chars]='\0';
        // printf("%s",buf);
-        syscall(SYS_write,fd,buf,BUFSIZE);
+        syscall(SYS_write,1,buf,sizeof(buf));
        // printf("hola mundo");
         /*
         if((write_chars=syscall(SYS_write,fd,buf,BUFSIZE))>0){
