@@ -1,0 +1,12 @@
+Antes de modificar el kernel
+git init
+git add .
+git commit -m "Initial commit"
+git tag inicial  
+
+Después de Modificar las fuentes
+	Por cada fichero añadido
+	git add "fichero nuevo"
+
+git commit -am "Cambios Hechos"
+git diff inicial > ../parche
