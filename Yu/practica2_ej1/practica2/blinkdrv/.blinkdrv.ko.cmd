@@ -1,0 +1,1 @@
+cmd_/home/kernel/LIN2015/Yu/practica2_ej1/blinkdrv/blinkdrv.ko := ld -r -m elf_x86_64 -T /var/tmp/linux-3.14.1/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Yu/practica2_ej1/blinkdrv/blinkdrv.ko /home/kernel/LIN2015/Yu/practica2_ej1/blinkdrv/blinkdrv.o /home/kernel/LIN2015/Yu/practica2_ej1/blinkdrv/blinkdrv.mod.o
