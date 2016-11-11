@@ -4,8 +4,7 @@
 #include <stdio.h>
 
 
-#define
-__NR_HELLO 316
+#define __NR_HELLO 316
 
 long lin_hello(void) 
 {

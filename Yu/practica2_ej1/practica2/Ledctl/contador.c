@@ -12,15 +12,11 @@ long led(int l)
 }
 
 int main(int arg, char *argv[]) {
-	int r=0;
-	char* buff=argv[1];
-
-	if(sscanf(buff,"%i",&r)==1){
+	int r;
+	for(r=0;r<8;r++){
 		led(r);
-		return 0;
 	}
-		printf("error\n");
-	
+		
 
-  return 1;
-}
+  return 0;
+  }
