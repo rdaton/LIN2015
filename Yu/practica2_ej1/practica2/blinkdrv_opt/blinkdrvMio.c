@@ -150,8 +150,8 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 	  string =unBuffer;
 	  printk("Original string abc: %s",string);
 
-    while((found = strsep(&string,",")) != NULL )
-        printk("hhh  %s",found);
+    while((found = strsep(&string,":")) != NULL )
+        printk("%s",found);
 
 	  //fin debug
 	  
@@ -161,13 +161,14 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 	  int nLed=0;
 
 
-	  while((unaCadena = strsep(&pBuffer,",")) != NULL ){
+	  printk("bbbbbb %s",unaCadena);
+	  while((unaCadena = strsep(&pBuffer,":")) != NULL ){
 	  //while(pBuffer!=NULL){
 		//unaCadena=strsep(&pBuffer,',');
-		if (unaCadena==NULL) break;
-		printk("hola hola %s",unaCadena);
+		//if (unaCadena==NULL) break;
+		printk("hola hola hola chao%s",unaCadena);
 	
-	/*
+	
 		int c;
 		if(sscanf(unaCadena,"%i:%i",&nLed,c)==1){
 	  		messages[nLed][0]='\x05';
@@ -187,7 +188,7 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 	  nLed++;
 
 	  
-	  }*/
+	  }
 	//debug
 	
 	
@@ -203,14 +204,14 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 		 * Send message (URB) to the Blinkstick device 
 		 * and wait for the operation to complete 
 		 */
-		/*
+		
 		retval=usb_control_msg(dev->udev,	
 			 usb_sndctrlpipe(dev->udev,00), //Specify endpoint #0 
 			 USB_REQ_SET_CONFIGURATION, 
 			 USB_DIR_OUT| USB_TYPE_CLASS | USB_RECIP_DEVICE,
 			 0x5,	//wValue 
-			 0, 	// wIndex=Endpoint # 
-			 messages[i],	// Pointer to the message 
+			 2, 	// wIndex=Endpoint # 
+			 messages[2],	// Pointer to the message 
 			 NR_BYTES_BLINK_MSG, // message's size in bytes 
 			 0);		
 
@@ -220,7 +221,7 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 			return retval;
 			//goto out_error;		
 		}
-		*/
+		
 	}
 
 	(*off)+=len;
@@ -228,6 +229,7 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 	  vfree(unBuffer);
 	return len;
 
+		
 }
 
 
