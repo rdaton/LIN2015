@@ -144,14 +144,14 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 
 	  unBuffer[len]='\0';
 	  //debug
-	  char *string,*found;
+/*	  char *string,*found;
 
 	  string = (char *)vmalloc( BUFFER_LENGTH );
 	  string =unBuffer;
 	  printk("Original string abc: %s",string);
-
-    while((found = strsep(&string,":")) != NULL )
-        printk("%s",found);
+*/
+    //while((found = strsep(&string,",")) != NULL )
+      //  printk("soy found %s",found);
 
 	  //fin debug
 	  
@@ -159,37 +159,38 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 	  char* pBuffer=unBuffer;
 	  char* unaCadena;
 	  int nLed=0;
+	  int c=0;
 
-
-	  printk("bbbbbb %s",unaCadena);
-	  for(i=0;i<NR_LEDS;i++){
-		messages[i][3]=0;
-		messages[i][4]=0;
-		messages[i][5]=0;
-	}
-
-	  while((unaCadena = strsep(&pBuffer,":")) != NULL ){
-	  //while(pBuffer!=NULL){
-		//unaCadena=strsep(&pBuffer,',');
-		//if (unaCadena==NULL) break;
-		printk("hola hola hola chao%s",unaCadena);
 	
+
+	  while((unaCadena = strsep(&pBuffer,",")) != NULL ){
+		printk("valor de una cadena es %s\n",unaCadena);
+		printk("valor de una cadena es %i\n",c);
+		
 	
-		int c;
-		if(sscanf(unaCadena,"%i:%i",&nLed,c)==1){
+		
+		
+		if(sscanf(unaCadena,"%i:%i",&nLed,&c)==1){
+			printk("entra if");
 	  		messages[nLed][0]='\x05';
 			messages[nLed][1]=0x00;
 			messages[nLed][2]=nLed; 
-			/*
+		
+		printk("hola valor 1 es %i\n",((color>>16) & c));
+		printk("valor 2 es %i\n",((color>>8) & c));
+		printk("valor 3 es %i\n",(color & c));	
+
 			messages[nLed][3]=((color>>16) & c);
 		 	messages[nLed][4]=((color>>8) & c);
-		 	messages[nLed][5]=(color & c);*/
-		 	messages[nLed][3]=10;
-		 	messages[nLed][4]=10;
-		 	messages[nLed][5]=01;
+		 	messages[nLed][5]=(color & c);
+
+		 	//messages[nLed][3]=00;
+		 	//messages[nLed][4]=00;
+		 	//messages[nLed][5]=00;
 	  }
 	  else{
 	  	//error
+	  	printk("error de scanner");
 	  	*off+=len;            // Update the file pointer 
 	  	vfree(unBuffer);
 	  	return -EFAULT;
@@ -198,6 +199,7 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 	  nLed++;
 
 	  }
+	  
 	for (i=0;i<NR_LEDS;i++){
 
 			
