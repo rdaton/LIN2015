@@ -162,6 +162,12 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 
 
 	  printk("bbbbbb %s",unaCadena);
+	  for(i=0;i<NR_LEDS;i++){
+		messages[i][3]=0;
+		messages[i][4]=0;
+		messages[i][5]=0;
+	}
+
 	  while((unaCadena = strsep(&pBuffer,":")) != NULL ){
 	  //while(pBuffer!=NULL){
 		//unaCadena=strsep(&pBuffer,',');
@@ -174,9 +180,13 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 	  		messages[nLed][0]='\x05';
 			messages[nLed][1]=0x00;
 			messages[nLed][2]=nLed; 
+			/*
 			messages[nLed][3]=((color>>16) & c);
 		 	messages[nLed][4]=((color>>8) & c);
-		 	messages[nLed][5]=(color & c);
+		 	messages[nLed][5]=(color & c);*/
+		 	messages[nLed][3]=10;
+		 	messages[nLed][4]=10;
+		 	messages[nLed][5]=01;
 	  }
 	  else{
 	  	//error
@@ -187,19 +197,12 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 
 	  nLed++;
 
-	  
 	  }
-	//debug
-	
-	
-	
-	
-	
-	//fin debug
 	for (i=0;i<NR_LEDS;i++){
 
-		
-	
+			
+		//messages[0][2]=2;
+
 		/* 
 		 * Send message (URB) to the Blinkstick device 
 		 * and wait for the operation to complete 
@@ -210,8 +213,8 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 			 USB_REQ_SET_CONFIGURATION, 
 			 USB_DIR_OUT| USB_TYPE_CLASS | USB_RECIP_DEVICE,
 			 0x5,	//wValue 
-			 2, 	// wIndex=Endpoint # 
-			 messages[2],	// Pointer to the message 
+			 0, 	// wIndex=Endpoint # 
+			 messages[i],	// Pointer to the message 
 			 NR_BYTES_BLINK_MSG, // message's size in bytes 
 			 0);		
 
