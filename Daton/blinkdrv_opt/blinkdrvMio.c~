@@ -150,7 +150,7 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 	  string =unBuffer;
 	  printk("Original string: '%s'\n",string);
 
-    while( (found = strsep(&string,",")) != NULL )
+    while( (found = strsep(&string," ")) != NULL )
         printk("%s\n",found);
 
 	  //fin debug

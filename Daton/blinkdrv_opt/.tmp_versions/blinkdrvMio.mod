@@ -1,2 +1,2 @@
-/home/osboxes/LIN2015/Daton/blinkdrv_opt/blinkdrvMio.ko
-/home/osboxes/LIN2015/Daton/blinkdrv_opt/blinkdrvMio.o
+/home/kernel/LIN2015/Daton/blinkdrv_opt/blinkdrvMio.ko
+/home/kernel/LIN2015/Daton/blinkdrv_opt/blinkdrvMio.o
