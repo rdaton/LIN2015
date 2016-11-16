@@ -322,7 +322,7 @@
 313	common	finit_module		sys_finit_module
 314	common	sched_setattr		sys_sched_setattr
 315	common	sched_getattr		sys_sched_getattr
-316     64      lin_hello               sys_lin_hello
+317     64      ledctl                  sys_ledctl
 #
 # x32-specific system call numbers start at 512 to avoid cache impact
 # for native 64-bit operation.
