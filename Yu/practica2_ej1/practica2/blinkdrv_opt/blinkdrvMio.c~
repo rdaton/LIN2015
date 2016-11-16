@@ -148,25 +148,23 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 
 	  string = (char *)vmalloc( BUFFER_LENGTH );
 	  string =unBuffer;
-	  printk("Original string abc: %s",string);
+	  printk("Original string: '%s'\n",string);
 
-    while((found = strsep(&string,",")) != NULL )
-        printk("hhh  %s",found);
+    while( (found = strsep(&string," ")) != NULL )
+        printk("%s\n",found);
 
 	  //fin debug
 	  
-
+/*	  
 	  char* pBuffer=unBuffer;
 	  char* unaCadena;
 	  int nLed=0;
 
-
-	  while((unaCadena = strsep(&pBuffer,",")) != NULL ){
-	  //while(pBuffer!=NULL){
-		//unaCadena=strsep(&pBuffer,',');
+	  while(pBuffer!=NULL){
+		unaCadena=strsep(&pBuffer,',');
 		if (unaCadena==NULL) break;
-		printk("hola hola %s",unaCadena);
-	
+		printk(unaCadena);
+		printk("\n");
 	/*
 		int c;
 		if(sscanf(unaCadena,"%i:%i",&nLed,c)==1){
