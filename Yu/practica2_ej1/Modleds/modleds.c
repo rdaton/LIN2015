@@ -5,7 +5,7 @@
 #include <linux/kd.h>       /* For KDSETLED */
 #include <linux/vt_kern.h>
 
-#define ALL_LEDS_ON 0x7
+#define ALL_LEDS_ON 7
 #define ALL_LEDS_OFF 0
 
 
@@ -24,15 +24,17 @@ static inline int set_leds(struct tty_driver* handler, unsigned int mask){
     return (handler->ops->ioctl) (vc_cons[fg_console].d->port.tty, KDSETLED,mask);
 }
 
-static int __init modleds_init(void)
+ static int __init modleds_init(void)
 {	
    kbd_driver= get_kbd_driver_handler();
    set_leds(kbd_driver,ALL_LEDS_ON); 
+   printk("\nvalor de on es %i\n",ALL_LEDS_ON);
    return 0;
 }
 
 static void __exit modleds_exit(void){
     set_leds(kbd_driver,ALL_LEDS_OFF); 
+    printk("\nadios \n");
 }
 
 module_init(modleds_init);
