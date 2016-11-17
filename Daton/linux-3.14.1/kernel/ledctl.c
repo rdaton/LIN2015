@@ -6,6 +6,8 @@
 #include <linux/vt_kern.h>
 #include <linux/syscalls.h>/*For SYSCALL_DEFINEi()*/
 #include <linux/kernel.h>
+#define ALL_LEDS_ON 0x7
+#define ALL_LEDS_OFF 0
 
 
 
@@ -32,7 +34,7 @@ SYSCALL_DEFINE1(ledctl,unsigned int,mask)
 {
   kbd_driver= get_kbd_driver_handler();
    printk (KERN_INFO "máscara de leds es %i\n", mask);
-   set_leds(kbd_driver,mask);
+   set_leds(kbd_driver,ALL_LEDS_ON);
   return 0;
 }
 

@@ -1,4 +1,3 @@
-#include <linux/module.h> 
 #include <asm-generic/errno.h>
 #include <linux/init.h>
 #include <linux/tty.h>      /* For fg_console */
@@ -21,7 +20,9 @@ struct tty_driver* get_kbd_driver_handler(void){
 }
 
 /* Set led state to that specified by mask */
-int set_leds(struct tty_driver* handler, unsigned int mask){
+inline int set_leds(struct tty_driver* handler, unsigned int mask){
+   printk (KERN_INFO "máscara 2 de leds es %i\n", mask);
+
     return (handler->ops->ioctl) (vc_cons[fg_console].d->port.tty, KDSETLED,mask);
 }
 
@@ -31,8 +32,7 @@ SYSCALL_DEFINE1(ledctl,unsigned int,mask)
 {
   kbd_driver= get_kbd_driver_handler();
    printk (KERN_INFO "máscara de leds es %i\n", mask);
-   set_leds(kbd_driver,ALL_LEDS_ON);
-  return 0;
+   return set_leds(kbd_driver,ALL_LEDS_ON);
 }
 
 
