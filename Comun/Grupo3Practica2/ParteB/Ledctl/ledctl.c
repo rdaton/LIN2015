@@ -35,6 +35,11 @@ SYSCALL_DEFINE1(ledctl,unsigned int, mask)
   return 0;
 }
 
+/*
+Esto "SYSCALL_DEFINE1(ledctl,unsigned int,leds)" define la cabecera de una función:
+long sys_<nombreSyscall>(<tipo_primer_parametro> <identificador_primer_parametro>) o sea:
 
+long sys_ledctl(unsigned int leds)
+*/
 
 
