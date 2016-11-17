@@ -1,8 +1,8 @@
-cmd_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o := gcc -Wp,-MD,/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/.modleds.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.7/include -I/usr/src/linux-headers-3.14.1.mikernel/arch/x86/include -Iarch/x86/include/generated  -Iinclude -I/usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/usr/src/linux-headers-3.14.1.mikernel/include/uapi -Iinclude/generated/uapi -include /usr/src/linux-headers-3.14.1.mikernel/include/linux/kconfig.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -Wno-maybe-uninitialized -m64 -mno-mmx -mno-sse -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -Wframe-larger-than=2048 -fno-stack-protector -Wno-unused-but-set-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(modleds)"  -D"KBUILD_MODNAME=KBUILD_STR(modleds)" -c -o /home/kernel/LIN2015/Yu/practica2_ej1/Modleds/.tmp_modleds.o /home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.c
+cmd_/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.o := gcc -Wp,-MD,/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/.ledctl.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.7/include -I/usr/src/linux-headers-3.14.1.mikernel/arch/x86/include -Iarch/x86/include/generated  -Iinclude -I/usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/usr/src/linux-headers-3.14.1.mikernel/include/uapi -Iinclude/generated/uapi -include /usr/src/linux-headers-3.14.1.mikernel/include/linux/kconfig.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -Wno-maybe-uninitialized -m64 -mno-mmx -mno-sse -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -Wframe-larger-than=2048 -fno-stack-protector -Wno-unused-but-set-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(ledctl)"  -D"KBUILD_MODNAME=KBUILD_STR(ledctl)" -c -o /home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/.tmp_ledctl.o /home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.c
 
-source_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o := /home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.c
+source_/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.o := /home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.c
 
-deps_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o := \
+deps_/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.o := \
   include/linux/module.h \
     $(wildcard include/config/sysfs.h) \
     $(wildcard include/config/modules.h) \
@@ -670,7 +670,208 @@ deps_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o := \
     $(wildcard include/config/debug/tlbflush.h) \
   include/linux/vm_event_item.h \
   include/linux/consolemap.h \
+  include/linux/syscalls.h \
+    $(wildcard include/config/ftrace/syscalls.h) \
+    $(wildcard include/config/old/sigsuspend.h) \
+    $(wildcard include/config/old/sigsuspend3.h) \
+    $(wildcard include/config/old/sigaction.h) \
+    $(wildcard include/config/odd/rt/sigaction.h) \
+    $(wildcard include/config/clone/backwards.h) \
+    $(wildcard include/config/clone/backwards3.h) \
+  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/linux/aio_abi.h \
+  include/linux/signal.h \
+  include/uapi/linux/signal.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/signal.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/signal.h \
+  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/asm-generic/signal-defs.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/siginfo.h \
+  include/asm-generic/siginfo.h \
+  include/uapi/asm-generic/siginfo.h \
+  include/linux/sem.h \
+    $(wildcard include/config/sysvipc.h) \
+  include/uapi/linux/sem.h \
+  include/linux/ipc.h \
+  include/uapi/linux/ipc.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/ipcbuf.h \
+  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/asm-generic/ipcbuf.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/sembuf.h \
+  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/linux/unistd.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/unistd.h \
+    $(wildcard include/config/x86/x32/abi.h) \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/unistd.h \
+  arch/x86/include/generated/uapi/asm/unistd_64.h \
+  arch/x86/include/generated/asm/unistd_64_x32.h \
+  include/linux/key.h \
+    $(wildcard include/config/keys.h) \
+  include/linux/assoc_array.h \
+    $(wildcard include/config/associative/array.h) \
+  include/trace/syscall.h \
+  include/linux/ftrace_event.h \
+    $(wildcard include/config/perf/events.h) \
+  include/linux/ring_buffer.h \
+    $(wildcard include/config/ring/buffer/allow/swap.h) \
+  include/linux/kmemcheck.h \
+  include/linux/seq_file.h \
+  include/linux/poll.h \
+  include/uapi/linux/poll.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/poll.h \
+  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/asm-generic/poll.h \
+  include/linux/trace_seq.h \
+  include/linux/hardirq.h \
+  include/linux/ftrace_irq.h \
+    $(wildcard include/config/ftrace/nmi/enter.h) \
+  include/linux/vtime.h \
+    $(wildcard include/config/virt/cpu/accounting/native.h) \
+    $(wildcard include/config/virt/cpu/accounting/gen.h) \
+    $(wildcard include/config/virt/cpu/accounting.h) \
+    $(wildcard include/config/irq/time/accounting.h) \
+  include/linux/context_tracking_state.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/hardirq.h \
+    $(wildcard include/config/x86/thermal/vector.h) \
+    $(wildcard include/config/x86/mce/threshold.h) \
+  include/linux/irq.h \
+    $(wildcard include/config/generic/pending/irq.h) \
+    $(wildcard include/config/hardirqs/sw/resend.h) \
+  include/linux/irqreturn.h \
+  include/linux/irqnr.h \
+  include/uapi/linux/irqnr.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/irq.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/irq_regs.h \
+  include/linux/irqdesc.h \
+    $(wildcard include/config/irq/preflow/fasteoi.h) \
+    $(wildcard include/config/sparse/irq.h) \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/hw_irq.h \
+    $(wildcard include/config/irq/remap.h) \
+  include/linux/profile.h \
+    $(wildcard include/config/profiling.h) \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/sections.h \
+    $(wildcard include/config/debug/rodata.h) \
+  include/asm-generic/sections.h \
+  include/linux/perf_event.h \
+    $(wildcard include/config/have/hw/breakpoint.h) \
+    $(wildcard include/config/function/tracer.h) \
+    $(wildcard include/config/cgroup/perf.h) \
+    $(wildcard include/config/no/hz/full.h) \
+    $(wildcard include/config/cpu/sup/intel.h) \
+  include/uapi/linux/perf_event.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/perf_event.h \
+    $(wildcard include/config/cpu/sup/amd.h) \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/stacktrace.h \
+    $(wildcard include/config/frame/pointer.h) \
+  include/linux/uaccess.h \
+  include/linux/ptrace.h \
+  include/linux/sched.h \
+    $(wildcard include/config/sched/debug.h) \
+    $(wildcard include/config/no/hz/common.h) \
+    $(wildcard include/config/lockup/detector.h) \
+    $(wildcard include/config/detect/hung/task.h) \
+    $(wildcard include/config/core/dump/default/elf/headers.h) \
+    $(wildcard include/config/sched/autogroup.h) \
+    $(wildcard include/config/bsd/process/acct.h) \
+    $(wildcard include/config/taskstats.h) \
+    $(wildcard include/config/cgroups.h) \
+    $(wildcard include/config/inotify/user.h) \
+    $(wildcard include/config/fanotify.h) \
+    $(wildcard include/config/posix/mqueue.h) \
+    $(wildcard include/config/schedstats.h) \
+    $(wildcard include/config/task/delay/acct.h) \
+    $(wildcard include/config/fair/group/sched.h) \
+    $(wildcard include/config/rt/group/sched.h) \
+    $(wildcard include/config/cgroup/sched.h) \
+    $(wildcard include/config/blk/dev/io/trace.h) \
+    $(wildcard include/config/rcu/boost.h) \
+    $(wildcard include/config/compat/brk.h) \
+    $(wildcard include/config/rt/mutexes.h) \
+    $(wildcard include/config/task/xacct.h) \
+    $(wildcard include/config/cpusets.h) \
+    $(wildcard include/config/futex.h) \
+    $(wildcard include/config/fault/injection.h) \
+    $(wildcard include/config/latencytop.h) \
+    $(wildcard include/config/function/graph/tracer.h) \
+    $(wildcard include/config/bcache.h) \
+    $(wildcard include/config/have/unstable/sched/clock.h) \
+  include/uapi/linux/sched.h \
+  include/linux/plist.h \
+    $(wildcard include/config/debug/pi/list.h) \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/cputime.h \
+  include/asm-generic/cputime.h \
+  include/asm-generic/cputime_jiffies.h \
+  include/linux/proportions.h \
+  include/linux/seccomp.h \
+    $(wildcard include/config/seccomp.h) \
+    $(wildcard include/config/seccomp/filter.h) \
+  include/uapi/linux/seccomp.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/seccomp.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/seccomp_64.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/ia32_unistd.h \
+  arch/x86/include/generated/asm/unistd_32_ia32.h \
+  include/linux/rtmutex.h \
+    $(wildcard include/config/debug/rt/mutexes.h) \
+  include/linux/resource.h \
+  include/uapi/linux/resource.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/resource.h \
+  include/asm-generic/resource.h \
+  include/uapi/asm-generic/resource.h \
+  include/linux/hrtimer.h \
+    $(wildcard include/config/high/res/timers.h) \
+    $(wildcard include/config/timerfd.h) \
+  include/linux/timerqueue.h \
+  include/linux/task_io_accounting.h \
+    $(wildcard include/config/task/io/accounting.h) \
+  include/linux/latencytop.h \
+  include/linux/cred.h \
+    $(wildcard include/config/debug/credentials.h) \
+  include/linux/selinux.h \
+    $(wildcard include/config/security/selinux.h) \
+  include/uapi/linux/ptrace.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/local64.h \
+  include/asm-generic/local64.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/local.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/hw_breakpoint.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/hw_breakpoint.h \
+  include/linux/kdebug.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/kdebug.h \
+    $(wildcard include/config/kexec.h) \
+  include/linux/pid_namespace.h \
+    $(wildcard include/config/pid/ns.h) \
+  include/linux/nsproxy.h \
+  include/linux/ftrace.h \
+    $(wildcard include/config/have/function/trace/mcount/test.h) \
+    $(wildcard include/config/dynamic/ftrace/with/regs.h) \
+    $(wildcard include/config/dynamic/ftrace.h) \
+    $(wildcard include/config/stack/tracer.h) \
+  include/linux/trace_clock.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/trace_clock.h \
+  include/linux/kallsyms.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/ftrace.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/compat.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/user32.h \
+  include/linux/cpu.h \
+    $(wildcard include/config/arch/has/cpu/autoprobe.h) \
+    $(wildcard include/config/pm/sleep/smp.h) \
+  include/linux/node.h \
+    $(wildcard include/config/memory/hotplug/sparse.h) \
+  include/linux/device.h \
+    $(wildcard include/config/debug/devres.h) \
+    $(wildcard include/config/pinctrl.h) \
+    $(wildcard include/config/dma/cma.h) \
+    $(wildcard include/config/devtmpfs.h) \
+    $(wildcard include/config/sysfs/deprecated.h) \
+  include/linux/klist.h \
+  include/linux/pinctrl/devinfo.h \
+  include/linux/ratelimit.h \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/device.h \
+    $(wildcard include/config/x86/dev/dma/ops.h) \
+    $(wildcard include/config/intel/iommu.h) \
+    $(wildcard include/config/amd/iommu.h) \
+  include/linux/pm_wakeup.h \
+  include/linux/irq_work.h \
+    $(wildcard include/config/irq/work.h) \
+  include/linux/jump_label_ratelimit.h \
+  include/linux/perf_regs.h \
+    $(wildcard include/config/have/perf/regs.h) \
+  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/perf_regs.h \
 
-/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o: $(deps_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o)
+/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.o: $(deps_/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.o)
 
-$(deps_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o):
+$(deps_/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.o):

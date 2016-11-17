@@ -1,8 +1,8 @@
-cmd_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o := gcc -Wp,-MD,/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/.modleds.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.7/include -I/usr/src/linux-headers-3.14.1.mikernel/arch/x86/include -Iarch/x86/include/generated  -Iinclude -I/usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/usr/src/linux-headers-3.14.1.mikernel/include/uapi -Iinclude/generated/uapi -include /usr/src/linux-headers-3.14.1.mikernel/include/linux/kconfig.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -Wno-maybe-uninitialized -m64 -mno-mmx -mno-sse -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -Wframe-larger-than=2048 -fno-stack-protector -Wno-unused-but-set-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(modleds)"  -D"KBUILD_MODNAME=KBUILD_STR(modleds)" -c -o /home/kernel/LIN2015/Yu/practica2_ej1/Modleds/.tmp_modleds.o /home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.c
+cmd_/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.mod.o := gcc -Wp,-MD,/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/.ledctl.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.7/include -I/usr/src/linux-headers-3.14.1.mikernel/arch/x86/include -Iarch/x86/include/generated  -Iinclude -I/usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/usr/src/linux-headers-3.14.1.mikernel/include/uapi -Iinclude/generated/uapi -include /usr/src/linux-headers-3.14.1.mikernel/include/linux/kconfig.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -Wno-maybe-uninitialized -m64 -mno-mmx -mno-sse -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -Wframe-larger-than=2048 -fno-stack-protector -Wno-unused-but-set-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(ledctl.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(ledctl)" -DMODULE  -c -o /home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.mod.o /home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.mod.c
 
-source_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o := /home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.c
+source_/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.mod.o := /home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.mod.c
 
-deps_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o := \
+deps_/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.mod.o := \
   include/linux/module.h \
     $(wildcard include/config/sysfs.h) \
     $(wildcard include/config/modules.h) \
@@ -539,138 +539,9 @@ deps_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o := \
     $(wildcard include/config/have/mod/arch/specific.h) \
     $(wildcard include/config/modules/use/elf/rel.h) \
     $(wildcard include/config/modules/use/elf/rela.h) \
-  include/linux/tty.h \
-    $(wildcard include/config/tty.h) \
-    $(wildcard include/config/audit.h) \
-  include/linux/fs.h \
-    $(wildcard include/config/fs/posix/acl.h) \
-    $(wildcard include/config/security.h) \
-    $(wildcard include/config/quota.h) \
-    $(wildcard include/config/fsnotify.h) \
-    $(wildcard include/config/ima.h) \
-    $(wildcard include/config/epoll.h) \
-    $(wildcard include/config/debug/writecount.h) \
-    $(wildcard include/config/file/locking.h) \
-    $(wildcard include/config/auditsyscall.h) \
-    $(wildcard include/config/block.h) \
-    $(wildcard include/config/fs/xip.h) \
-    $(wildcard include/config/migration.h) \
-  include/linux/kdev_t.h \
-  include/uapi/linux/kdev_t.h \
-  include/linux/dcache.h \
-  include/linux/rculist.h \
-  include/linux/rculist_bl.h \
-  include/linux/list_bl.h \
-  include/linux/bit_spinlock.h \
-  include/linux/lockref.h \
-    $(wildcard include/config/arch/use/cmpxchg/lockref.h) \
-  include/linux/path.h \
-  include/linux/list_lru.h \
-  include/linux/radix-tree.h \
-  include/linux/pid.h \
-  include/linux/capability.h \
-  include/uapi/linux/capability.h \
-  include/linux/semaphore.h \
-  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/linux/fiemap.h \
-  include/linux/shrinker.h \
-  include/linux/migrate_mode.h \
-  include/linux/percpu-rwsem.h \
-  include/linux/blk_types.h \
-    $(wildcard include/config/blk/cgroup.h) \
-    $(wildcard include/config/blk/dev/integrity.h) \
-  include/uapi/linux/fs.h \
-  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/linux/limits.h \
-  include/linux/quota.h \
-    $(wildcard include/config/quota/netlink/interface.h) \
-  include/linux/percpu_counter.h \
-  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/linux/dqblk_xfs.h \
-  include/linux/dqblk_v1.h \
-  include/linux/dqblk_v2.h \
-  include/linux/dqblk_qtree.h \
-  include/linux/projid.h \
-  include/uapi/linux/quota.h \
-  include/linux/nfs_fs_i.h \
-  include/linux/fcntl.h \
-  include/uapi/linux/fcntl.h \
-  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/fcntl.h \
-  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/asm-generic/fcntl.h \
-  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/linux/major.h \
-  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/linux/termios.h \
-  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/termios.h \
-  include/asm-generic/termios.h \
-  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/uaccess.h \
-    $(wildcard include/config/x86/intel/usercopy.h) \
-    $(wildcard include/config/debug/strict/user/copy/checks.h) \
-  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/smap.h \
-    $(wildcard include/config/x86/smap.h) \
-  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/uaccess_64.h \
-  include/uapi/asm-generic/termios.h \
-  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/termbits.h \
-  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/asm-generic/termbits.h \
-  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/uapi/asm/ioctls.h \
-  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/asm-generic/ioctls.h \
-  include/linux/tty_driver.h \
-    $(wildcard include/config/console/poll.h) \
-  include/linux/cdev.h \
-  include/linux/tty_ldisc.h \
-  /usr/src/linux-headers-3.14.1.mikernel/include/uapi/linux/tty_flags.h \
-  include/uapi/linux/tty.h \
-  include/linux/kd.h \
-  include/uapi/linux/kd.h \
-  include/linux/vt_kern.h \
-    $(wildcard include/config/vga/console.h) \
-    $(wildcard include/config/console/translations.h) \
-  include/linux/vt.h \
-    $(wildcard include/config/vt/console.h) \
-  include/uapi/linux/vt.h \
-  include/linux/console_struct.h \
-  include/linux/mm.h \
-    $(wildcard include/config/ppc.h) \
-    $(wildcard include/config/parisc.h) \
-    $(wildcard include/config/metag.h) \
-    $(wildcard include/config/stack/growsup.h) \
-    $(wildcard include/config/transparent/hugepage.h) \
-    $(wildcard include/config/ksm.h) \
-    $(wildcard include/config/debug/vm/rb.h) \
-    $(wildcard include/config/debug/pagealloc.h) \
-    $(wildcard include/config/hugetlbfs.h) \
-  include/linux/debug_locks.h \
-    $(wildcard include/config/debug/locking/api/selftests.h) \
-  include/linux/mm_types.h \
-    $(wildcard include/config/split/ptlock/cpus.h) \
-    $(wildcard include/config/arch/enable/split/pmd/ptlock.h) \
-    $(wildcard include/config/have/cmpxchg/double.h) \
-    $(wildcard include/config/have/aligned/struct/page.h) \
-    $(wildcard include/config/want/page/debug/flags.h) \
-    $(wildcard include/config/aio.h) \
-    $(wildcard include/config/mm/owner.h) \
-    $(wildcard include/config/mmu/notifier.h) \
-  include/linux/auxvec.h \
-  include/uapi/linux/auxvec.h \
-  include/linux/page-debug-flags.h \
-    $(wildcard include/config/page/poisoning.h) \
-    $(wildcard include/config/page/guard.h) \
-    $(wildcard include/config/page/debug/something/else.h) \
-  include/linux/uprobes.h \
-    $(wildcard include/config/uprobes.h) \
-  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/uprobes.h \
-  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/pgtable.h \
-  /usr/src/linux-headers-3.14.1.mikernel/arch/x86/include/asm/pgtable_64.h \
-  include/asm-generic/pgtable.h \
-    $(wildcard include/config/have/arch/soft/dirty.h) \
-    $(wildcard include/config/arch/uses/numa/prot/none.h) \
-  include/linux/page-flags.h \
-    $(wildcard include/config/pageflags/extended.h) \
-    $(wildcard include/config/arch/uses/pg/uncached.h) \
-    $(wildcard include/config/memory/failure.h) \
-    $(wildcard include/config/swap.h) \
-  include/linux/huge_mm.h \
-  include/linux/vmstat.h \
-    $(wildcard include/config/vm/event/counters.h) \
-    $(wildcard include/config/debug/tlbflush.h) \
-  include/linux/vm_event_item.h \
-  include/linux/consolemap.h \
+  include/linux/vermagic.h \
+  include/generated/utsrelease.h \
 
-/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o: $(deps_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o)
+/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.mod.o: $(deps_/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.mod.o)
 
-$(deps_/home/kernel/LIN2015/Yu/practica2_ej1/Modleds/modleds.o):
+$(deps_/home/kernel/LIN2015/Comun/Grupo3Practica2/ParteB/Ledctl/ledctl.mod.o):
