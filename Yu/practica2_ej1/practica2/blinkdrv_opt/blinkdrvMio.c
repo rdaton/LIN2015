@@ -126,9 +126,16 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 		color_cnt=0;
 
 ///////////////
-/* zero fill*/ 
-	memset(messages,0,NR_BYTES_BLINK_MSG);
-
+/* zero fill*/
+	int j; 
+	for(j=0;j<NR_LEDS;j++){
+		memset(messages[j],0,NR_BYTES_BLINK_MSG);
+		messages[j][0]='\x05';
+		messages[j][1]=0x00;
+		messages[j][2]=j; 
+	}
+	
+//memset(messages,0,NR_BYTES_BLINK_MSG);
 
 	char* unBuffer;
 	  if ((*off) > 0) /* The application can write in this entry just once !! */
@@ -165,13 +172,10 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 
 	  while((unaCadena = strsep(&pBuffer,",")) != NULL ){
 		printk("valor de una cadena es %s\n",unaCadena);
-		printk("valor de una cadena es %i\n",c);
-		
-	
 		
 		
-		if(sscanf(unaCadena,"%i:%i",&nLed,&c)==1){
-			printk("entra if");
+		if(sscanf(unaCadena,"%i:%i",&nLed,&c)==2){
+			
 	  		messages[nLed][0]='\x05';
 			messages[nLed][1]=0x00;
 			messages[nLed][2]=nLed; 
@@ -184,9 +188,9 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 		 	messages[nLed][4]=((color>>8) & c);
 		 	messages[nLed][5]=(color & c);
 
-		 	//messages[nLed][3]=00;
-		 	//messages[nLed][4]=00;
-		 	//messages[nLed][5]=00;
+		 	//messages[nLed][3]=1;
+		 	//messages[nLed][4]=2;
+		 	//messages[nLed][5]=222;
 	  }
 	  else{
 	  	//error
@@ -195,8 +199,6 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 	  	vfree(unBuffer);
 	  	return -EFAULT;
 	  }
-
-	  nLed++;
 
 	  }
 	  
