@@ -22,10 +22,12 @@
 #include <linux/mutex.h>
 #include <linux/vmalloc.h>
 
+
 MODULE_LICENSE("GPL");
 
 /* Get a minor range for your devices from the usb maintainer */
 #define USB_BLINK_MINOR_BASE	0 
+#define BUFFER_LENGTH  PAGE_SIZE
 
 /* Structure to hold all of our device specific stuff */
 struct usb_blink {
@@ -101,69 +103,204 @@ static int blink_release(struct inode *inode, struct file *file)
 
 
 
-#define NR_SAMPLE_COLORS 4
 
-unsigned int sample_colors[]={0x000011, 0x110000, 0x001100, 0x000000};
+int  inicializaLeds(struct file *file)
+
+{
+int retval=0;  
+struct usb_blink *dev=file->private_data;
+unsigned char messages[NR_LEDS][NR_BYTES_BLINK_MSG];
+unsigned int colorNegro=0x000000;
+  unsigned int dos_unos=0xff;
+  int nLed=0;
+  int c=0;	  
+  
+
+
+  
+  ///////////////
+/* zero fill*/
+	int j; 
+	for(j=0;j<NR_LEDS;j++){
+		memset(messages[j],0,NR_BYTES_BLINK_MSG);
+		messages[j][0]='\x05';
+		messages[j][1]=0x00;
+		messages[j][2]=j; 
+		//debug
+		messages[j][3]=((colorNegro>>16) & dos_unos);
+		messages[j][4]=((colorNegro>>8) & dos_unos);
+		messages[j][5]=((colorNegro) & dos_unos);
+
+	}
+
+
+	int i;
+		for (i=0;i<NR_LEDS;i++)
+		{
+
+		retval=usb_control_msg(dev->udev,	
+			 usb_sndctrlpipe(dev->udev,00), //Specify endpoint #0 
+			 USB_REQ_SET_CONFIGURATION, 
+			 USB_DIR_OUT| USB_TYPE_CLASS | USB_RECIP_DEVICE,
+			 0x5,	//wValue
+			 0, 	// wInde=Endpoint # 
+			 messages[i],	// Pointer to the message 
+			 NR_BYTES_BLINK_MSG, // message's size in bytes 
+			 0);		
+
+		if (retval<0){
+	//		vfree(unBuffer);
+			printk(KERN_ALERT "Executed with retval=%d\n",retval);
+			return retval;
+			//goto out_error;		
+		}
+		
+	      }  
+  return retval;
+}
+
+
 
 /* Called when a user program invokes the write() system call on the device */
 static ssize_t blink_write(struct file *file, const char *user_buffer,
 			  size_t len, loff_t *off)
 {
 	struct usb_blink *dev=file->private_data;
-	int retval = 0;
-	int i=0;
-	unsigned char message[NR_BYTES_BLINK_MSG];
-	static int color_cnt=0;
-	unsigned int color;
-
-	/* Pick a color and get ready for the next invocation*/		
-	color=sample_colors[color_cnt++];
-
-	/* Reset the color counter if necessary */	
-	if (color_cnt == NR_SAMPLE_COLORS)
-		color_cnt=0;
 	
-	/* zero fill*/
-	memset(message,0,NR_BYTES_BLINK_MSG);
+	int retval = inicializaLeds(file); // no debe inicialiizar !!! si entrada mal, debe dejar tal cual
+	if (retval<0)
+	  return retval;
+	int i=0;
+	unsigned char messages[NR_LEDS][NR_BYTES_BLINK_MSG];
+	int dos_unos=0xff;
+	int nLed=0;
+	  int c=0;
+	  unsigned int colorNegro=0x000000;
+	
 
-	/* Fill up the message accordingly */
-	message[0]='\x05';
-	message[1]=0x00;
-	message[2]=0; 
-	message[3]=((color>>16) & 0xff);
- 	message[4]=((color>>8) & 0xff);
- 	message[5]=(color & 0xff);
+///////////////
+///zero fill
+/*	  
+	int j; 
+	for(j=0;j<NR_LEDS;j++){
+		memset(messages[j],0,NR_BYTES_BLINK_MSG);
+		messages[j][0]='\x05';
+		messages[j][1]=0x00;
+		messages[j][2]=j; 
+		//debug
+		messages[nLed][3]=(colorBlanco>>16);
+		messages[nLed][4]=(colorBlanco>>8);
+		messages[nLed][5]=(colorBlanco);
 
+	}
+	
+//memset(messages,0,NR_BYTES_BLINK_MSG);
+*/
+	char* unBuffer;
+	  if ((*off) > 0) // The application can write in this entry just once !! 
+		return 0;
+	  
+	  
+	  // Transfer data from user to kernel space 
+	  unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
+	  if (copy_from_user( &unBuffer[0], user_buffer, len )){
+	  	vfree(unBuffer);
+	  	return -EFAULT;
+	  }  
 
+	  unBuffer[len]='\0';
+	  //debug
+//	  char *string,*found;
+
+//	  string = (char *)vmalloc( BUFFER_LENGTH );
+//	  string =unBuffer;
+//	  printk("Original string abc: %s",string);
+
+    //while((found = strsep(&string,",")) != NULL )
+      //  printk("soy found %s",found);
+
+	  //fin debug
+	  
+
+	  char* pBuffer=unBuffer;
+	  char* unaCadena;
+	  
+	  //lleno los mensajes de ceros
+	  int j;
+	  for(j=0;j<NR_LEDS;j++){
+		memset(messages[j],0,NR_BYTES_BLINK_MSG);
+		messages[j][0]='\x05';
+		messages[j][1]=0x00;
+		messages[j][2]=j; 
+		//debug
+		messages[j][3]=((colorNegro>>16) & dos_unos);
+		messages[j][4]=((colorNegro>>8) & dos_unos);
+		messages[j][5]=((colorNegro) & dos_unos);
+
+	}
+
+	
+
+	  while((unaCadena = strsep(&pBuffer,",")) != NULL ){
+		printk("valor de una cadena es %s\n",unaCadena);
+		
+		if(sscanf(unaCadena,"%i:%i",&nLed,&c)==2){
+			
+	  		messages[nLed][0]='\x05';
+			messages[nLed][1]=0x00;
+			messages[nLed][2]=nLed; 
+		
+	printk("hola valor 1 es %i\n",(c>>16) );
+		printk("valor 2 es %i\n",(c>>8));
+		printk("valor 3 es %i\n", c);	
+
+			messages[nLed][3]=((c>>16) & dos_unos);
+		 	messages[nLed][4]=((c>>8) & dos_unos);
+		 	messages[nLed][5]=(c & dos_unos);
+
+	  }
+	  else{
+	  	//error
+	  	printk("error de scanner");
+	  	*off+=len;            // Update the file pointer 
+	  	vfree(unBuffer);
+	  	return -EINVAL;
+	  }
+
+	  }
+	 
+	 
 	for (i=0;i<NR_LEDS;i++){
 
-		message[2]=i; /* Change Led number in message */
-	
-		/* 
-		 * Send message (URB) to the Blinkstick device 
-		 * and wait for the operation to complete 
-		 */
+			
+		//messages[0][2]=2;
+
+		
 		retval=usb_control_msg(dev->udev,	
-			 usb_sndctrlpipe(dev->udev,00), /* Specify endpoint #0 */
+			 usb_sndctrlpipe(dev->udev,00), //Specify endpoint #0 
 			 USB_REQ_SET_CONFIGURATION, 
 			 USB_DIR_OUT| USB_TYPE_CLASS | USB_RECIP_DEVICE,
-			 0x5,	/* wValue */
-			 0, 	/* wIndex=Endpoint # */
-			 message,	/* Pointer to the message */ 
-			 NR_BYTES_BLINK_MSG, /* message's size in bytes */
+			 0x5,	//wValue 
+			 0, 	// wIndex=Endpoint # 
+			 messages[i],	// Pointer to the message 
+			 NR_BYTES_BLINK_MSG, // message's size in bytes 
 			 0);		
 
 		if (retval<0){
+			vfree(unBuffer);
 			printk(KERN_ALERT "Executed with retval=%d\n",retval);
-			goto out_error;		
+			return retval;
+			//goto out_error;		
 		}
-	}
-
+		
+	} 
+	
 	(*off)+=len;
+        // Update the file pointer 
+	vfree(unBuffer);
 	return len;
 
-out_error:
-	return retval;	
+		
 }
 
 

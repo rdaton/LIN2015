@@ -1,1 +1,0 @@
-cmd_/home/kernel/LIN2015/Daton/blinkdrv_opt/blinkdrvMio.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.14.1.mikernel/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Daton/blinkdrv_opt/blinkdrvMio.ko /home/kernel/LIN2015/Daton/blinkdrv_opt/blinkdrvMio.o /home/kernel/LIN2015/Daton/blinkdrv_opt/blinkdrvMio.mod.o
