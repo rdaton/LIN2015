@@ -67,7 +67,7 @@ static void limpiar(struct list_head* list){
 	
 	//sección critica lista de enteros
 	unsigned long flags=0;
-	write_lock_irqsave(sp,flags);
+	write_lock_irqsave(&rwl,flags);
 	list_for_each_safe(cur_node,lista_aux,list) 
 	{
 	/* item points to the structure wherein the links are embedded */
@@ -75,7 +75,7 @@ static void limpiar(struct list_head* list){
 	list_del(cur_node);
 	vfree(item);	//¿bloqueante?		
 	}
-	write_unlock_irqrestore(sp,flags);
+	write_unlock_irqrestore(&rwl,flags);
 	//fin sección critica lista de enteros
 
 }
@@ -89,7 +89,7 @@ static int remove (int valor,struct list_head* list){
 	
 	//sección critica lista de enteros
 	unsigned long flags=0;
-	write_lock_irqsave(sp,flags);
+	write_lock_irqsave(&rwl,flags);
 	list_for_each_safe(cur_node,lista_aux,list) 
 	{
 	/* item points to the structure wherein the links are embedded */
@@ -99,7 +99,7 @@ static int remove (int valor,struct list_head* list){
 		list_del(cur_node);
 		vfree(item);
 		}
-	write_unlock_irqrestore(sp,flags);
+	write_unlock_irqrestore(&rwl,flags);
 	//fin sección critica lista de enteros	
 	}
 	return 0;
@@ -115,14 +115,14 @@ void print_list(struct list_head *list) {
 	
 	//sección critica lista de enteros
 	unsigned long flags=0;
-	read_lock_irqsave(sp,flags);
+	read_lock_irqsave(&rwl,flags);
 	list_for_each(cur_node, list) 
 	{
 	/* item points to the structure wherein the links are embedded */
 	item = list_entry(cur_node,tNodo, list);
 	//trace_printk(KERN_INFO "%i\n",item->data);
 	}
-	read_unlock_irqrestore(sp,flags);
+	read_unlock_irqrestore(&rwl,flags);
 	//fin sección critica lista de enteros
 	
 }
