@@ -1,7 +1,9 @@
 /*
- * Simple driver for the Blinkstick Strip USB device
+ * Based on driver for the Blinkstick Strip USB device
  *
- * Copyright (C) 2015 Juan Carlos Saez (jcsaezal@ucm.es)
+ * (Copyright (C) 2015 Juan Carlos Saez (jcsaezal@ucm.es))
+ * 
+ * Grupo 3 , LIN; 2016 UCM FDI
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License as
@@ -102,180 +104,73 @@ static int blink_release(struct inode *inode, struct file *file)
 #define NR_BYTES_BLINK_MSG 6
 
 
-
-
-int  inicializaLeds(struct file *file)
-
-{
-int retval=0;  
-struct usb_blink *dev=file->private_data;
-unsigned char messages[NR_LEDS][NR_BYTES_BLINK_MSG];
-unsigned int colorNegro=0x000000;
-  unsigned int dos_unos=0xff;
-  int nLed=0;
-  int c=0;	  
-  
-
-
-  
-  ///////////////
-/* zero fill*/
-	int j; 
-	for(j=0;j<NR_LEDS;j++){
-		memset(messages[j],0,NR_BYTES_BLINK_MSG);
-		messages[j][0]='\x05';
-		messages[j][1]=0x00;
-		messages[j][2]=j; 
-		//debug
-		messages[j][3]=((colorNegro>>16) & dos_unos);
-		messages[j][4]=((colorNegro>>8) & dos_unos);
-		messages[j][5]=((colorNegro) & dos_unos);
-
-	}
-
-
-	int i;
-		for (i=0;i<NR_LEDS;i++)
-		{
-
-		retval=usb_control_msg(dev->udev,	
-			 usb_sndctrlpipe(dev->udev,00), //Specify endpoint #0 
-			 USB_REQ_SET_CONFIGURATION, 
-			 USB_DIR_OUT| USB_TYPE_CLASS | USB_RECIP_DEVICE,
-			 0x5,	//wValue
-			 0, 	// wInde=Endpoint # 
-			 messages[i],	// Pointer to the message 
-			 NR_BYTES_BLINK_MSG, // message's size in bytes 
-			 0);		
-
-		if (retval<0){
-	//		vfree(unBuffer);
-			printk(KERN_ALERT "Executed with retval=%d\n",retval);
-			return retval;
-			//goto out_error;		
-		}
-		
-	      }  
-  return retval;
-}
-
-
-
 /* Called when a user program invokes the write() system call on the device */
 static ssize_t blink_write(struct file *file, const char *user_buffer,
 			  size_t len, loff_t *off)
 {
-	struct usb_blink *dev=file->private_data;
-	
-	int retval = inicializaLeds(file); // no debe inicialiizar !!! si entrada mal, debe dejar tal cual
-	if (retval<0)
-	  return retval;
+	struct usb_blink *dev=file->private_data;	
+	int retval = 0;
 	int i=0;
 	unsigned char messages[NR_LEDS][NR_BYTES_BLINK_MSG];
 	int dos_unos=0xff;
 	int nLed=0;
-	  int c=0;
-	  unsigned int colorNegro=0x000000;
-	
-
-///////////////
-///zero fill
-/*	  
-	int j; 
-	for(j=0;j<NR_LEDS;j++){
-		memset(messages[j],0,NR_BYTES_BLINK_MSG);
-		messages[j][0]='\x05';
-		messages[j][1]=0x00;
-		messages[j][2]=j; 
-		//debug
-		messages[nLed][3]=(colorBlanco>>16);
-		messages[nLed][4]=(colorBlanco>>8);
-		messages[nLed][5]=(colorBlanco);
-
-	}
-	
-//memset(messages,0,NR_BYTES_BLINK_MSG);
-*/
+	int c=0;
+	unsigned int colorNegro=0x000000;
 	char* unBuffer;
-	  if ((*off) > 0) // The application can write in this entry just once !! 
+	if ((*off) > 0) // The application can write in this entry just once !! 
 		return 0;
 	  
 	  
-	  // Transfer data from user to kernel space 
-	  unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
-	  if (copy_from_user( &unBuffer[0], user_buffer, len )){
-	  	vfree(unBuffer);
-	  	return -EFAULT;
-	  }  
+	// Transfer data from user to kernel space 
+	unBuffer=(char *)vmalloc( BUFFER_LENGTH ); 
+	if (copy_from_user( &unBuffer[0], user_buffer, len )){
+	vfree(unBuffer);
+	return -EFAULT;
+	}  
+	unBuffer[len]='\0';	  
 
-	  unBuffer[len]='\0';
-	  //debug
-//	  char *string,*found;
+	char* pBuffer=unBuffer;
+	char* unaCadena;
 
-//	  string = (char *)vmalloc( BUFFER_LENGTH );
-//	  string =unBuffer;
-//	  printk("Original string abc: %s",string);
+	// lleno mensajes de Color Negro
+	int j;
+	for(j=0;j<NR_LEDS;j++){
+	memset(messages[j],0,NR_BYTES_BLINK_MSG);
+	messages[j][0]='\x05';
+	messages[j][1]=0x00;
+	messages[j][2]=j; 
+	messages[j][3]=((colorNegro>>16) & dos_unos);
+	messages[j][4]=((colorNegro>>8) & dos_unos);
+	messages[j][5]=((colorNegro) & dos_unos);
+	}	
 
-    //while((found = strsep(&string,",")) != NULL )
-      //  printk("soy found %s",found);
+	//leo entrada de usuario
+	while((unaCadena = strsep(&pBuffer,",")) != NULL )
+	{
+	printk("valor de una cadena es %s\n",unaCadena);
 
-	  //fin debug
-	  
-
-	  char* pBuffer=unBuffer;
-	  char* unaCadena;
-	  
-	  //lleno los mensajes de ceros
-	  int j;
-	  for(j=0;j<NR_LEDS;j++){
-		memset(messages[j],0,NR_BYTES_BLINK_MSG);
-		messages[j][0]='\x05';
-		messages[j][1]=0x00;
-		messages[j][2]=j; 
-		//debug
-		messages[j][3]=((colorNegro>>16) & dos_unos);
-		messages[j][4]=((colorNegro>>8) & dos_unos);
-		messages[j][5]=((colorNegro) & dos_unos);
-
+	if(sscanf(unaCadena,"%i:%i",&nLed,&c)==2){
+		
+		messages[nLed][0]='\x05';
+		messages[nLed][1]=0x00;
+		messages[nLed][2]=nLed; 
+		messages[nLed][3]=((c>>16) & dos_unos);
+		messages[nLed][4]=((c>>8) & dos_unos);
+		messages[nLed][5]=(c & dos_unos);
+	} //si cadena de entrada está vacía
+	else if (len>1)
+	{	
+		*off+=len;            // Update the file pointer 
+		vfree(unBuffer);	
+		//entrada errónea
+		return -EINVAL;	
 	}
-
+	}
 	
-
-	  while((unaCadena = strsep(&pBuffer,",")) != NULL ){
-		printk("valor de una cadena es %s\n",unaCadena);
-		
-		if(sscanf(unaCadena,"%i:%i",&nLed,&c)==2){
-			
-	  		messages[nLed][0]='\x05';
-			messages[nLed][1]=0x00;
-			messages[nLed][2]=nLed; 
-		
-	printk("hola valor 1 es %i\n",(c>>16) );
-		printk("valor 2 es %i\n",(c>>8));
-		printk("valor 3 es %i\n", c);	
-
-			messages[nLed][3]=((c>>16) & dos_unos);
-		 	messages[nLed][4]=((c>>8) & dos_unos);
-		 	messages[nLed][5]=(c & dos_unos);
-
-	  }
-	  else{
-	  	//error
-	  	printk("error de scanner");
-	  	*off+=len;            // Update the file pointer 
-	  	vfree(unBuffer);
-	  	return -EINVAL;
-	  }
-
-	  }
-	 
-	 
-	for (i=0;i<NR_LEDS;i++){
-
-			
-		//messages[0][2]=2;
-
-		
+	
+	
+	//mando mensajes
+	for (i=0;i<NR_LEDS;i++){			
 		retval=usb_control_msg(dev->udev,	
 			 usb_sndctrlpipe(dev->udev,00), //Specify endpoint #0 
 			 USB_REQ_SET_CONFIGURATION, 
@@ -289,18 +184,13 @@ static ssize_t blink_write(struct file *file, const char *user_buffer,
 		if (retval<0){
 			vfree(unBuffer);
 			printk(KERN_ALERT "Executed with retval=%d\n",retval);
-			return retval;
-			//goto out_error;		
-		}
-		
-	} 
-	
-	(*off)+=len;
-        // Update the file pointer 
+			return -EIO;		
+		}		
+	} 	
+	// Update the file pointer 
+	(*off)+=len;        
 	vfree(unBuffer);
-	return len;
-
-		
+	return len;		
 }
 
 
