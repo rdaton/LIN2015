@@ -47,7 +47,6 @@ static int add (int valor)
   int error=1;
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
-  	vfree(unNodo);
   	return -ENOMEM;	
   }	
   unNodo->data = valor;
