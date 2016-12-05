@@ -3,7 +3,7 @@ while true
 do
 	cat /proc/modlist
 	echo cleanup > /proc/modlist
-	sleep 0.1
+	sleep 1
 	reset
 done
 

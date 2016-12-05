@@ -14,7 +14,7 @@ MODULE_DESCRIPTION("Modlist module - FDI-UCM; Thread-Safe");
 MODULE_AUTHOR("Roumen Daton; Yu Liu");
 
 #define BUFFER_LENGTH  PAGE_SIZE
-
+#define num_elem_max 100
 
 //http://stackoverflow.com/questions/19647356/linux-kernel-linked-list
 //http://isis.poly.edu/kulesh/stuff/src/klist/
@@ -33,70 +33,81 @@ int data;
 
 /* Lista enlazada */
 struct list_head modlist;
+static int longitud=0;
 DEFINE_RWLOCK(rwl);
-static int max=5;
-static int length =0;
+
+
 
 //operaciones internas
 //
 
+static int hayEspacio(void)
+{
+  return (longitud < num_elem_max) ;
+}
 
 static int add (int valor)
 {
+  int error=1;
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
-  	vfree(unNodo);
   	return -ENOMEM;	
   }	
   unNodo->data = valor;
   
   //sección critica lista de enteros
   write_lock(&rwl);
-  if(length < max){
-  	list_add_tail(&(unNodo->list), &modlist);
-  	 write_unlock(&rwl);
-  	 length++;
-  	 return 0;
-  }
   
-  else{
-  	write_unlock(&rwl);
-  	return -ENOMEM;
-  }
-  
-
+  if (hayEspacio())
+  {
+    list_add_tail(&(unNodo->list), &modlist);
+    error=0;
+    longitud++;
+  };
+  write_unlock(&rwl);
   //fin sección critica lista de enteros
+  
+  if (error) 
+  {
+    vfree(unNodo);
+    return -ENOSPC;	
+  }
+  
   return 0;
 }
 
 
-static int limpiar(struct list_head* list){
+static void limpiar(struct list_head* list){
 	tNodo* item=NULL;
+	tNodo* listaNodos[longitud];
 	struct list_head* cur_node=NULL;
 	struct list_head* lista_aux=NULL;
 	//trace_printk(KERN_INFO "%s\n","limpiando");
 	
 	//sección critica lista de enteros
-	unsigned long flags=0;
-	write_lock(&rwl);
-	if(length > 0){
-		list_for_each_safe(cur_node,lista_aux,list) 
-		{
-			/* item points to the structure wherein the links are embedded */
-			item = list_entry(cur_node,tNodo, list);
-			list_del(cur_node);
-			vfree(item);	//¿bloqueante?		
-		}
-		length=0;
-		write_unlock(&rwl);
-		return 0;
-	}
+	//unsigned long flags=0;
+	int i=0;
+	int longitud_aux=0;
 	
-	else{
-		write_unlock(&rwl);
-		return -ENOMEM;
-	//fin sección critica lista de enteros
+	//write_lock_irqsave(&rwl,flags); no habrá interrupciones que
+	//accedan a la lista, así que uso
+	write_lock(&rwl);
+	longitud_aux=longitud;
+	list_for_each_safe(cur_node,lista_aux,list) 
+	{
+	/* item points to the structure wherein the links are embedded */
+	  item = list_entry(cur_node,tNodo, list);
+	  list_del(cur_node);
+	  listaNodos[i]=item;
+	  i++;	
 	}
+	longitud=0;
+	write_unlock(&rwl);
+	//fin sección critica lista de enteros
+	
+// 	//hago el vfree fuera del spinlock
+	for (i=0;i<longitud_aux;i++)
+	  vfree(listaNodos[i]);
 	
 
 }
@@ -106,56 +117,63 @@ static int remove (int valor,struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
 	struct list_head* lista_aux=NULL;
+	tNodo* listaNodos[longitud];
+	int longitud_aux=0;
+	int i=0;
 	//trace_printk(KERN_INFO "Entra metodo de remove\n");
 	
 	//sección critica lista de enteros
-	unsigned long flags=0;
-	write_lock(&rwl);
-	if(length>0){
-		list_for_each_safe(cur_node,lista_aux,list) 
-			{
-			/* item points to the structure wherein the links are embedded */
-			item = list_entry(cur_node,tNodo, list);
-			if((item->data) == valor){
-				//trace_printk(KERN_INFO "el valor que va a eliminar es %i\n",valor);
-				list_del(cur_node);
-				vfree(item);
-				}
-			write_unlock(&rwl);
-			//fin sección critica lista de enteros	
-			}
+	//unsigned long flags=0;
 	
+	//write_lock_irqsave(&rwl,flags); no habrá interrupciones que
+	//accedan a la lista, así que uso
+	write_lock(&rwl);
+	longitud_aux=longitud;
+	
+	list_for_each_safe(cur_node,lista_aux,list) 
+	{
+	/* item points to the structure wherein the links are embedded */
+	  item = list_entry(cur_node,tNodo, list);
+	  if((item->data) == valor)
+	  {
+		  //trace_printk(KERN_INFO "el valor que va a eliminar es %i\n",valor);
+		  list_del(cur_node);
+		  listaNodos[i]=item;
+		  longitud--;
+		  i++;
+	  }
+	 
 	}
-	else{
-		write_unlock(&rwl);
-			//fin sección critica lista de enteros
-		return -ENOMEM;
-	}
+	//write_unlock_irqrestore(&rwl,flags);
+	write_unlock(&rwl);
+	//fin sección critica lista de enteros	
+	// 	//hago el vfree fuera del spinlock
+	for (i=0;i<longitud_aux;i++)
+	  vfree(listaNodos[i]);
 	return 0;
 
 }
 
 
-
+/*
 void print_list(struct list_head *list) {
         tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
 	//trace_printk(KERN_INFO "%s\n","imprimiendo");
 	
 	//sección critica lista de enteros
-	unsigned long flags=0;
 	read_lock(&rwl);
 	list_for_each(cur_node, list) 
 	{
-	/* item points to the structure wherein the links are embedded */
-	item = list_entry(cur_node,tNodo, list);
+	// item points to the structure wherein the links are embedded 
+	  item = list_entry(cur_node,tNodo, list);
 	//trace_printk(KERN_INFO "%i\n",item->data);
 	}
 	read_unlock(&rwl);
 	//fin sección critica lista de enteros
 	
 }
-
+*/
 
 
 
@@ -186,12 +204,12 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	  else if(sscanf(unBuffer,"remove %i\n",&r)==1){
 	  		remove(r,&modlist);
 	  		//trace_printk("intentando a borrar: %d\n",r);
-	  		print_list(&modlist);
+	  		//print_list(&modlist);
 	  }
 	   else if(strcmp(unBuffer,"cleanup\n")==0){
 	  		limpiar(&modlist);
 	  		//trace_printk("intentando a limpiar todo");
-	  		print_list(&modlist);
+	  		//print_list(&modlist);
 	  }
 
 	  else{
@@ -219,14 +237,12 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 
 int generaVector(char* unBuffer,struct list_head* list){
 	//struct list_head* list=&Modlist;
-	  tNodo* item=NULL;
+	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
-	//trace_printk(KERN_INFO "%s\n","imprimiendo");
-
-
-	unsigned long flags=0;
-	read_lock(&rwl);
+	//trace_printk(KERN_INFO "%s\n","imprimiendo");	
 	char* dest=unBuffer;
+	//sección critica
+	read_lock(&rwl);
 	list_for_each(cur_node, list) 
 	{
 	// item points to the structure wherein the links are embedded 
@@ -239,6 +255,7 @@ int generaVector(char* unBuffer,struct list_head* list){
 	
 	}
 	read_unlock(&rwl);
+	//fin sección critica
 	return dest-unBuffer;
 }
 
@@ -252,9 +269,9 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
 	      return 0;
 
 	 unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
- 	
+
  	num_elem=generaVector(unBuffer,&modlist);
- 	
+ 
  	//nr_bytes=strlen(unBuffer);
 
 	if (len<num_elem){
@@ -271,7 +288,7 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
   }
    
 
-  print_list(&modlist);
+  //print_list(&modlist);
     
   (*off)+=len;  /* Update the file pointer */
 
@@ -321,7 +338,7 @@ void exit_modlist_module( void )
   remove_proc_entry("modlist", NULL);
   limpiar(&modlist);
   //trace_printk(KERN_INFO "modlist: Module unloaded.\n");
-  print_list(&modlist);
+  //print_list(&modlist);
 
 };
 module_exit( exit_modlist_module );
