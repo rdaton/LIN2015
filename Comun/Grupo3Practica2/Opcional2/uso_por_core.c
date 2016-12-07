@@ -40,25 +40,48 @@ int read_fields (FILE *fp, unsigned long long int *fields)
   return 1;
 }
 
-void imprimirStick(double* ochoPorcentajes)
+char* dameColor(double unPorcentaje)
 {
 	char* verde="0x001100";	
 	char* amarillo="0x111100";
 	char* rojo="0x110000";	
-	char cadenas[8][12];
-		
+	char salida[24];
 	
+	if (unPorcentaje < 50)
+		strcpy(salida,verde);
+	else 
+	if (unPorcentaje < 90)
+		strcpy(salida, amarillo);
+	else
+		strcpy(salida,rojo);
+	
+	
+}
+
+void imprimirStick(double* ochoPorcentajes)
+{
+	char cadenas[8][24];
+	char salida[200];
 	int i=0;	
 	for (i=0;i<8;i++)
 	{			
 
 		char numLed[2];	
 		snprintf(numLed,sizeof(numLed),"%d",i);
-		strcpy(cadenas[i],numLed);
-		printf(numLed);
-		
+		strcpy(cadenas[i],numLed);		
+		strcat(cadenas[i],":");
+		strcat(cadenas[i],dameColor(ochoPorcentajes[i]));		
+		strcat(cadenas[i],",");		
 	}
 	
+	for (i=0;i<8;i++)
+	{
+			printf(cadenas[i]);
+			strcat(salida,cadenas[i]);
+			printf("\n");
+	}
+	
+	printf (salida);
 	
 	
 }
