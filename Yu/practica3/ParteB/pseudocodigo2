@@ -23,13 +23,57 @@ open
 		unlock(mtx)
 
 
- fifoproc_read
+//111111111111111111111111111111111111111111111111111111111111
+
+int prod_count=0,cons_count=0; cbuffer_t* cbuffer; 
+
+int fifoproc_write(char* buff, int len) 
+{
+ char kbuffer[MAX_KBUF]; 
+ if (len> MAX_CBUFFER_LEN || len> MAX_KBUF) 
+ {
+  return Error;} 
+
+  if (copy_from_user(kbuffer,buff,len)) 
+  {
+   return Error;
+	} 
+   lock(mtx); 
+
+   /* Esperar hasta que haya hueco para insertar (debe haber consumidores) */ 
+   while (nr_gaps_cbuffer_t(cbuffer)<len && cons_count>0){ cond_wait(prod,mtx); } 
+   /* Detectar fin de comunicación por error (consumidor cierra FIFO antes) */ 
+   if (cons_count==0) {unlock(mtx); return -EPIPE;} 
+   insert_items_cbuffer_t(cbuffer,kbuffer,len); 
+   /* Despertar a posible consumidor bloqueado */ 
+   cond_signal(cons); 
+   unlock(mtx); 
+   return len; 
+
+//11111111111111111111111111111111111111111111111111111111111
+
+
+ int fifoproc_read(char* buff, int len)
+
+ 	char kbuffer[MAX_KBUF]; 
+ if (len> MAX_CBUFFER_LEN || len> MAX_KBUF) 
+ 	{
+  		return Error;
+  	} 
+
+ 	if (copy_to_user(kbuffer,buff,len)) 
+  	{
+   		return Error;
+	} 
  
-
-
  	lock(mtx); 
+
+ 	if( productor_count == 0 && size_cbuffer_t(cbuffer)==0){
+ 		return -EOF;
+ 	}
+
  	/* Esperar hasta que haya elemento para sacar (debe haber cproductores) */ 
- 	while (nr_gaps_cbuffer_t(cbuffer)>=len && productor_count>0)
+ 	while (size_cbuffer_t(cbuffer)==0 && productor_count>0)
  		{ cond_wait(consumidor,mtx); } 
  
  	/* Detectar fin de comunicación por error (productor cierra FIFO antes) */ 
@@ -40,23 +84,44 @@ open
   	item=head_cbuffer_t(cbuf);
   	remove_cbuffer_t(cbuf);  
 
- 	/* Despertar a posible consumidor bloqueado */ 
- 	cond_signal(cons); 
+ 	/* Despertar a posible productor bloqueado */ 
+ 	cond_signal(prod_count); 
  	unlock(mtx); 
 
  	return len;
 
 
+//11111111111111111111111111111111111111111111111111111111111
 
+release(struct inode *inodo, struct file *file)
+	//entra sesion critica
+	if(consumidor)
+	{
+		lock(mtx)
+		consumidor--
+	   unlock(mtx);
+	 
+	  		
+	}
+	
+	if(productor)
+	{
+		lock(mtx)
+		productor--
+	   unlock(mtx);
+	}
 
-release
-	si es consumidor , Despertar otros consumidores  y return.
-	si es productor , Despertar otros productores  y return.
+	if (cons_count==0 && prod_count==0) 
+	  		{
+	  			lock(&mtx)
+	  			clear_cbuffer_t (cbuffer_t* cbuffer); 
+	  			unlock(&mtx); 
+	  			return 0;
+	  		} 
 
+	return 0;
 
-
-
-
+}
 
 
 

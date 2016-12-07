@@ -32,7 +32,7 @@ static int fifoproc_open(struct inode *inode, struct file *file)
 		
 		if (file->f_mode & FMODE_READ)	
 		{ /* Un consumidor abrió el FIFO */
-			/* Acceso a la sección crítica */
+			/* Acceso a la crítica */
 			  if (down_interruptible(&mtx))
 			  {
 				return -EINTR;
@@ -128,20 +128,30 @@ static int fifoproc_open(struct inode *inode, struct file *file)
 
 
 /* Se invoca al hacer close() de entrada /proc */ 
-static int fifoproc_release(struct inode *inodo, struct file *file){
+static int fifoproc_release(struct inode *inodo, struct file *file)
+{
 	
 	if (file->f_mode & FMODE_WRITE){
-		/* decremento de productor  esperando */
+		down(&mtx);
 		prod_count--;
+	    up(&mtx);
 
 	}
 	else if (file->f_mode & FMODE_READ){
 
-		/* decremento de consumidores esperando */
-				cons_count--;
+		down(&mtx);
+		cons_count--;
+	  	up(&mtx);
+	  
 	}
 
-	up(mtx);
+	if (cons_count==0 && prod_count==0) 
+  	{	  			
+  		down(&mtx);
+  		clear_cbuffer_t (cbuffer); 
+	  	up(&mtx); 
+	} 
+
 	return 0;
 }
 
@@ -151,7 +161,7 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
 {
 		  int nr_bytes=0;
 		  int* item=NULL;
-		  char kbuff[32]="";
+		  char kbuff[MAX_CHARS_KBUF];
 		  
 		  if ((*off) > 0) 
 		      return 0;
@@ -160,6 +170,13 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
 		  if (down_interruptible(&mtx))
 		  {
 			return -EINTR;
+		  }
+
+		  /*Si se intenta hacer una lectura del FIFO cuando el 
+		  buffer circular esté vacío y no haya productores, el 
+		  módulo devolverá el valor 0 (EOF)*/
+		  if(size_cbuffer_t(cbuffer)==0 && prod_count){
+		  		return 0;
 		  }
 
 		 /* Bloquearse mientras buffer esté vacío */
@@ -278,6 +295,12 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
 			}	
   	  }
 
+  	  /* Si se intenta escribir en el FIFO cuando no hay consumidores
+  	   (extremo de lectura cerrado), el módulo devolverá un error*/
+  	  if(cons_count == 0){
+  	  	return -EINTR;
+  	  }
+
 		   /* Insertar en el buffer */
 	  insert_cbuffer_t(cbuffer,item); 
 
@@ -323,7 +346,7 @@ int init_module(void){
 
   nr_prod_waiting=nr_cons_waiting=0;
 
-  proc_entry = proc_create_data("modfifo",0666, NULL, &proc_entry_fops, NULL);
+  proc_entry = proc_create_data("fifomod",0666, NULL, &proc_entry_fops, NULL);
     
   if (proc_entry == NULL) {
       destroy_cbuffer_t(cbuffer);
@@ -336,7 +359,10 @@ int init_module(void){
   return 0;
 }
 void cleanup_module(void){
-	remove_proc_entry("modfifo", NULL);
+	remove_proc_entry("fifomod", NULL);
   destroy_cbuffer_t(cbuffer);
   printk(KERN_INFO "fifomod: Modulo descargado.\n");
 }
+
+module_init( init_module );
+module_exit( cleanup_module );
