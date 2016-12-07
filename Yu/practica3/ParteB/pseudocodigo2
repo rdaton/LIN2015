@@ -1,0 +1,79 @@
+open
+	consumidor
+
+		...
+
+		lock(mtx)
+		while(numero_productor <=0){
+			cond_wait(consumidor,mtx);
+		}
+
+		cond_signal(consumidores)
+		unlock(mtx)
+
+	productor 
+		...
+
+		lock(mtx)
+		while(numero_consumidor <=0){
+			cond_wait(productor,mtx);
+		}
+
+		cond_signal(productores)
+		unlock(mtx)
+
+
+ fifoproc_read
+ 
+
+
+ 	lock(mtx); 
+ 	/* Esperar hasta que haya elemento para sacar (debe haber cproductores) */ 
+ 	while (nr_gaps_cbuffer_t(cbuffer)>=len && productor_count>0)
+ 		{ cond_wait(consumidor,mtx); } 
+ 
+ 	/* Detectar fin de comunicación por error (productor cierra FIFO antes) */ 
+ 	if (productor_count==0) 
+ 		{unlock(mtx); return -EPIPE;} 
+
+ 	/* Obtener el primer elemento del buffer y eliminarlo */
+  	item=head_cbuffer_t(cbuf);
+  	remove_cbuffer_t(cbuf);  
+
+ 	/* Despertar a posible consumidor bloqueado */ 
+ 	cond_signal(cons); 
+ 	unlock(mtx); 
+
+ 	return len;
+
+
+
+
+release
+	si es consumidor , Despertar otros consumidores  y return.
+	si es productor , Despertar otros productores  y return.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
