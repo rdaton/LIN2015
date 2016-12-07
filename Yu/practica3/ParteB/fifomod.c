@@ -109,7 +109,7 @@ static int fifoproc_open(struct inode *inode, struct file *file)
 					}	
 				  }
 				  
-				  /* Despertar a los lectores bloqueados (si hay alguno) */
+				  /* Despertar a los productores bloqueados (si hay alguno) */
 				  if (prod_count>0)
 				  {
 					up(&sem_prod);	
