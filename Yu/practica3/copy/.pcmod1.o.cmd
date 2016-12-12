@@ -1,0 +1,1 @@
+cmd_/home/kernel/LIN2015/Yu/practica3/copy/pcmod1.o := ld -m elf_x86_64   -r -o /home/kernel/LIN2015/Yu/practica3/copy/pcmod1.o /home/kernel/LIN2015/Yu/practica3/copy/cbuffer.o /home/kernel/LIN2015/Yu/practica3/copy/prodcons1.o 

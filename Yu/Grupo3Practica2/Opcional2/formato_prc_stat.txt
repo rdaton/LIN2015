@@ -1,0 +1,61 @@
+Fuente: https://phoxis.org/2013/09/05/finding-overall-and-per-core-cpu-utilization/
+
+
++-------+------------+-------------------------------------------------------+
+| field |    name    |   description                                         |
++-------+------------+-------------------------------------------------------+
+|   1   |    user    |   Time spent in user mode                             |
++-------+------------+-------------------------------------------------------+
+|   2   |    nice    |   Time spent in user mode with low priority           |
++-------+------------+-------------------------------------------------------+
+|   3   |   system   |   Time spent in system mode                           |
++-------+------------+-------------------------------------------------------+
+|   4   |    idle    |   Time spent in idle task                             |
++-------+------------+-------------------------------------------------------+
+|   5   |   iowait   |   Time waiting for I/O to complete                    |
++-------+------------+-------------------------------------------------------+
+|   6   |     irq    |   Time servicing interrupts                           |
++-------+------------+-------------------------------------------------------+
+|   7   |   softirq  |   Time servicing softirqs                             |
++-------+------------+-------------------------------------------------------+
+|   8   |    steal   |   Time spent in other OSes when in virtualized env    |
++-------+------------+-------------------------------------------------------+
+|   9   |    quest   |   Time spent running a virtual CPU for guest OS       |
++-------+------------+-------------------------------------------------------+
+|  10   | quest_nice |   Time spent running niced guest                      |
++-------+------------+-------------------------------------------------------+
+
+cat /proc/stat nos da
+
+ays the CPU of the system (all the CPUs accumulated) has spent 
+434566 unit time in user mode, 7188 unit of time in low priority user mode,
+ 225392 units of time in system mode, 
+ 23354859 units of time as idle. 
+ These values indicates the measure of time since the system was booted.
+  We are not interested about the unit of time, because we are interested to find ratio.
+   Although for information, these are in number of cycles spent. 
+   Number of cycles in a second in your system can be found by executing
+
+getconf CLK_TCK
+For my system the result is 100. That means there are 100 clock ticks per second, 
+which makes one cycle of duration 1/100 second. 
+Therefore in the above example the CPU has ran for 434566/100 = 4345.66 seconds in user mode.
+
+delta_user(t) = user(t) - user(t-1)
+delta_nice(t) = nice(t) - nice(t-1)
+delta_system(t) = system(t) - system(t-1) 
+delta_idle(t) = idle(t) - idle(t-1)
+
+                             user_delta(t)  +  nice_delta(t)  +  system_delta (t)
+Percent CPU Usage = ---------------------------------------------------------------------- X 100
+                       user_delta(t) + nice_delta(t) + system_delta (t) + idle_delta(t)
+
+
+The above discussion was done only with the four fields, but the CPU also does spend time to do other works 
+like servicing interrupt requests, do iowait etc, which are listed in the table. Therefore to compute the 
+percent of processor used I will also include the other fields too. This is exactly similar to the above discussion. 
+Instead of the 4 fields, now we find the percentage of the delta since last second (or any time interval) 
+which is the summation of the delta for the 9 fields except the idle field, compared to the total time spent, 
+which is the summation of the deltas of all the 10 fields.
+
+
