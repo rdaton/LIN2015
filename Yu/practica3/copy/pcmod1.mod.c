@@ -24,7 +24,6 @@ __attribute__((section("__versions"))) = {
 	{ 0x999e8297, __VMLINUX_SYMBOL_STR(vfree) },
 	{ 0x91715312, __VMLINUX_SYMBOL_STR(sprintf) },
 	{ 0x27e1a049, __VMLINUX_SYMBOL_STR(printk) },
-	{ 0x20c55ae0, __VMLINUX_SYMBOL_STR(sscanf) },
 	{ 0x68aca4ad, __VMLINUX_SYMBOL_STR(down) },
 	{ 0xbdfb6dbb, __VMLINUX_SYMBOL_STR(__fentry__) },
 	{ 0x245505fd, __VMLINUX_SYMBOL_STR(proc_create_data) },

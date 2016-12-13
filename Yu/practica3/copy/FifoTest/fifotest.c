@@ -66,10 +66,13 @@ static void fifo_receive (const char* path_fifo) {
   fd_fifo=open(path_fifo,O_RDONLY);
 
   if (fd_fifo<0) {
+    printf("error de direccion \n");
 	perror(path_fifo);
 	exit(1);
   }
-z
+
+
+printf("valor de puntero path_fifo es %d\n",fd_fifo );
 
   while((bytes=read(fd_fifo,&message,size))==size) {
 	/* Write to stdout */
@@ -118,6 +121,8 @@ main (int argc, char **argv)
   char* path_fifo=NULL;
   int receive=0;
   nombre_programa = argv[0];
+
+  printf("longitud es %d\n, valor es %s\n",argc,*argv);
 
   while ((optc = getopt (argc, argv, "srhf:")) != -1)
     {
