@@ -1,7 +1,8 @@
 #include <linux/vmalloc.h> /* vmalloc()/vfree()*/
 #include <asm/string.h> /* memcpy() */
 #include "cbuffer.h"
-
+#include <linux/module.h>
+#include <linux/kernel.h>
 #ifndef NULL
 #define NULL 0
 #endif
@@ -97,8 +98,11 @@ void remove_cbuffer_t ( cbuffer_t* cbuffer)
 /* Returns the first element in the buffer */
 void* head_cbuffer_t ( cbuffer_t* cbuffer )
 {
-	if ( cbuffer->size !=0 )
+	if ( cbuffer->size !=0 ){
+		printk("valor que tiene en la cabeza es %d\n",cbuffer->data[cbuffer->head]);
 		return cbuffer->data[cbuffer->head];
+	}
+		
 	else{
 		return NULL;
 	}

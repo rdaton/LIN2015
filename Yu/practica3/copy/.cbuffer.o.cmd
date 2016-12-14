@@ -288,6 +288,258 @@ deps_/home/kernel/LIN2015/Yu/practica3/copy/cbuffer.o := \
     $(wildcard include/config/inline/write/unlock/irqrestore.h) \
   include/linux/rbtree.h \
   /home/kernel/LIN2015/Yu/practica3/copy/cbuffer.h \
+  include/linux/module.h \
+    $(wildcard include/config/sysfs.h) \
+    $(wildcard include/config/module/sig.h) \
+    $(wildcard include/config/kallsyms.h) \
+    $(wildcard include/config/tracepoints.h) \
+    $(wildcard include/config/event/tracing.h) \
+    $(wildcard include/config/module/unload.h) \
+    $(wildcard include/config/constructors.h) \
+    $(wildcard include/config/debug/set/module/ronx.h) \
+  include/linux/stat.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi/asm/stat.h \
+  include/uapi/linux/stat.h \
+  include/linux/time.h \
+    $(wildcard include/config/arch/uses/gettimeoffset.h) \
+  include/linux/seqlock.h \
+  include/uapi/linux/time.h \
+  include/linux/uidgid.h \
+    $(wildcard include/config/user/ns.h) \
+  include/linux/highuid.h \
+  include/linux/kmod.h \
+  include/linux/gfp.h \
+    $(wildcard include/config/numa.h) \
+    $(wildcard include/config/highmem.h) \
+    $(wildcard include/config/zone/dma.h) \
+    $(wildcard include/config/zone/dma32.h) \
+    $(wildcard include/config/pm/sleep.h) \
+    $(wildcard include/config/cma.h) \
+  include/linux/mmdebug.h \
+    $(wildcard include/config/debug/vm.h) \
+  include/linux/mmzone.h \
+    $(wildcard include/config/force/max/zoneorder.h) \
+    $(wildcard include/config/memory/isolation.h) \
+    $(wildcard include/config/memcg.h) \
+    $(wildcard include/config/compaction.h) \
+    $(wildcard include/config/memory/hotplug.h) \
+    $(wildcard include/config/have/memblock/node/map.h) \
+    $(wildcard include/config/flat/node/mem/map.h) \
+    $(wildcard include/config/no/bootmem.h) \
+    $(wildcard include/config/numa/balancing.h) \
+    $(wildcard include/config/have/memory/present.h) \
+    $(wildcard include/config/have/memoryless/nodes.h) \
+    $(wildcard include/config/need/node/memmap/size.h) \
+    $(wildcard include/config/need/multiple/nodes.h) \
+    $(wildcard include/config/have/arch/early/pfn/to/nid.h) \
+    $(wildcard include/config/sparsemem/extreme.h) \
+    $(wildcard include/config/have/arch/pfn/valid.h) \
+    $(wildcard include/config/nodes/span/other/nodes.h) \
+    $(wildcard include/config/holes/in/zone.h) \
+    $(wildcard include/config/arch/has/holes/memorymodel.h) \
+  include/linux/wait.h \
+  include/uapi/linux/wait.h \
+  include/linux/numa.h \
+    $(wildcard include/config/nodes/shift.h) \
+  include/linux/nodemask.h \
+    $(wildcard include/config/movable/node.h) \
+  include/linux/pageblock-flags.h \
+    $(wildcard include/config/hugetlb/page.h) \
+    $(wildcard include/config/hugetlb/page/size/variable.h) \
+  include/linux/page-flags-layout.h \
+  include/generated/bounds.h \
+  include/linux/memory_hotplug.h \
+    $(wildcard include/config/memory/hotremove.h) \
+    $(wildcard include/config/have/arch/nodedata/extension.h) \
+    $(wildcard include/config/have/bootmem/info/node.h) \
+  include/linux/notifier.h \
+  include/linux/mutex.h \
+    $(wildcard include/config/debug/mutexes.h) \
+    $(wildcard include/config/mutex/spin/on/owner.h) \
+  include/linux/rwsem.h \
+    $(wildcard include/config/rwsem/generic/spinlock.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/rwsem.h \
+  include/linux/srcu.h \
+  include/linux/rcupdate.h \
+    $(wildcard include/config/rcu/torture/test.h) \
+    $(wildcard include/config/tree/rcu.h) \
+    $(wildcard include/config/tree/preempt/rcu.h) \
+    $(wildcard include/config/rcu/trace.h) \
+    $(wildcard include/config/preempt/rcu.h) \
+    $(wildcard include/config/rcu/user/qs.h) \
+    $(wildcard include/config/tiny/rcu.h) \
+    $(wildcard include/config/debug/objects/rcu/head.h) \
+    $(wildcard include/config/rcu/nocb/cpu.h) \
+    $(wildcard include/config/no/hz/full/sysidle.h) \
+  include/linux/completion.h \
+  include/linux/debugobjects.h \
+    $(wildcard include/config/debug/objects.h) \
+    $(wildcard include/config/debug/objects/free.h) \
+  include/linux/rcutree.h \
+  include/linux/workqueue.h \
+    $(wildcard include/config/debug/objects/work.h) \
+    $(wildcard include/config/freezer.h) \
+  include/linux/timer.h \
+    $(wildcard include/config/timer/stats.h) \
+    $(wildcard include/config/debug/objects/timers.h) \
+  include/linux/ktime.h \
+    $(wildcard include/config/ktime/scalar.h) \
+  include/linux/jiffies.h \
+  include/linux/timex.h \
+  include/uapi/linux/timex.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/include/uapi/linux/param.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi/asm/param.h \
+  include/asm-generic/param.h \
+    $(wildcard include/config/hz.h) \
+  include/uapi/asm-generic/param.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/timex.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/tsc.h \
+    $(wildcard include/config/x86/tsc.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/mmzone.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/mmzone_64.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/smp.h \
+    $(wildcard include/config/x86/local/apic.h) \
+    $(wildcard include/config/x86/io/apic.h) \
+    $(wildcard include/config/x86/32/smp.h) \
+    $(wildcard include/config/debug/nmi/selftest.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/mpspec.h \
+    $(wildcard include/config/x86/numaq.h) \
+    $(wildcard include/config/eisa.h) \
+    $(wildcard include/config/x86/mpparse.h) \
+    $(wildcard include/config/acpi.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/mpspec_def.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/x86_init.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi/asm/bootparam.h \
+  include/linux/screen_info.h \
+  include/uapi/linux/screen_info.h \
+  include/linux/apm_bios.h \
+  include/uapi/linux/apm_bios.h \
+  include/linux/edd.h \
+  include/uapi/linux/edd.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/e820.h \
+    $(wildcard include/config/efi.h) \
+    $(wildcard include/config/hibernation.h) \
+    $(wildcard include/config/memtest.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi/asm/e820.h \
+    $(wildcard include/config/intel/txt.h) \
+  include/linux/ioport.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/ist.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi/asm/ist.h \
+  include/video/edid.h \
+    $(wildcard include/config/x86.h) \
+  include/uapi/video/edid.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/apicdef.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/apic.h \
+    $(wildcard include/config/x86/x2apic.h) \
+  include/linux/pm.h \
+    $(wildcard include/config/vt/console/sleep.h) \
+    $(wildcard include/config/pm.h) \
+    $(wildcard include/config/pm/runtime.h) \
+    $(wildcard include/config/pm/clk.h) \
+    $(wildcard include/config/pm/generic/domains.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/fixmap.h \
+    $(wildcard include/config/paravirt/clock.h) \
+    $(wildcard include/config/provide/ohci1394/dma/init.h) \
+    $(wildcard include/config/x86/visws/apic.h) \
+    $(wildcard include/config/pci/mmconfig.h) \
+    $(wildcard include/config/x86/intel/mid.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/acpi.h \
+    $(wildcard include/config/acpi/numa.h) \
+  include/acpi/pdc_intel.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/numa.h \
+    $(wildcard include/config/numa/emu.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/topology.h \
+    $(wildcard include/config/x86/ht.h) \
+  include/asm-generic/topology.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/mmu.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/realmode.h \
+    $(wildcard include/config/acpi/sleep.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/io.h \
+    $(wildcard include/config/mtrr.h) \
+  include/asm-generic/iomap.h \
+    $(wildcard include/config/has/ioport.h) \
+    $(wildcard include/config/pci.h) \
+    $(wildcard include/config/generic/iomap.h) \
+  include/asm-generic/pci_iomap.h \
+    $(wildcard include/config/no/generic/pci/ioport/map.h) \
+    $(wildcard include/config/generic/pci/iomap.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/pvclock.h \
+  include/linux/clocksource.h \
+    $(wildcard include/config/arch/clocksource/data.h) \
+    $(wildcard include/config/clocksource/watchdog.h) \
+    $(wildcard include/config/clksrc/of.h) \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/clocksource.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/pvclock-abi.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/vsyscall.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi/asm/vsyscall.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/vvar.h \
+  include/asm-generic/fixmap.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/idle.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/io_apic.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/irq_vectors.h \
+    $(wildcard include/config/have/kvm.h) \
+  include/linux/topology.h \
+    $(wildcard include/config/sched/smt.h) \
+    $(wildcard include/config/sched/mc.h) \
+    $(wildcard include/config/sched/book.h) \
+    $(wildcard include/config/use/percpu/numa/node/id.h) \
+  include/linux/smp.h \
+  include/linux/llist.h \
+    $(wildcard include/config/arch/have/nmi/safe/cmpxchg.h) \
+  include/linux/percpu.h \
+    $(wildcard include/config/need/per/cpu/embed/first/chunk.h) \
+    $(wildcard include/config/need/per/cpu/page/first/chunk.h) \
+  include/linux/pfn.h \
+  include/linux/sysctl.h \
+    $(wildcard include/config/sysctl.h) \
+  include/uapi/linux/sysctl.h \
+  include/linux/elf.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/elf.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/user.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/user_64.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi/asm/auxvec.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/vdso.h \
+  include/uapi/linux/elf.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/include/uapi/linux/elf-em.h \
+  include/linux/kobject.h \
+    $(wildcard include/config/debug/kobject/release.h) \
+  include/linux/sysfs.h \
+  include/linux/kernfs.h \
+  include/linux/idr.h \
+  include/linux/kobject_ns.h \
+  include/linux/kref.h \
+  include/linux/moduleparam.h \
+    $(wildcard include/config/alpha.h) \
+    $(wildcard include/config/ia64.h) \
+    $(wildcard include/config/ppc64.h) \
+  include/linux/tracepoint.h \
+  include/linux/static_key.h \
+  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/module.h \
+    $(wildcard include/config/m586.h) \
+    $(wildcard include/config/m586tsc.h) \
+    $(wildcard include/config/m586mmx.h) \
+    $(wildcard include/config/mcore2.h) \
+    $(wildcard include/config/m686.h) \
+    $(wildcard include/config/mpentiumii.h) \
+    $(wildcard include/config/mpentiumiii.h) \
+    $(wildcard include/config/mpentiumm.h) \
+    $(wildcard include/config/mpentium4.h) \
+    $(wildcard include/config/mk6.h) \
+    $(wildcard include/config/mk8.h) \
+    $(wildcard include/config/melan.h) \
+    $(wildcard include/config/mcrusoe.h) \
+    $(wildcard include/config/mefficeon.h) \
+    $(wildcard include/config/mwinchipc6.h) \
+    $(wildcard include/config/mwinchip3d.h) \
+    $(wildcard include/config/mcyrixiii.h) \
+    $(wildcard include/config/mviac3/2.h) \
+    $(wildcard include/config/mviac7.h) \
+    $(wildcard include/config/mgeodegx1.h) \
+    $(wildcard include/config/mgeode/lx.h) \
+  include/asm-generic/module.h \
+    $(wildcard include/config/have/mod/arch/specific.h) \
+    $(wildcard include/config/modules/use/elf/rel.h) \
+    $(wildcard include/config/modules/use/elf/rela.h) \
 
 /home/kernel/LIN2015/Yu/practica3/copy/cbuffer.o: $(deps_/home/kernel/LIN2015/Yu/practica3/copy/cbuffer.o)
 
