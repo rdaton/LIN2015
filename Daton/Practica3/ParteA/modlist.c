@@ -43,7 +43,7 @@ DEFINE_RWLOCK(rwl);
 
 static int hayEspacio(void)
 {
-	int num_elem_max=100;
+	int num_elem_max=1000;
   return (longitud < num_elem_max) ;
 }
 
@@ -245,6 +245,8 @@ int generaVector(char* unBuffer,struct list_head* list){
 	char miniBuffer[long_max_buffer];	
 	char* dest=unBuffer;
 	int nr_chars,len;
+	nr_chars=0;
+	len=0;
 	//sección critica
 	read_lock(&rwl);
 	
@@ -256,10 +258,9 @@ int generaVector(char* unBuffer,struct list_head* list){
 		//trace_printk(KERN_INFO "%i\n",item->data);
 	
 		//AQUI HAY QUE HACER UNA CONVERSION ASIGNANDO EL VALOR A LA VARIABLE C
-		len=sprintf(miniBuffer,"%i\n",item->data))
-		if (len+nr_chars> BUFFER_LENGTH )
+		len=sprintf(miniBuffer,"%i\n",item->data);
+		if ((len+nr_chars) > BUFFER_LENGTH )
 			break;
-			
 		dest+=sprintf(dest,"%i\n",item->data);
 		nr_chars+=len;
 		
