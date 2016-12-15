@@ -81,7 +81,7 @@ int fifoproc_write(char* buff, int len)
 
  	/* Obtener el primer elemento del buffer y eliminarlo */
   	item=head_cbuffer_t(cbuf);
-  	remove_cbuffer_t(cbuf);  
+  	remove_items_cbuffer_t ( cbuffer_t* cbuffer, char* items, int nr_items)
 
  	/* Despertar a posible productor bloqueado */ 
  	cond_signal(prod_count); 
