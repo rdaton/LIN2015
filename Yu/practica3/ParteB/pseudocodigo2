@@ -1,4 +1,5 @@
 open
+	lock(mtx)
 	consumidor
 
 		...
@@ -8,19 +9,17 @@ open
 			cond_wait(consumidor,mtx);
 		}
 
-		cond_signal(consumidores)
-		unlock(mtx)
+		cond_signal(productores)
 
 	productor 
 		...
 
-		lock(mtx)
 		while(numero_consumidor <=0){
 			cond_wait(productor,mtx);
 		}
 
-		cond_signal(productores)
-		unlock(mtx)
+		cond_signal(consumidores)
+	unlock(mtx)
 
 
 //111111111111111111111111111111111111111111111111111111111111
@@ -41,12 +40,18 @@ int fifoproc_write(char* buff, int len)
    lock(mtx); 
 
    /* Esperar hasta que haya hueco para insertar (debe haber consumidores) */ 
-   while (nr_gaps_cbuffer_t(cbuffer)<len && cons_count>0){ cond_wait(prod,mtx); } 
+   while (nr_gaps_cbuffer_t(cbuffer)<len && cons_count>0)
+   { 
+   	cond_wait(prod,mtx); 
+   } 
    /* Detectar fin de comunicación por error (consumidor cierra FIFO antes) */ 
+   
    if (cons_count==0) {unlock(mtx); return -EPIPE;} 
    insert_items_cbuffer_t(cbuffer,kbuffer,len); 
+   
    /* Despertar a posible consumidor bloqueado */ 
    cond_signal(cons); 
+   
    unlock(mtx); 
    return len; 
 
@@ -65,24 +70,27 @@ int fifoproc_write(char* buff, int len)
   	{
    		return Error;
 	} 
- 
+
+
+
+
  	lock(mtx); 
-
- 	if( productor_count == 0 && size_cbuffer_t(cbuffer)==0){
- 		return -EOF;
- 	}
-
+ 	
  	/* Esperar hasta que haya elemento para sacar (debe haber cproductores) */ 
  	while (size_cbuffer_t(cbuffer)==0 && productor_count>0)
  		{ cond_wait(consumidor,mtx); } 
  
- 	/* Detectar fin de comunicación por error (productor cierra FIFO antes) */ 
- 	if (productor_count==0) 
- 		{unlock(mtx); return -EPIPE;} 
+ 	if( productor_count == 0 && size_cbuffer_t(cbuffer)==0){
+
+ 		return 0;
+ 	}
+
 
  	/* Obtener el primer elemento del buffer y eliminarlo */
   	item=head_cbuffer_t(cbuf);
   	remove_cbuffer_t(cbuf);  
+
+
 
  	/* Despertar a posible productor bloqueado */ 
  	cond_signal(prod_count); 
@@ -95,29 +103,26 @@ int fifoproc_write(char* buff, int len)
 
 release(struct inode *inodo, struct file *file)
 	//entra sesion critica
+	lock()
 	if(consumidor)
 	{
-		lock(mtx)
 		consumidor--
-	   unlock(mtx);
-	 
+		cond_signal(cons)	 
 	  		
 	}
 	
 	if(productor)
 	{
-		lock(mtx)
 		productor--
-	   unlock(mtx);
+		cond_signal(prod)
 	}
 
 	if (cons_count==0 && prod_count==0) 
 	  		{
-	  			lock(&mtx)
 	  			clear_cbuffer_t (cbuffer_t* cbuffer); 
-	  			unlock(&mtx); 
-	  			return 0;
+
 	  		} 
+	   unlock(mtx);
 
 	return 0;
 

@@ -1,0 +1,1 @@
+cmd_/home/kernel/LIN2015/Yu/Practica4/work3/workqueue3.ko := ld -r -m elf_x86_64 -T /home/kernel/LIN2015/Yu/linux-3.14.1/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Yu/Practica4/work3/workqueue3.ko /home/kernel/LIN2015/Yu/Practica4/work3/workqueue3.o /home/kernel/LIN2015/Yu/Practica4/work3/workqueue3.mod.o

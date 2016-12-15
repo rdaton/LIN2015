@@ -255,7 +255,6 @@ int generaVector(char* unBuffer,struct list_head* list){
 	list_for_each(cur_node, list) 
 	{
 	// item points to the structure wherein the links are embedded 
-
 	item = list_entry(cur_node,tNodo, list);
 	//trace_printk(KERN_INFO "%i\n",item->data);
 	
