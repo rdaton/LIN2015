@@ -9,12 +9,11 @@ open
 		}
 
 		cond_signal(consumidores)
-		unlock(mtx)
-
+		
 	productor 
 		...
 
-		lock(mtx)
+		
 		while(numero_consumidor <=0){
 			cond_wait(productor,mtx);
 		}
@@ -69,7 +68,7 @@ int fifoproc_write(char* buff, int len)
  	lock(mtx); 
 
  	if( productor_count == 0 && size_cbuffer_t(cbuffer)==0){
- 		return -EOF;
+ 		return 0;
  	}
 
  	/* Esperar hasta que haya elemento para sacar (debe haber cproductores) */ 
@@ -95,11 +94,12 @@ int fifoproc_write(char* buff, int len)
 
 release(struct inode *inodo, struct file *file)
 	//entra sesion critica
+	lock(mtx)
 	if(consumidor)
 	{
-		lock(mtx)
+		
 		consumidor--
-	   unlock(mtx);
+	  	cond_signal
 	 
 	  		
 	}
@@ -108,17 +108,18 @@ release(struct inode *inodo, struct file *file)
 	{
 		lock(mtx)
 		productor--
-	   unlock(mtx);
+		cond_signal
 	}
 
 	if (cons_count==0 && prod_count==0) 
 	  		{
-	  			lock(&mtx)
+	  			
 	  			clear_cbuffer_t (cbuffer_t* cbuffer); 
-	  			unlock(&mtx); 
+	  			
 	  			return 0;
 	  		} 
 
+	unlock(&mtx); 
 	return 0;
 
 }
