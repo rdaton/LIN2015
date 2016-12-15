@@ -131,9 +131,9 @@ static int fifoproc_release(struct inode *inodo, struct file *file)
   if (cons_count==0 && prod_count==0) 
     {         
        printk("libero la tuberia \n");
-     vaciar();
+        clear_cbuffer_t (cbuffer);
   } 
-    up(&mtx);
+  up(&mtx);
   return 0;
 }
 
@@ -302,7 +302,7 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
 
       printk("empiezo a escribir \n");
        /* Insertar en el buffer */
-    insert_items_cbuffer_t (cbuffer,kbuf ,len);
+    insert_items_cbuffer_t (cbuffer,kbuf,len);
         
     printk("productor : termino de escribir y en el cbuffer tiene size %d\n",size_cbuffer_t(cbuffer)); 
     
