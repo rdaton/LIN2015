@@ -297,12 +297,11 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     
     kbuf[len] ='\0'; 
      *off+=len;            /* Update the file pointer */
-
     item=vmalloc(sizeof(int));
-
     (*item)=kbuf;
-    
     printk("prductor : voy a entrar sesion critica\n");
+    
+    
     /* Acceso a la sección crítica */
     if (down_interruptible(&mtx))
     {
