@@ -14,7 +14,7 @@ MODULE_DESCRIPTION("Modlist module - FDI-UCM; Thread-Safe");
 MODULE_AUTHOR("Roumen Daton; Yu Liu");
 
 #define BUFFER_LENGTH  PAGE_SIZE
-#define num_elem_max 100
+
 
 //http://stackoverflow.com/questions/19647356/linux-kernel-linked-list
 //http://isis.poly.edu/kulesh/stuff/src/klist/
@@ -43,6 +43,7 @@ DEFINE_RWLOCK(rwl);
 
 static int hayEspacio(void)
 {
+	int num_elem_max=1000;
   return (longitud < num_elem_max) ;
 }
 
@@ -239,20 +240,30 @@ int generaVector(char* unBuffer,struct list_head* list){
 	//struct list_head* list=&Modlist;
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
-	//trace_printk(KERN_INFO "%s\n","imprimiendo");	
+	//trace_printk(KERN_INFO "%s\n","imprimiendo");
+	int long_max_buffer=9;
+	char miniBuffer[long_max_buffer];	
 	char* dest=unBuffer;
+	int nr_chars,len;
+	nr_chars=0;
+	len=0;
 	//sección critica
 	read_lock(&rwl);
+	
 	list_for_each(cur_node, list) 
 	{
-	// item points to the structure wherein the links are embedded 
+		// item points to the structure wherein the links are embedded 
 
-	item = list_entry(cur_node,tNodo, list);
-	//trace_printk(KERN_INFO "%i\n",item->data);
+		item = list_entry(cur_node,tNodo, list);
+		//trace_printk(KERN_INFO "%i\n",item->data);
 	
-	//AQUI HAY QUE HACER UNA CONVERSION ASIGNANDO EL VALOR A LA VARIABLE C
-	dest+=sprintf(dest,"%i\n",item->data);
-	
+		//AQUI HAY QUE HACER UNA CONVERSION ASIGNANDO EL VALOR A LA VARIABLE C
+		len=sprintf(miniBuffer,"%i\n",item->data);
+		if ((len+nr_chars) > BUFFER_LENGTH )
+			break;
+		dest+=sprintf(dest,"%i\n",item->data);
+		nr_chars+=len;
+		
 	}
 	read_unlock(&rwl);
 	//fin sección critica
