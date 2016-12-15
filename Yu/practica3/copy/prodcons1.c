@@ -193,6 +193,10 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       printk("consumirdor: voy a eliminar elemento\n");
       /* Obtener el primer elemento del buffer y eliminarlo */
       item=head_cbuffer_t(cbuffer);
+    /*borrar el contenido en el cbuffer mientras obteniendo una copia en item*/
+      remove_items_cbuffer_t (cbuffer, item, nr_bytes);
+      printk("consumidor: elemento ya esta eliminado \n");
+        /*pasar la copia a kbuff*/
      nr_bytes=sprintf(kbuff,"%i\n",*item);
     
      if (len < nr_bytes){
@@ -200,11 +204,6 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
         up(&mtx);
         return -ENOSPC;
       }
-    
-      printk("prodcons: valor de item es %d\n",item);
-   // otro funcion de remover con item(cbuffer);  
-     remove_items_cbuffer_t (cbuffer, items, nr_bytes);
-      printk("consumidor: elemento ya esta eliminado \n");
 
       printk("voy a copiar kbuf a user \n");
       if (copy_to_user(buf,kbuff,nr_bytes)){
@@ -226,7 +225,6 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       printk("consumidor:  termina de consumir \nvalor de retorno de write es %d \n",nr_bytes);
     /* Salir de la sección crítica */ 
       up(&mtx);
-    
       return nr_bytes;
   }
 
