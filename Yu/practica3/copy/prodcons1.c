@@ -30,16 +30,15 @@ int nr_cons_waiting=0; /* Número de procesos consumidores esperando */
 static int fifoproc_open(struct inode *inode, struct file *file)
 {
     
+    if (down_interruptible(&mtx))
+        {
+        return -EINTR;
+        }
     printk("entro open \n");
     if (file->f_mode & FMODE_READ)  
     { /* Un consumidor abrió el FIFO */
       /* Acceso a la crítica */
       printk("soy consumidor\n");
-        if (down_interruptible(&mtx))
-        {
-        return -EINTR;
-        }
-
          cons_count++;
 
         /* Bloquearse mientras no haya productor preparado */
@@ -59,30 +58,24 @@ static int fifoproc_open(struct inode *inode, struct file *file)
             nr_cons_waiting--;
             up(&mtx);   
             return -EINTR;
-          }
-
-             /* Readquisición del 'mutex' antes de entrar a la SC */       
-          if (down_interruptible(&mtx)){
-            return -EINTR;
-          } 
+          }   
+         
         }
 
          
 
-        //abrir extremo de escritura
+       
         
-        /* Despertar a los consumidores bloqueados (si hay alguno) */
-      while (nr_cons_waiting>0)
-        {
-          printk("consumidor : voy a despertar consumidor numeor %d\n",nr_cons_waiting);
-        up(&sem_cons);  
-        nr_cons_waiting--;
-        }
+       /* Despertar a los productores bloqueados (si hay alguno) */
+          if (nr_prod_waiting>0)
+          {
+             printk("consumidor : voy a despertar productor numeor %d\n",nr_prod_waiting);
+          up(&sem_prod);  
+          nr_prod_waiting--;
+          }
 
       
-      printk("voy a despertar un de los productores\n");
-        up(&sem_prod);
-        nr_prod_waiting--;
+     
 
         /* Salir de la sección crítica */
         up(&mtx);
@@ -122,27 +115,20 @@ static int fifoproc_open(struct inode *inode, struct file *file)
             up(&mtx);   
             return -EINTR;
           }
-          /* Readquisición del 'mutex' antes de entrar a la SC */       
-          if (down_interruptible(&mtx)){
-            return -EINTR;
-          } 
+      
         }
 
         
+           /* Despertar a los consumidores bloqueados (si hay alguno) */
+      while (nr_cons_waiting>0)
+        {
+          printk("productor : voy a despertar consumidor numeor %d\n",nr_cons_waiting);
+        up(&sem_cons);  
+        nr_cons_waiting--;
+        }
           
-          /* Despertar a los consumidores bloqueados (si hay alguno) */
-          if (nr_prod_waiting>0)
-          {
-             printk("productor : voy a despertar productor numeor %d\n",nr_prod_waiting);
-          up(&sem_prod);  
-          nr_prod_waiting--;
-          }
 
-          printk("voy a despertar un de los consumidores\n");
-          up(&sem_cons);
-          nr_cons_waiting--;
-
-
+     
           /* Salir de la sección crítica */
           up(&mtx);
       } 
@@ -157,33 +143,27 @@ static int fifoproc_open(struct inode *inode, struct file *file)
 /* Se invoca al hacer close() de entrada /proc */ 
 static int fifoproc_release(struct inode *inodo, struct file *file)
 {
-  
+   down(&mtx);
   printk("entro release\n");
   if (file->f_mode & FMODE_WRITE){
     printk("productor release el numero %d \n",prod_count);
-    down(&mtx);
     prod_count--;
-      up(&mtx);
-      //up(&sem_prod);
+      up(&sem_prod);
   }
   else if (file->f_mode & FMODE_READ){
  printk("consumidor release el numero %d\n",cons_count);
-    down(&mtx);
     cons_count--;
-      up(&mtx);
-    //  up(&sem_cons);
+    up(&sem_cons);
     
   }
 
   if (cons_count==0 && prod_count==0) 
     {         
        printk("libero la tuberia \n");
-      down(&mtx);
-      if (size_cbuffer_t(cbuffer) > 0){
-        remove_cbuffer_t(cbuffer);
-      }  
-      up(&mtx); 
+     vaciar();
   } 
+    
+     up(&mtx);
 
   return 0;
 }
@@ -226,6 +206,11 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
 
         /* Liberar el 'mutex' antes de bloqueo*/
         up(&mtx);
+           /*despierto los productores*/ 
+        while(nr_prod_waiting > 0){
+             up(&prod_count);
+             nr_prod_waiting--;
+        }
         
         /* Bloqueo en cola de espera */   
         if (down_interruptible(&sem_cons)){
@@ -237,16 +222,12 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
         } 
       }
 
-      /* Readquisición del 'mutex' antes de entrar a la SC */   
-        if (down_interruptible(&mtx)){
-          return -EINTR;
-        } 
 
       printk("consumirdor: voy a eliminar elemento\n");
       /* Obtener el primer elemento del buffer y eliminarlo */
       item=head_cbuffer_t(cbuffer);
       printk("prodcons: valor de item es %d\n",item);
-      remove_cbuffer_t(cbuffer);  
+    otro funcion de remover con item(cbuffer);  
       printk("consumidor: elemento ya esta eliminado \n");
 
 
@@ -271,21 +252,13 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       /* Liberar memoria del elemento extraido */
       vfree(item);
 
-      /* Detectar fin de comunicación por error (productores cierra FIFO antes) */ 
-     //   if (prod_count==0) 
-       // {
-          //printk("consumidor: no hay productor, retorno -EPIPE, si hubiese mas productores, el valor de retorno de la funcion read es %d\n",nr_bytes);
-         // up(&mtx); 
-         // return -EPIPE;
-        //} 
-
       
       /* Despertar a los productores bloqueados (si hay alguno) */
       if (nr_prod_waiting>0)
       {
         printk("consumidor: voy a despertar productor numero %d\n",prod_count);
-      up(&sem_prod);  
-      nr_prod_waiting--;
+        up(&sem_prod);  
+        nr_prod_waiting--;
       }
 
       /* Salir de la sección crítica */ 
@@ -309,8 +282,6 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     //int val=0;
     int* item=NULL;
 
-
-
     if ((*off) > 0) /* The application can write in this entry just once !! */
       return 0;
     
@@ -327,18 +298,10 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     kbuf[len] ='\0'; 
      *off+=len;            /* Update the file pointer */
 
-
-   // printk("valor de retorno de sscanf es %i \n\n",sscanf(kbuf,"%i",&val)); 
-    //&val=kbuf;
-   /* if (sscanf(kbuf,"%i",&val)!=1)
-    {
-      printk("aqui es la linea 315 mas o menos, por error de sscanf\n");
-    return -EINVAL;
-    }
-    */
     item=vmalloc(sizeof(int));
 
     (*item)=kbuf;
+    
     printk("prductor : voy a entrar sesion critica\n");
     /* Acceso a la sección crítica */
     if (down_interruptible(&mtx))
@@ -354,6 +317,12 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
       printk("productor: mientras que no haya hueco,espero, soy numero %d\n",prod_count);
       /* Liberar el 'mutex' antes de bloqueo*/
       up(&mtx);
+       /*despierto los consumidores*/ 
+        while(nr_cons_waiting > 0){
+             up(&cons_count);
+             nr_cons_waiting--;
+        }
+     
 
       /* Bloqueo en cola de espera */   
       if (down_interruptible(&sem_prod)){
