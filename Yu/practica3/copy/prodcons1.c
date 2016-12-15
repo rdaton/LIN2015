@@ -280,7 +280,7 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
   printk("productor empieza a producir \n");
   char kbuf[MAX_CHARS_KBUF+1];
     //int val=0;
-    int* item=NULL;
+ //   int* item=NULL;
 
     if ((*off) > 0) /* The application can write in this entry just once !! */
       return 0;
@@ -297,8 +297,8 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     
     kbuf[len] ='\0'; 
      *off+=len;            /* Update the file pointer */
-    item=vmalloc(sizeof(int));
-    (*item)=kbuf;
+  //  item=vmalloc(sizeof(int));
+  // (*item)=kbuf;
     printk("prductor : voy a entrar sesion critica\n");
     
     
@@ -334,11 +334,6 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     }
 
 
-    /* Readquisición del 'mutex' antes de entrar a la SC */       
-      if (down_interruptible(&mtx)){
-        return -EINTR;
-      } 
-
       /* Si se intenta escribir en el FIFO cuando no hay consumidores
        (extremo de lectura cerrado), el módulo devolverá un error*/
       if(cons_count == 0){
@@ -349,17 +344,9 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
 
       printk("empiezo a escribir \n");
        /* Insertar en el buffer */
-    insert_cbuffer_t(cbuffer,item);
-
+    insert_items_cbuffer_t (cbuffer,kbuf ,len);
+        
     printk("productor : termino de escribir y en el cbuffer tiene size %d\n",size_cbuffer_t(cbuffer)); 
-
-    /* Detectar fin de comunicación por error (consumidor cierra FIFO antes) */ 
-    if (cons_count==0) 
-    {
-      up(&mtx);
-      printk("productor: no hay consumidor \n"); 
-      return -EPIPE;
-    } 
     
     /* Despertar a los consumidores bloqueados (si hay alguno) */
     if (nr_cons_waiting>0)
