@@ -10,8 +10,8 @@
 #include "cbuffer.h"
 
 
-#define MAX_CBUFFER_LEN  32
-#define MAX_KBUF  32
+#define MAX_ITEMS_CBUF  32
+#define MAX_CHARS_KBUF  64
 
 MODULE_LICENSE("GPL");
 
@@ -139,22 +139,29 @@ static int fifoproc_release(struct inode *inodo, struct file *file)
 /* Se invoca al hacer read() de entrada /proc */ 
 static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, loff_t *off)
 {
-   
-
-   printk("consumidor empieza a consumir \n");
-     
-      char kbuff[MAX_KBUF];
-
-      if (len> MAX_CBUFFER_LEN || len> MAX_KBUF) 
-      {
-        return -ENOSPC;
-      } 
-    
-      /* Entrar a la sección crítica */
+   /* Entrar a la sección crítica */
       if (down_interruptible(&mtx))
       {
       return -EINTR;
       }
+
+   printk("consumidor empieza a consumir \n");
+      int nr_bytes=0;
+      int* item=NULL;
+      char kbuff[MAX_CHARS_KBUF];
+      
+      if ((*off) > 0) 
+          return 0;
+      /*Si se intenta hacer una lectura del FIFO cuando el 
+      buffer circular esté vacío y no haya productores, el 
+      módulo devolverá el valor 0 (EOF)*/
+      
+      if(size_cbuffer_t(cbuffer)==0 && prod_count==0){
+        printk("consumidor: no hay nada en cbuffer y tampoco hay productor \n");
+       up(&mtx);
+          return 0;
+      }
+      
 
      /* Bloquearse mientras buffer esté vacío */
       while (size_cbuffer_t(cbuffer)==0  && prod_count > 0)
@@ -165,40 +172,33 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
 
         /* Liberar el 'mutex' antes de bloqueo*/
         up(&mtx);
-       
+        //up(&sem_prod);
         
         /* Bloqueo en cola de espera */   
         if (down_interruptible(&sem_cons)){    
           printk("salgo de la cola de espera de consumidor, soy numero %d\n",nr_cons_waiting);
-            up(&mtx);   
+          //down(&mtx);
+          //nr_cons_waiting--;
+          up(&mtx);   
           return -EINTR;
         }
         if (down_interruptible(&mtx){return -EINTR;}  
       }
 
-       /*Si se intenta hacer una lectura del FIFO cuando el 
-      buffer circular esté vacío y no haya productores, el 
-      módulo devolverá el valor 0 (EOF)*/
-      
-      if(size_cbuffer_t(cbuffer)==0 && prod_count==0){
-          printk("consumidor: no hay nada en cbuffer y tampoco hay productor \n");
-          up(&mtx);
-          return 0;
-      }
-      
+
       printk("consumirdor: voy a eliminar elemento\n");
         /* Obtener el primer elemento del buffer y eliminarlo */
-     
+     // item=head_cbuffer_t(cbuffer);
       remove_items_cbuffer_t (cbuffer, kbuff, len); 
       //remove_items_cbuffer_t (cbuffer, kbuff, 2); 
         
       printk("consumidor: elemento ya esta eliminado , valor de item es %i\n",item);
 	    
       //nr_bytes=sprintf(kbuff,"%i\n",*item); 
-      //nr_bytes=len;
+      nr_bytes=len;
         
       printk("voy a copiar kbuf a user \n");
-      if (copy_to_user(buf,kbuff,len)){
+      if (copy_to_user(buf,kbuff,nr_bytes)){
 		    nr_cons_waiting--;		
         up(&mtx);
         up(&sem_cons);
@@ -214,6 +214,7 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       up(&sem_prod);  
       nr_prod_waiting--;
       }       
+      (*off)+=nr_bytes;  /* Update the file pointer */
       printk("consumidor:  termina de consumir \nvalor de retorno de write es %d \n",nr_bytes);
 
        /* Salir de la sección crítica */ 
@@ -227,11 +228,13 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
 static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, loff_t *off)
 {
   printk("productor empieza a producir \n");
-  char kbuf[MAX_KBUF];
-   
+  char kbuf[MAX_CHARS_KBUF];
+    //int val=0;
+    int* item=NULL;
+    if ((*off) > 0) /* The application can write in this entry just once !! */
+      return 0;
     
-    
-    if (len > MAX_CHARS_KBUF || len > MAX_KBUF) {
+    if (len > MAX_CHARS_KBUF) {
       printk("no hay espacio suficiente, len tiene tamanio %d\n",len);
       return -ENOSPC;
     }
@@ -240,16 +243,23 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
       return -EFAULT;
     }
     printk("productor: he mandado valor de kbuf a buf, valor de buf es %s, valor de kbuf es %s, valor de len es %d\n",*buf,*kbuf,len);
-  
+    
+    kbuf[len] ='\0'; 
+     *off+=len;            /* Update the file pointer */
+
+    item=vmalloc(sizeof(int));
+
+    (*item)=kbuf;
     printk("prductor : voy a entrar sesion critica\n");
     /* Acceso a la sección crítica */
     if (down_interruptible(&mtx))
     {
+      vfree(item);
     return -EINTR;
     }
 
     /* Bloquearse mientras no haya huecos en el buffer */
-    while ( nr_gaps_cbuffer_t(cbuffer) && cons_count >0 )
+    while (is_full_cbuffer_t(cbuffer) && cons_count >0 )
     {
       /* Incremento de productores esperando */
       nr_prod_waiting++;
@@ -262,7 +272,8 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
         down(&mtx);
         printk("productor: salgo de la cola de espera\n");
         nr_prod_waiting--;
-        up(&mtx); 
+        up(&mtx);
+        vfree(item);   
         return -EINTR;
       }
       if (down_interruptible(&mtx){return -EINTR;} 
@@ -273,6 +284,7 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     {
       up(&mtx);
       printk("productor: no hay consumidor \n"); 
+      vfree(item);
       return -EPIPE;
     } 
     
@@ -293,6 +305,7 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     /* Salir de la sección crítica */
       up(&mtx);
       printk("productor: termina de producir, valor de retorno de write es %d \n",len);
+      vfree(item);
     return len;
 }
 
@@ -307,7 +320,7 @@ static const struct file_operations proc_entry_fops = {
 /* Funciones de inicialización y descarga del módulo */ 
 int init_cons_module(void){
   /* Inicialización del buffer */  
-  cbuffer = create_cbuffer_t(MAX_CBUFFER_LEN);
+  cbuffer = create_cbuffer_t(MAX_ITEMS_CBUF);
 
   if (!cbuffer) {
     return -ENOMEM;

@@ -39,7 +39,7 @@ int fifoproc_write(char* buff, int len)
    lock(mtx); 
 
    /* Esperar hasta que haya hueco para insertar (debe haber consumidores) */ 
-   while (is_full_cbuffer_t(cbuffer) && cons_count>0)
+   while (nr_gaps_cbuffer_t(cbuffer)<len && cons_count>0)
    { 
    	cond_wait(prod,mtx); 
    } 
