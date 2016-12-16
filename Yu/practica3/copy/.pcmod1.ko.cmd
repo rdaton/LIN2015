@@ -1,1 +1,0 @@
-cmd_/home/kernel/LIN2015/Yu/practica3/copy/pcmod1.ko := ld -r -m elf_x86_64 -T /home/kernel/LIN2015/Yu/linux-3.14.1/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Yu/practica3/copy/pcmod1.ko /home/kernel/LIN2015/Yu/practica3/copy/pcmod1.o /home/kernel/LIN2015/Yu/practica3/copy/pcmod1.mod.o

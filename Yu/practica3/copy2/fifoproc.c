@@ -10,8 +10,8 @@
 #include "cbuffer.h"
 
 
-#define MAX_CBUFFER_LEN  32
-#define MAX_KBUF  32
+#define MAX_CBUFFER_LEN  64
+#define MAX_KBUF  64
 
 MODULE_LICENSE("GPL");
 
@@ -57,7 +57,10 @@ static int fifoproc_open(struct inode *inode, struct file *file)
             up(&mtx);
             return -EINTR;
           }
-          if (down_interruptible(&mtx){return -EINTR;}     
+            if(down_interruptible(&mtx))
+            {
+              return -EINTR;
+            }     
         }
         /* Despertar a los productores bloqueados (si hay alguno) */
         while (nr_prod_waiting>0)
@@ -88,7 +91,7 @@ static int fifoproc_open(struct inode *inode, struct file *file)
               up(&mtx); 
               return -EINTR;
             }
-            if (down_interruptible(&mtx){return -EINTR;} 
+            if (down_interruptible(&mtx)){return -EINTR;} 
           }
           /* Despertar a los consumidores bloqueados (si hay alguno) */
           if (nr_cons_waiting>0)
@@ -165,12 +168,17 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
         /* Liberar el 'mutex' antes de bloqueo*/
         up(&mtx);
         /* Bloqueo en cola de espera */   
-        if (down_interruptible(&sem_cons)){    
+        if (down_interruptible(&sem_cons)){ 
+          down(&mtx);
           printk("salgo de la cola de espera de consumidor, soy numero %d\n",nr_cons_waiting);
-            up(&mtx);   
+          nr_cons_waiting--;
+          up(&mtx);   
           return -EINTR;
         }
-        if (down_interruptible(&mtx){return -EINTR;}  
+        if (down_interruptible(&mtx))
+        {
+          return -EINTR;
+        }  
       }
 
      
@@ -183,7 +191,7 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
         /* Obtener el primer elemento del buffer y eliminarlo */
       remove_items_cbuffer_t (cbuffer, kbuff, len); 
       //remove_items_cbuffer_t (cbuffer, kbuff, 2); 
-      printk("consumidor: elemento ya esta eliminado , valor de item es %i\n",item);      
+      printk("consumidor: elemento ya esta eliminado\n");      
       /* Despertar a los productores bloqueados (si hay alguno) */
       if (nr_prod_waiting>0)
       {
@@ -191,7 +199,7 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       up(&sem_prod);  
       nr_prod_waiting--;
       }       
-      printk("consumidor:  termina de consumir \nvalor de retorno de write es %d \n",nr_bytes);
+      printk("consumidor:  termina de consumir\n");
 
        /* Salir de la sección crítica */ 
       up(&mtx);
@@ -215,7 +223,7 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
    
     
     
-    if (len > MAX_CHARS_KBUF || len > MAX_KBUF) {
+    if (len > MAX_CBUFFER_LEN || len > MAX_KBUF) {
       printk("no hay espacio suficiente, len tiene tamanio %d\n",len);
       return -ENOSPC;
     }
@@ -233,14 +241,13 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     }
 
     /* Bloquearse mientras no haya huecos en el buffer */
-    while ( nr_gaps_cbuffer_t(cbuffer) && cons_count >0 )
+    while ( nr_gaps_cbuffer_t(cbuffer)<len && cons_count >0 )
     {
       /* Incremento de productores esperando */
       nr_prod_waiting++;
       printk("productor: mientras que no haya hueco,espero, soy numero %d\n",prod_count);
       /* Liberar el 'mutex' antes de bloqueo*/
       up(&mtx);
-     // up(&sem_cons);
       /* Bloqueo en cola de espera */   
       if (down_interruptible(&sem_prod)){
         down(&mtx);
@@ -249,7 +256,7 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
         up(&mtx); 
         return -EINTR;
       }
-      if (down_interruptible(&mtx){return -EINTR;} 
+      if (down_interruptible(&mtx)){return -EINTR;} 
     }
 
     /* Detectar fin de comunicación por error (consumidor cierra FIFO antes) */ 
