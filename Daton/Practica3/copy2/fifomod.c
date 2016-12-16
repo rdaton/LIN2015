@@ -41,17 +41,18 @@ static int fifoproc_open(struct inode *inode, struct file *file)
       /* Acceso a la crítica */
       printk("soy consumidor\n");
        cons_count++;
-       up(&mtx);
+       
         /* Bloquearse mientras no haya productor preparado */
         while (prod_count<=0)
         {
           /* Incremento de consumidores esperando */
           nr_cons_waiting++;
+          up(&mtx);
           printk("consumidor: espero en la cola mientras que no hay productor, soy numero %d\n",nr_cons_waiting);
           /* Bloqueo en cola de espera */   
           if (down_interruptible(&sem_cons)){  
              printk("consumidor: salgo de la cola, soy numero %d\n",nr_cons_waiting);
-             down(&mtx);
+             down_interruptible(&mtx);
             nr_cons_waiting--;
             up(&mtx);
             return -EINTR;
@@ -69,15 +70,15 @@ static int fifoproc_open(struct inode *inode, struct file *file)
     else
     { /* Un productor abrió el FIFO */
       if (file->f_mode & FMODE_WRITE) 
-      { /* Un productor abrió el FIFO */
+      { /* Un consumidor abrió el FIFO */
         printk("soy productor\n");
           prod_count++;
-	  up(&mtx);
           /* Bloquearse mientras no haya consumidor preparado */
           while (cons_count<=0)
           {
             /* Incremento de productores esperando */
             nr_prod_waiting++;
+             up(&mtx);
             printk("productor: espero mientras que no hay consumidor, soy numero %d\n",nr_prod_waiting);
             /* Bloqueo en cola de espera */   
             if (down_interruptible(&sem_prod)){
@@ -109,7 +110,7 @@ static int fifoproc_open(struct inode *inode, struct file *file)
 /* Se invoca al hacer close() de entrada /proc */ 
 static int fifoproc_release(struct inode *inodo, struct file *file)
 {
-  down(&mtx);
+  down_interruptible(&mtx);
   printk("entro release\n");
   if (file->f_mode & FMODE_WRITE){
     printk("productor release el numero %d \n",prod_count);
@@ -145,7 +146,8 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
 
    printk("consumidor empieza a consumir \n");
       int nr_bytes=0;
-      char kbuff[MAX_CHARS_KBUF+1];
+      int* item=NULL;
+      char kbuff[MAX_CHARS_KBUF];
       
       if ((*off) > 0) 
           return 0;
@@ -174,8 +176,8 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
         /* Bloqueo en cola de espera */   
         if (down_interruptible(&sem_cons)){    
           printk("salgo de la cola de espera de consumidor, soy numero %d\n",nr_cons_waiting);
-          down(&mtx);
-          nr_cons_waiting--;
+          //down(&mtx);
+          //nr_cons_waiting--;
           up(&mtx);   
           return -EINTR;
         } 
@@ -183,39 +185,37 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       }
 
 	  //pido acceso a buffer
-	  down_interruptible(&mtx);
+	 // down_interruptible(&mtx);
 
       printk("consumirdor: voy a eliminar elemento\n");
         /* Obtener el primer elemento del buffer y eliminarlo */
-      //item=head_cbuffer_t(cbuffer);
-      remove_items_cbuffer_t (cbuffer, &kbuff, len); 
-      kbuff[len]="\0";
+      item=head_cbuffer_t(cbuffer);
+      remove_items_cbuffer_t (cbuffer, item, len); 
       printk("consumidor: elemento ya esta eliminado \n");
-	
-
-      /*nr_bytes=sprintf(kbuff,"%i\n",*item); 
-
-      if (len < nr_bytes){
-        printk("consumidor: no hay espacio, retorno -ENOSPC \n");
-        up(&mtx);
-        return -ENOSPC;
-      }
-        Daton
-        */
-      nr_bytes=len+1;
+	    
+      nr_bytes=sprintf(kbuff,"%i\n",*item); 
+      nr_bytes=len;
         
       printk("voy a copiar kbuf a user \n");
       if (copy_to_user(buf,kbuff,nr_bytes)){
-		nr_cons_waiting--;		
+		    nr_cons_waiting--;		
         up(&mtx);
         up(&sem_cons);
-        int i=0;        
          return -EINVAL;
       }
-        printk("he mandado kbuf a user \n");      
-      
-     
+        printk("he mandado kbuf a user \n");
 
+      
+      
+      /* Liberar memoria del elemento extraido */
+      //vfree(item);
+      //Daton
+/*      int i=0;
+      for (i=0;i<nr_bytes;i++)
+	 {
+			vfree(item[i]);
+		}
+*/
       /* Despertar a los productores bloqueados (si hay alguno) */
       if (nr_prod_waiting>0)
       {
@@ -236,16 +236,10 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
 /* Se invoca al hacer write() de entrada /proc */ 
 static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, loff_t *off)
 {
-  /* Acceso a la sección crítica */
-    if (down_interruptible(&mtx))
-    {
-    return -EINTR;
-    };
-    
   printk("productor empieza a producir \n");
   char kbuf[MAX_CHARS_KBUF];
-    
-    
+    //int val=0;
+    int* item=NULL;
     if ((*off) > 0) /* The application can write in this entry just once !! */
       return 0;
     
@@ -262,49 +256,48 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     kbuf[len] ='\0'; 
      *off+=len;            /* Update the file pointer */
 
-    
+    item=vmalloc(sizeof(int));
+
+    (*item)=kbuf;
     printk("prductor : voy a entrar sesion critica\n");
-    
+    /* Acceso a la sección crítica */
+    if (down_interruptible(&mtx))
+    {
+      vfree(item);
+    return -EINTR;
+    }
 
     /* Bloquearse mientras no haya huecos en el buffer */
-    while (nr_gaps_cbuffer_t(cbuffer)< len && cons_count >0 )
+    while (is_full_cbuffer_t(cbuffer) && cons_count >0 )
     {
       /* Incremento de productores esperando */
       nr_prod_waiting++;
       printk("productor: mientras que no haya hueco,espero, soy numero %d\n",prod_count);
       /* Liberar el 'mutex' antes de bloqueo*/
       up(&mtx);
-      //up(&sem_cons);
+     // up(&sem_cons);
       /* Bloqueo en cola de espera */   
       if (down_interruptible(&sem_prod)){
         down(&mtx);
         printk("productor: salgo de la cola de espera\n");
         nr_prod_waiting--;
-        up(&mtx);   
+        up(&mtx);
+        vfree(item);   
         return -EINTR;
       }
     }
-      /* Si se intenta escribir en el FIFO cuando no hay consumidores
-       (extremo de lectura cerrado), el módulo devolverá un error*/
-      if(cons_count == 0){
-        printk("productor: no hay consumidor\n");
-        //up(&mtx);
-        return -EINTR;
-      }
 
     /* Detectar fin de comunicación por error (consumidor cierra FIFO antes) */ 
     if (cons_count==0) 
     {
       up(&mtx);
       printk("productor: no hay consumidor \n"); 
+      vfree(item);
       return -EPIPE;
     } 
     
-    //pido acceso a buffer
-    down_interruptible(&mtx);
     printk("empiezo a escribir \n");
        /* Insertar en el buffer */
-     
     insert_items_cbuffer_t(cbuffer,kbuf,len);
     printk("productor : termino de escribir y en el cbuffer tiene size %d\n",size_cbuffer_t(cbuffer)); 
 
@@ -320,6 +313,7 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     /* Salir de la sección crítica */
       up(&mtx);
       printk("productor: termina de producir, valor de retorno de write es %d \n",len);
+      vfree(item);
     return len;
 }
 
