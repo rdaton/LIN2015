@@ -162,11 +162,8 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       /* Incremento de consumidores esperando */
         nr_cons_waiting++;
         printk("espero en la cola de consumidor mientras que no haya nada que leer, numero de consumidor es %d\n", nr_cons_waiting);
-
         /* Liberar el 'mutex' antes de bloqueo*/
         up(&mtx);
-       
-        
         /* Bloqueo en cola de espera */   
         if (down_interruptible(&sem_cons)){    
           printk("salgo de la cola de espera de consumidor, soy numero %d\n",nr_cons_waiting);
@@ -176,37 +173,17 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
         if (down_interruptible(&mtx){return -EINTR;}  
       }
 
-       /*Si se intenta hacer una lectura del FIFO cuando el 
-      buffer circular esté vacío y no haya productores, el 
-      módulo devolverá el valor 0 (EOF)*/
-      
+     
       if(size_cbuffer_t(cbuffer)==0 && prod_count==0){
           printk("consumidor: no hay nada en cbuffer y tampoco hay productor \n");
           up(&mtx);
           return 0;
-      }
-      
+      } 
       printk("consumirdor: voy a eliminar elemento\n");
         /* Obtener el primer elemento del buffer y eliminarlo */
-     
       remove_items_cbuffer_t (cbuffer, kbuff, len); 
       //remove_items_cbuffer_t (cbuffer, kbuff, 2); 
-        
-      printk("consumidor: elemento ya esta eliminado , valor de item es %i\n",item);
-	    
-      //nr_bytes=sprintf(kbuff,"%i\n",*item); 
-      //nr_bytes=len;
-        
-      printk("voy a copiar kbuf a user \n");
-      if (copy_to_user(buf,kbuff,len)){
-		    nr_cons_waiting--;		
-        up(&mtx);
-        up(&sem_cons);
-         return -EINVAL;
-      }
-        printk("he mandado kbuf a user \n");
-
-      
+      printk("consumidor: elemento ya esta eliminado , valor de item es %i\n",item);      
       /* Despertar a los productores bloqueados (si hay alguno) */
       if (nr_prod_waiting>0)
       {
@@ -219,7 +196,14 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
        /* Salir de la sección crítica */ 
       up(&mtx);
 
-      return nr_bytes;
+
+       printk("voy a copiar kbuf a user \n");
+      if (copy_to_user(buf,kbuff,len)){
+         return -EINVAL;
+      }
+      
+        printk("he mandado kbuf a user \n");
+      return len;
   }
 
 
