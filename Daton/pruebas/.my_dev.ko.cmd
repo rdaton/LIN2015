@@ -1,0 +1,1 @@
+cmd_/home/osboxes/LIN2015/Daton/pruebas/my_dev.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.16.0-4-common/scripts/module-common.lds --build-id  -o /home/osboxes/LIN2015/Daton/pruebas/my_dev.ko /home/osboxes/LIN2015/Daton/pruebas/my_dev.o /home/osboxes/LIN2015/Daton/pruebas/my_dev.mod.o
