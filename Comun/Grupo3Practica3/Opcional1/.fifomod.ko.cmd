@@ -1,0 +1,1 @@
+cmd_/home/kernel/LIN2015/Comun/Grupo3Practica3/Opcional1/fifomod.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.14.1.lin/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Comun/Grupo3Practica3/Opcional1/fifomod.ko /home/kernel/LIN2015/Comun/Grupo3Practica3/Opcional1/fifomod.o /home/kernel/LIN2015/Comun/Grupo3Practica3/Opcional1/fifomod.mod.o
