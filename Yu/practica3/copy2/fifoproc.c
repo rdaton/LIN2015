@@ -10,8 +10,8 @@
 #include "cbuffer.h"
 
 
-#define MAX_CBUFFER_LEN  32
-#define MAX_KBUF  32
+#define MAX_CBUFFER_LEN  64
+#define MAX_KBUF  64
 
 MODULE_LICENSE("GPL");
 
@@ -168,9 +168,11 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
         /* Liberar el 'mutex' antes de bloqueo*/
         up(&mtx);
         /* Bloqueo en cola de espera */   
-        if (down_interruptible(&sem_cons)){    
+        if (down_interruptible(&sem_cons)){ 
+          down(&mtx);
           printk("salgo de la cola de espera de consumidor, soy numero %d\n",nr_cons_waiting);
-            up(&mtx);   
+          nr_cons_waiting--;
+          up(&mtx);   
           return -EINTR;
         }
         if (down_interruptible(&mtx))
@@ -239,14 +241,13 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     }
 
     /* Bloquearse mientras no haya huecos en el buffer */
-    while ( nr_gaps_cbuffer_t(cbuffer) && cons_count >0 )
+    while ( nr_gaps_cbuffer_t(cbuffer)<len && cons_count >0 )
     {
       /* Incremento de productores esperando */
       nr_prod_waiting++;
       printk("productor: mientras que no haya hueco,espero, soy numero %d\n",prod_count);
       /* Liberar el 'mutex' antes de bloqueo*/
       up(&mtx);
-     // up(&sem_cons);
       /* Bloqueo en cola de espera */   
       if (down_interruptible(&sem_prod)){
         down(&mtx);
