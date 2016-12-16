@@ -13,10 +13,9 @@
 #include <linux/kfifo.h>
 MODULE_LICENSE("GPL");
 
-//#define MAX_CBUFFER_LEN  64
-#define FIFO_SIZE	64
-#define MAX_KBUF  64
-typedef STRUCT_KFIFO_REC_2(FIFO_SIZE) tipoKfifo;	
+#define FIFO_SIZE 64 //potencia de 2
+#define MAX_KBUF 64
+typedef STRUCT_KFIFO_REC_1(FIFO_SIZE) tipoKfifo;	
 static tipoKfifo unKFifo; /* Buffer circular */
 
 
@@ -127,7 +126,7 @@ static int fifoproc_release(struct inode *inodo, struct file *file)
 
   if (cons_count==0 && prod_count==0) 
   {         
-       kfifo_free(&unKFifo);
+       kfifo_reset(&unKFifo);
   } 
 
   up(&mtx);
@@ -138,13 +137,11 @@ static int fifoproc_release(struct inode *inodo, struct file *file)
 /* Se invoca al hacer read() de entrada /proc */ 
 static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, loff_t *off)
 {
-   
-
-     
+ 
+  if (len> FIFO_SIZE || len> MAX_KBUF)  {
+      return -ENOSPC;
+    }
       char kbuff[MAX_KBUF];
-
-      
-    
       /* Entrar a la sección crítica */
       if (down_interruptible(&mtx))
       {
@@ -177,8 +174,7 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
           return 0;
       } 
         /* Obtener los elementos del buffer y eliminarlo */
-      len=kfifo_out (&unKFifo, &kbuff, FIFO_SIZE); 
-      printk("read %d\n",len);
+      kfifo_out (&unKFifo, kbuff, len);
       /* Despertar a los productores bloqueados (si hay alguno) */
       if (nr_prod_waiting>0)
       {
@@ -193,7 +189,7 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       if (copy_to_user(buf,kbuff,len)){
          return -EINVAL;
       }
-      
+     
       return len;
   }
 
@@ -201,26 +197,25 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
 /* Se invoca al hacer write() de entrada /proc */ 
 static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, loff_t *off)
 {
-  char kbuf[MAX_KBUF];
-   
+    char kbuf[MAX_KBUF];
     
-    
-   /* if (len > MAX_CBUFFER_LEN || len > MAX_KBUF) {
+    if (len> FIFO_SIZE || len> MAX_KBUF)  {
       return -ENOSPC;
     }
-   */
+   
     if (copy_from_user( kbuf, buf, len )) {
       return -EFAULT;
     }
-  
+    
     /* Acceso a la sección crítica */
     if (down_interruptible(&mtx))
     {
     return -EINTR;
     }
-
+     printk("w tam %d",kfifo_len(&unKFifo));
+     nr_prod_waiting++;
     /* Bloquearse mientras no haya huecos en el buffer */
-    while ( kfifo_is_full(&unKFifo) && cons_count >0 )
+    while ( kfifo_avail(&unKFifo)<len && cons_count >0 )
     {
       /* Incremento de productores esperando */
       nr_prod_waiting++;
@@ -242,12 +237,9 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
       up(&mtx);
       return -EPIPE;
     } 
-    
+     
        /* Insertar en el buffer */
-       printk("write %d\n",len);
-    kfifo_in(&unKFifo,&kbuf,len);
-
-
+   kfifo_in(&unKFifo,kbuf,len);
     /* Despertar a los consumidores bloqueados (si hay alguno) */
     if (nr_cons_waiting>0)
     {
@@ -257,6 +249,7 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
 
     /* Salir de la sección crítica */
       up(&mtx);
+      
     return len;
 }
 
@@ -277,6 +270,7 @@ int init_cons_module(void){
     return -ENOMEM;
   }
   */
+   INIT_KFIFO(unKFifo);
   /* Inicialización a 0 de los semáforos usados como colas de espera */
   sema_init(&sem_prod,0);
   sema_init(&sem_cons,0);
@@ -300,7 +294,6 @@ int init_cons_module(void){
 }
 void cleanup_cons_module(void){
   remove_proc_entry("modfifo", NULL);
-  kfifo_reset(&unKFifo);
   printk(KERN_INFO "modfifo: Modulo descargado.\n");
 }
 
