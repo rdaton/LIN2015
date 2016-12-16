@@ -4,7 +4,6 @@ open
 
 		...
 
-		lock(mtx)
 		while(numero_productor <=0){
 			cond_wait(consumidor,mtx);
 		}
@@ -40,7 +39,7 @@ int fifoproc_write(char* buff, int len)
    lock(mtx); 
 
    /* Esperar hasta que haya hueco para insertar (debe haber consumidores) */ 
-   while (nr_gaps_cbuffer_t(cbuffer)<len && cons_count>0)
+   while (is_full_cbuffer_t(cbuffer) && cons_count>0)
    { 
    	cond_wait(prod,mtx); 
    } 
@@ -66,10 +65,7 @@ int fifoproc_write(char* buff, int len)
   		return Error;
   	} 
 
- 	if (copy_to_user(kbuffer,buff,len)) 
-  	{
-   		return Error;
-	} 
+
 
 
  	lock(mtx); 
@@ -80,20 +76,21 @@ int fifoproc_write(char* buff, int len)
  
  	if( productor_count == 0 && size_cbuffer_t(cbuffer)==0){
 
+ 		unlock(mtx);
  		return 0;
  	}
 
 
- 	/* Obtener el primer elemento del buffer y eliminarlo */
-  	item=head_cbuffer_t(cbuf);
-  	remove_items_cbuffer_t(kbuffer,item, len);
-  	//remove_cbuffer_t(cbuf);  
-
-
+  	remove_items_cbuffer_t(buff,kbuff, len);
 
  	/* Despertar a posible productor bloqueado */ 
  	cond_signal(prod_count); 
  	unlock(mtx); 
+
+ 	if (copy_to_user(buff,kbuffer,len)) 
+  	{
+   		return Error;
+	} 
 
  	return len;
 

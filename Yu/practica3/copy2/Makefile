@@ -1,5 +1,5 @@
 obj-m +=  fifomod.o 
-pcmod1-objs += cbuffer.o fifomod.o
+fifomod-objs += cbuffer.o fifoproc.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules

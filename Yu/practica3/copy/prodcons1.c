@@ -57,8 +57,8 @@ static int fifoproc_open(struct inode *inode, struct file *file)
             up(&mtx);
             return -EINTR;
           }
-
-       }
+          if (down_interruptible(&mtx){return -EINTR;}     
+        }
         /* Despertar a los productores bloqueados (si hay alguno) */
         while (nr_prod_waiting>0)
         {
@@ -88,6 +88,7 @@ static int fifoproc_open(struct inode *inode, struct file *file)
               up(&mtx); 
               return -EINTR;
             }
+            if (down_interruptible(&mtx){return -EINTR;} 
           }
           /* Despertar a los consumidores bloqueados (si hay alguno) */
           if (nr_cons_waiting>0)
@@ -149,8 +150,7 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       int* item=NULL;
       char kbuff[MAX_CHARS_KBUF];
       
-      if ((*off) > 0) 
-          return 0;
+
       /*Si se intenta hacer una lectura del FIFO cuando el 
       buffer circular esté vacío y no haya productores, el 
       módulo devolverá el valor 0 (EOF)*/
@@ -180,24 +180,24 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
           //nr_cons_waiting--;
           up(&mtx);   
           return -EINTR;
-        } 
-        
+        }
+        if (down_interruptible(&mtx){return -EINTR;}  
       }
 
 
       printk("consumirdor: voy a eliminar elemento\n");
         /* Obtener el primer elemento del buffer y eliminarlo */
-      item=head_cbuffer_t(cbuffer);
-      remove_items_cbuffer_t (cbuffer, item, 1); 
+     // item=head_cbuffer_t(cbuffer);
+      remove_items_cbuffer_t (cbuffer, kbuff, len); 
       //remove_items_cbuffer_t (cbuffer, kbuff, 2); 
         
       printk("consumidor: elemento ya esta eliminado , valor de item es %i\n",item);
 	    
       //nr_bytes=sprintf(kbuff,"%i\n",*item); 
-      nr_bytes=len;
+      //nr_bytes=len;
         
       printk("voy a copiar kbuf a user \n");
-      if (copy_to_user(buf,kbuff,nr_bytes)){
+      if (copy_to_user(buf,kbuff,len)){
 		    nr_cons_waiting--;		
         up(&mtx);
         up(&sem_cons);
@@ -213,7 +213,6 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       up(&sem_prod);  
       nr_prod_waiting--;
       }       
-      (*off)+=nr_bytes;  /* Update the file pointer */
       printk("consumidor:  termina de consumir \nvalor de retorno de write es %d \n",nr_bytes);
 
        /* Salir de la sección crítica */ 
@@ -275,6 +274,7 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
         vfree(item);   
         return -EINTR;
       }
+      if (down_interruptible(&mtx){return -EINTR;} 
     }
 
     /* Detectar fin de comunicación por error (consumidor cierra FIFO antes) */ 
