@@ -1,1 +1,0 @@
-cmd_/home/kernel/LIN2015/Yu/practica3/copy2/fifomod.o := ld -m elf_x86_64   -r -o /home/kernel/LIN2015/Yu/practica3/copy2/fifomod.o /home/kernel/LIN2015/Yu/practica3/copy2/cbuffer.o /home/kernel/LIN2015/Yu/practica3/copy2/fifoproc.o 
