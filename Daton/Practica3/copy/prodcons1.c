@@ -11,7 +11,7 @@
 
 
 #define MAX_ITEMS_CBUF  5
-#define MAX_CHARS_KBUF  64
+#define MAX_CHARS_KBUF  4000
 
 MODULE_LICENSE("GPL");
 
@@ -188,8 +188,8 @@ static ssize_t fifoproc_read(struct file *filp, char __user *buf, size_t len, lo
       printk("consumirdor: voy a eliminar elemento\n");
         /* Obtener el primer elemento del buffer y eliminarlo */
       //item=head_cbuffer_t(cbuffer);
-      remove_items_cbuffer_t (cbuffer, &kbuff, len); 
-      kbuff[len]="\0";
+      remove_items_cbuffer_t (cbuffer, &kbuff[0], len); 
+      kbuff[len]='\0';
       printk("consumidor: elemento ya esta eliminado \n");
 	
 
@@ -242,24 +242,25 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
     return -EINTR;
     };
     
+    
   printk("productor empieza a producir \n");
   char kbuf[MAX_CHARS_KBUF];
-    
     
     if ((*off) > 0) /* The application can write in this entry just once !! */
       return 0;
     
-    if (len > MAX_CHARS_KBUF) {
+    if (len +1 > MAX_CHARS_KBUF) {
       printk("no hay espacio suficiente, len tiene tamanio %d\n",len);
       return -ENOSPC;
     }
    
-    if (copy_from_user( kbuf, buf, len )) {
+    if (copy_from_user(kbuf, buf, len )) {
       return -EFAULT;
     }
-    printk("productor: he mandado valor de kbuf a buf, valor de buf es %s, valor de kbuf es %s, valor de len es %d\n",*buf,*kbuf,len);
-    
     kbuf[len] ='\0'; 
+    printk("productor: he mandado valor de buf a kbuf, valor de buf es %s, valor de kbuf es %s, valor de len es %d\n",buf,kbuf,len);
+    
+    
      *off+=len;            /* Update the file pointer */
 
     
