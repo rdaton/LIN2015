@@ -1,1 +1,0 @@
-cmd_/home/kernel/LIN2015/Yu/Practica4/work2/workqueue2.ko := ld -r -m elf_x86_64 -T /home/kernel/LIN2015/Yu/linux-3.14.1/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Yu/Practica4/work2/workqueue2.ko /home/kernel/LIN2015/Yu/Practica4/work2/workqueue2.o /home/kernel/LIN2015/Yu/Practica4/work2/workqueue2.mod.o
