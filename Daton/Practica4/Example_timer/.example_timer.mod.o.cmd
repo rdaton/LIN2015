@@ -1,9 +1,9 @@
-<<<<<<< HEAD
-cmd_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o := gcc -Wp,-MD,/home/kernel/LIN2015/Yu/Practica4/practica/.probar.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.7/include -I/home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include -Iarch/x86/include/generated  -Iinclude -I/home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/home/kernel/LIN2015/Yu/linux-3.14.1/include/uapi -Iinclude/generated/uapi -include /home/kernel/LIN2015/Yu/linux-3.14.1/include/linux/kconfig.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -Wno-maybe-uninitialized -m64 -mno-mmx -mno-sse -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -Wframe-larger-than=2048 -fno-stack-protector -Wno-unused-but-set-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(probar)"  -D"KBUILD_MODNAME=KBUILD_STR(probar)" -c -o /home/kernel/LIN2015/Yu/Practica4/practica/.tmp_probar.o /home/kernel/LIN2015/Yu/Practica4/practica/probar.c
+cmd_/home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.mod.o := gcc -Wp,-MD,/home/kernel/LIN2015/Yu/Practica4/Example_timer/.example_timer.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.7/include -I/home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include -Iarch/x86/include/generated  -Iinclude -I/home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/home/kernel/LIN2015/Yu/linux-3.14.1/include/uapi -Iinclude/generated/uapi -include /home/kernel/LIN2015/Yu/linux-3.14.1/include/linux/kconfig.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -Wno-maybe-uninitialized -m64 -mno-mmx -mno-sse -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -Wframe-larger-than=2048 -fno-stack-protector -Wno-unused-but-set-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(example_timer.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(example_timer)" -DMODULE  -c -o /home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.mod.o /home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.mod.c
 
-source_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o := /home/kernel/LIN2015/Yu/Practica4/practica/probar.c
+source_/home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.mod.o := /home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.mod.c
 
-deps_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o := \
+deps_/home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.mod.o := \
+    $(wildcard include/config/module/unload.h) \
   include/linux/module.h \
     $(wildcard include/config/sysfs.h) \
     $(wildcard include/config/modules.h) \
@@ -16,7 +16,6 @@ deps_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o := \
     $(wildcard include/config/tracing.h) \
     $(wildcard include/config/event/tracing.h) \
     $(wildcard include/config/ftrace/mcount/record.h) \
-    $(wildcard include/config/module/unload.h) \
     $(wildcard include/config/constructors.h) \
     $(wildcard include/config/debug/set/module/ronx.h) \
   include/linux/list.h \
@@ -540,70 +539,9 @@ deps_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o := \
     $(wildcard include/config/have/mod/arch/specific.h) \
     $(wildcard include/config/modules/use/elf/rel.h) \
     $(wildcard include/config/modules/use/elf/rela.h) \
-  include/linux/proc_fs.h \
-  include/linux/fs.h \
-    $(wildcard include/config/fs/posix/acl.h) \
-    $(wildcard include/config/security.h) \
-    $(wildcard include/config/quota.h) \
-    $(wildcard include/config/fsnotify.h) \
-    $(wildcard include/config/ima.h) \
-    $(wildcard include/config/epoll.h) \
-    $(wildcard include/config/debug/writecount.h) \
-    $(wildcard include/config/file/locking.h) \
-    $(wildcard include/config/auditsyscall.h) \
-    $(wildcard include/config/block.h) \
-    $(wildcard include/config/fs/xip.h) \
-    $(wildcard include/config/migration.h) \
-  include/linux/kdev_t.h \
-  include/uapi/linux/kdev_t.h \
-  include/linux/dcache.h \
-  include/linux/rculist.h \
-  include/linux/rculist_bl.h \
-  include/linux/list_bl.h \
-  include/linux/bit_spinlock.h \
-  include/linux/lockref.h \
-    $(wildcard include/config/arch/use/cmpxchg/lockref.h) \
-  include/linux/path.h \
-  include/linux/list_lru.h \
-  include/linux/radix-tree.h \
-  include/linux/pid.h \
-  include/linux/capability.h \
-  include/uapi/linux/capability.h \
-  include/linux/semaphore.h \
-  /home/kernel/LIN2015/Yu/linux-3.14.1/include/uapi/linux/fiemap.h \
-  include/linux/shrinker.h \
-  include/linux/migrate_mode.h \
-  include/linux/percpu-rwsem.h \
-  include/linux/blk_types.h \
-    $(wildcard include/config/blk/cgroup.h) \
-    $(wildcard include/config/blk/dev/integrity.h) \
-  include/uapi/linux/fs.h \
-  /home/kernel/LIN2015/Yu/linux-3.14.1/include/uapi/linux/limits.h \
-  include/linux/quota.h \
-    $(wildcard include/config/quota/netlink/interface.h) \
-  include/linux/percpu_counter.h \
-  /home/kernel/LIN2015/Yu/linux-3.14.1/include/uapi/linux/dqblk_xfs.h \
-  include/linux/dqblk_v1.h \
-  include/linux/dqblk_v2.h \
-  include/linux/dqblk_qtree.h \
-  include/linux/projid.h \
-  include/uapi/linux/quota.h \
-  include/linux/nfs_fs_i.h \
-  include/linux/fcntl.h \
-  include/uapi/linux/fcntl.h \
-  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi/asm/fcntl.h \
-  /home/kernel/LIN2015/Yu/linux-3.14.1/include/uapi/asm-generic/fcntl.h \
-  include/linux/random.h \
-    $(wildcard include/config/arch/random.h) \
-  include/uapi/linux/random.h \
-  include/linux/irqnr.h \
-  include/uapi/linux/irqnr.h \
-  /home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/asm/archrandom.h \
-  /home/kernel/LIN2015/Yu/Practica4/practica/cbuffer.h \
+  include/linux/vermagic.h \
+  include/generated/utsrelease.h \
 
-/home/kernel/LIN2015/Yu/Practica4/practica/probar.o: $(deps_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o)
+/home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.mod.o: $(deps_/home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.mod.o)
 
-$(deps_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o):
-=======
-cmd_/home/barfelix/LIN2015/Yu/Practica4/practica/probar.o := ld -m elf_x86_64   -r -o /home/barfelix/LIN2015/Yu/Practica4/practica/probar.o /home/barfelix/LIN2015/Yu/Practica4/practica/cbuffer.o 
->>>>>>> f3248655fccc9dd071c8495e7634e218afb49c7c
+$(deps_/home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.mod.o):
