@@ -1,8 +1,8 @@
-cmd_/home/barfelix/LIN2015/Yu/Practica4/practica/probar.mod.o :=  gcc-4.8 -Wp,-MD,/home/barfelix/LIN2015/Yu/Practica4/practica/.probar.mod.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include -Iarch/x86/include/generated  -I/usr/src/linux-headers-3.16.0-4-common/include -Iinclude -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/usr/src/linux-headers-3.16.0-4-common/include/uapi -Iinclude/generated/uapi -include /usr/src/linux-headers-3.16.0-4-common/include/linux/kconfig.h   -I/home/barfelix/LIN2015/Yu/Practica4/practica -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -m64 -mno-mmx -mno-sse -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -fno-delete-null-pointer-checks -O2 -Wframe-larger-than=2048 -fstack-protector -Wno-unused-but-set-variable -fno-var-tracking-assignments -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(probar.mod)"  -D"KBUILD_MODNAME=KBUILD_STR(probar)" -DMODULE  -c -o /home/barfelix/LIN2015/Yu/Practica4/practica/probar.mod.o /home/barfelix/LIN2015/Yu/Practica4/practica/probar.mod.c
+cmd_/home/barfelix/LIN2015/Daton/Practica4/practica/probar.o :=  gcc-4.8 -Wp,-MD,/home/barfelix/LIN2015/Daton/Practica4/practica/.probar.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include -Iarch/x86/include/generated  -I/usr/src/linux-headers-3.16.0-4-common/include -Iinclude -I/usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/usr/src/linux-headers-3.16.0-4-common/include/uapi -Iinclude/generated/uapi -include /usr/src/linux-headers-3.16.0-4-common/include/linux/kconfig.h   -I/home/barfelix/LIN2015/Daton/Practica4/practica -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -std=gnu89 -m64 -mno-mmx -mno-sse -mno-80387 -mno-fp-ret-in-387 -mpreferred-stack-boundary=3 -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_X86_X32_ABI -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_CRC32=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -fno-delete-null-pointer-checks -O2 -Wframe-larger-than=2048 -fstack-protector -Wno-unused-but-set-variable -fno-var-tracking-assignments -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(probar)"  -D"KBUILD_MODNAME=KBUILD_STR(probar)" -c -o /home/barfelix/LIN2015/Daton/Practica4/practica/.tmp_probar.o /home/barfelix/LIN2015/Daton/Practica4/practica/probar.c
 
-source_/home/barfelix/LIN2015/Yu/Practica4/practica/probar.mod.o := /home/barfelix/LIN2015/Yu/Practica4/practica/probar.mod.c
+source_/home/barfelix/LIN2015/Daton/Practica4/practica/probar.o := /home/barfelix/LIN2015/Daton/Practica4/practica/probar.c
 
-deps_/home/barfelix/LIN2015/Yu/Practica4/practica/probar.mod.o := \
+deps_/home/barfelix/LIN2015/Daton/Practica4/practica/probar.o := \
   /usr/src/linux-headers-3.16.0-4-common/include/linux/module.h \
     $(wildcard include/config/sysfs.h) \
     $(wildcard include/config/modules.h) \
@@ -581,9 +581,59 @@ deps_/home/barfelix/LIN2015/Yu/Practica4/practica/probar.mod.o := \
     $(wildcard include/config/have/mod/arch/specific.h) \
     $(wildcard include/config/modules/use/elf/rel.h) \
     $(wildcard include/config/modules/use/elf/rela.h) \
-  /usr/src/linux-headers-3.16.0-4-common/include/linux/vermagic.h \
-  include/generated/utsrelease.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/proc_fs.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/fs.h \
+    $(wildcard include/config/fs/posix/acl.h) \
+    $(wildcard include/config/security.h) \
+    $(wildcard include/config/ima.h) \
+    $(wildcard include/config/quota.h) \
+    $(wildcard include/config/fsnotify.h) \
+    $(wildcard include/config/epoll.h) \
+    $(wildcard include/config/file/locking.h) \
+    $(wildcard include/config/auditsyscall.h) \
+    $(wildcard include/config/block.h) \
+    $(wildcard include/config/fs/xip.h) \
+    $(wildcard include/config/migration.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/kdev_t.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/kdev_t.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/dcache.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/rculist.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/rculist_bl.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/list_bl.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/bit_spinlock.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/lockref.h \
+    $(wildcard include/config/arch/use/cmpxchg/lockref.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/path.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/list_lru.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/radix-tree.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/pid.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/capability.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/capability.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/semaphore.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/fiemap.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/shrinker.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/migrate_mode.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/percpu-rwsem.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/blk_types.h \
+    $(wildcard include/config/blk/cgroup.h) \
+    $(wildcard include/config/blk/dev/integrity.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/fs.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/limits.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/quota.h \
+    $(wildcard include/config/quota/netlink/interface.h) \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/percpu_counter.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/dqblk_xfs.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/dqblk_v1.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/dqblk_v2.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/dqblk_qtree.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/projid.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/quota.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/nfs_fs_i.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/linux/fcntl.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/linux/fcntl.h \
+  /usr/src/linux-headers-3.16.0-4-common/arch/x86/include/uapi/asm/fcntl.h \
+  /usr/src/linux-headers-3.16.0-4-common/include/uapi/asm-generic/fcntl.h \
 
-/home/barfelix/LIN2015/Yu/Practica4/practica/probar.mod.o: $(deps_/home/barfelix/LIN2015/Yu/Practica4/practica/probar.mod.o)
+/home/barfelix/LIN2015/Daton/Practica4/practica/probar.o: $(deps_/home/barfelix/LIN2015/Daton/Practica4/practica/probar.o)
 
-$(deps_/home/barfelix/LIN2015/Yu/Practica4/practica/probar.mod.o):
+$(deps_/home/barfelix/LIN2015/Daton/Practica4/practica/probar.o):
