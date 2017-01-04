@@ -17,17 +17,19 @@ __attribute__((section(".gnu.linkonce.this_module"))) = {
 static const struct modversion_info ____versions[]
 __used
 __attribute__((section("__versions"))) = {
-	{ 0xdca08a4c, __VMLINUX_SYMBOL_STR(module_layout) },
-	{ 0xd5f2172f, __VMLINUX_SYMBOL_STR(del_timer_sync) },
-	{ 0xbe2c0274, __VMLINUX_SYMBOL_STR(add_timer) },
-	{ 0x593a99b, __VMLINUX_SYMBOL_STR(init_timer_key) },
-	{ 0x999e8297, __VMLINUX_SYMBOL_STR(vfree) },
-	{ 0x8834396c, __VMLINUX_SYMBOL_STR(mod_timer) },
-	{ 0x7d11c268, __VMLINUX_SYMBOL_STR(jiffies) },
+	{ 0x2ab9dba5, __VMLINUX_SYMBOL_STR(module_layout) },
+	{ 0x6bc3fbc0, __VMLINUX_SYMBOL_STR(__unregister_chrdev) },
+	{ 0x9f6b4c62, __VMLINUX_SYMBOL_STR(down_interruptible) },
+	{ 0xb4b37155, __VMLINUX_SYMBOL_STR(__register_chrdev) },
+	{ 0xc6cb465a, __VMLINUX_SYMBOL_STR(__kfifo_max_r) },
 	{ 0x27e1a049, __VMLINUX_SYMBOL_STR(printk) },
-	{ 0xd6ee688f, __VMLINUX_SYMBOL_STR(vmalloc) },
-	{ 0xf09de776, __VMLINUX_SYMBOL_STR(get_random_int) },
+	{ 0x68aca4ad, __VMLINUX_SYMBOL_STR(down) },
+	{ 0xdb7305a1, __VMLINUX_SYMBOL_STR(__stack_chk_fail) },
+	{ 0x3955fcf6, __VMLINUX_SYMBOL_STR(__kfifo_in_r) },
 	{ 0xbdfb6dbb, __VMLINUX_SYMBOL_STR(__fentry__) },
+	{ 0x69acdf38, __VMLINUX_SYMBOL_STR(memcpy) },
+	{ 0x71e3cecb, __VMLINUX_SYMBOL_STR(up) },
+	{ 0x33fcf44a, __VMLINUX_SYMBOL_STR(__kfifo_out_r) },
 };
 
 static const char __module_depends[]

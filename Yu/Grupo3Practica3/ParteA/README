@@ -1,0 +1,2 @@
+Los scripts bash de prueba están en la carpeta 'scripts_prueba'.
+Al ejecutar un script, se crea un productor, o consumidor respectivamente.
