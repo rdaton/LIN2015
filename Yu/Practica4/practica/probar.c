@@ -7,7 +7,7 @@
 #include "cbuffer.h"
 
 
-#define MAX_ITEMS_CBUF  5
+#define MAX_ITEMS_CBUF  10
 
 
 MODULE_LICENSE("GPL");
@@ -15,27 +15,33 @@ MODULE_LICENSE("GPL");
 struct timer_list my_timer; /* Structure that describes the kernel timer */
 cbuffer_t* cbuffer; /* Buffer circular */ 
 
+int timer_period_ms=1;
+int emergency_threshold=80;//por centaje 80%
+int max_random= 100;
 
 /* Function invoked when timer expires (fires) */
 static void fire_timer(unsigned long data)
 {   
-    unsigned int max_random= 100;
+    float capacidad=MAX_ITEMS_CBUF;
     int numero_cpu =  smp_processor_id();
     unsigned int num_aleatorio=0;
     num_aleatorio = (unsigned int)(get_random_int());
  
-   // while (num_aleatorio > max_random-1 || num_aleatorio < 0){
     while (num_aleatorio > max_random-1){
         num_aleatorio = get_random_int();
     }
 
      char* a = (char*)&num_aleatorio;
+     int num_elem=size_cbuffer_t (cbuffer);
+     int porcentaje = (((float)num_elem)/capacidad)*100;
            /* Insertar en el buffer */
-     if(is_full_cbuffer_t(cbuffer)){
-        printk("\nesta lleno\n");
-     }else{
+     if(porcentaje < emergency_threshold){
+        printk("\nporcentaje es %i\n",porcentaje);
          insert_items_cbuffer_t(cbuffer,a,1);
           printk("\nNo esta lleno\n");
+        
+     }else{
+         printk("\nesta lleno\n");
      }
      
     printk("valor de numero es %i \n",num_aleatorio);
