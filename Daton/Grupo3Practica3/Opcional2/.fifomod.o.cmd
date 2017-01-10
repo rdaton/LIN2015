@@ -1,0 +1,1 @@
+cmd_/home/osboxes/LIN2015/Comun/Grupo3Practica3/Opcional2/fifomod.o := ld -m elf_x86_64   -r -o /home/osboxes/LIN2015/Comun/Grupo3Practica3/Opcional2/fifomod.o /home/osboxes/LIN2015/Comun/Grupo3Practica3/Opcional2/fifoproc.o 

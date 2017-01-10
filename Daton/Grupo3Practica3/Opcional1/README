@@ -1,0 +1,8 @@
+productor:
+
+./fifotest -f /proc/modfifo -s < test.txt
+
+consumidor:
+
+./fifotest -f /proc/modfifo -r
+
