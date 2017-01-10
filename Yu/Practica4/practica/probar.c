@@ -11,7 +11,7 @@
 
 
 #define MAX_ITEMS_CBUF  10
-DEFINE_SPINLOCK(sp);
+DEFINE_RWLOCK(sp);
 
 
 MODULE_LICENSE("GPL");
@@ -50,14 +50,20 @@ static void limpiar(struct list_head* list){
 
 void print_list(struct list_head *list) {
         tNodo* item=NULL;
-    struct list_head* cur_node=NULL;
-    //trace_printk(KERN_INFO "%s\n","imprimiendo");
-    list_for_each(cur_node, list) 
-    {
-    /* item points to the structure wherein the links are embedded */
+  struct list_head* cur_node=NULL;
+  //trace_printk(KERN_INFO "%s\n","imprimiendo");
+  
+  //sección critica lista de enteros
+  //read_lock(&rwl);
+  list_for_each(cur_node, list) 
+  {
+  // item points to the structure wherein the links are embedded 
     item = list_entry(cur_node,tNodo, list);
-    //trace_printk(KERN_INFO "%i\n",item->data);
-    }
+  //trace_printk(KERN_INFO "%i\n",item->data);
+  }
+  //read_unlock(&rwl);
+  //fin sección critica lista de enteros
+  
 }
 
 static int add(char* valor) 
@@ -85,24 +91,29 @@ static void copy_items_into_list ( struct work_struct *work )
     int num_temp=size_cbuffer_t (cbuffer);
     char temp[num_temp];
     int i= 0;
-
-     spin_lock_irqsave(sp,2);
+    unsigned long flags = 0;
+    int r;
+      read_lock_irqsave(&sp,flags);
     /* Obtener el primer elemento del buffer y eliminarlo */
     while(!is_empty_cbuffer_t ( cbuffer ) && i < num_temp){
         temp[i] =remove_cbuffer_t (cbuffer); 
         i++;
     }
-
-    spin_unlock_irqrestore(sp,1);
+     read_unlock_irqrestore(&sp,flags);
 
     i=0;
     while(i < num_temp){
-        add(&(temp[i]));
-        i++;
-    }
+        //add(&(temp[i]));
+     // if(sscanf(temp[i],"%i\n",&r)==1){
+       // add(r);
+         printk("\nvalor metido es %i\n",r);
+          i++;
+      }
      
+      printk(KERN_INFO "\ncopiar elementos a la lista\n");
+      print_list(&modlist);
 
-    printk(KERN_INFO "\ncopiar elementos a la lista\n");
+   
 }
 
 int timer_period_ms=1;
@@ -115,32 +126,50 @@ static void fire_timer(unsigned long data)
     float capacidad=MAX_ITEMS_CBUF;
     int numero_cpu =  smp_processor_id();
     unsigned int num_aleatorio=5;
+    unsigned long flags = 0;
+   char* ini;
+    char* a=ini;
+    //int len=0;
+
     /*num_aleatorio = (unsigned int)(get_random_int());
  
     while (num_aleatorio > max_random-1){
         num_aleatorio = get_random_int();
     }*/
 
-     char* a = (char*)&num_aleatorio;
+    
+     //a+=sprintf(a,"%i\n",num_aleatorio);
+
+     //len= a-ini;
+     printk("\nvalor de len es %i\n",a);
      int num_elem=size_cbuffer_t (cbuffer);
      int porcentaje = (((float)num_elem)/capacidad)*100;
            /* Insertar en el buffer */
+    // printk("\nnumero de cpu es %i\n",numero_cpu);
      
      if(porcentaje < emergency_threshold){
         printk("\nporcentaje es %i\n",porcentaje);
 
-        spin_lock_irqsave(sp,1);
+//entra sesion critica
+         write_lock_irqsave(&sp,flags);
 
-         insert_items_cbuffer_t(cbuffer,a,1);
+        // insert_items_cbuffer_t(cbuffer,a,len);
+          
+
          printk("\nNo esta lleno\n");
-        
+        write_unlock_irqrestore(&sp,flags);
+  //sale sesion critica
      }else{
-
-         spin_unlock_irqrestore(sp,2);
-
          printk("\nesta lleno\n");
-         
-         schedule_work(&my_work);
+         if(numero_cpu%2 == 0){
+          printk("\nejecuta cpu 1\n");
+            schedule_work_on(1,&my_work);
+         }
+         else{
+          printk("\nejecuta cpu 0\n");
+            schedule_work_on(0,&my_work);
+         }
+
      }
       
      
@@ -183,13 +212,14 @@ int init_timer_module( void )
 
 
 void cleanup_timer_module( void ){
-   destroy_cbuffer_t(cbuffer);
-  /* Wait until completion of the timer function (if it's currently running) and delete timer */
+  
   del_timer_sync(&my_timer);
   /* Wait until all jobs scheduled so far have finished */
   flush_scheduled_work();
-
-  remove_proc_entry("modlist", NULL);
+  destroy_cbuffer_t(cbuffer);
+  /* Wait until completion of the timer function (if it's currently running) and delete timer */
+  
+  print_list(&modlist);
   limpiar(&modlist);
 }
 
