@@ -96,17 +96,15 @@ static void copy_items_into_list ( struct work_struct *work )
       read_lock_irqsave(&sp,flags);
     /* Obtener el primer elemento del buffer y eliminarlo */
     while(!is_empty_cbuffer_t ( cbuffer ) && i < num_temp){
-        temp[i] =remove_cbuffer_t (cbuffer); 
+       temp[i] =remove_cbuffer_t (cbuffer); 
         i++;
     }
      read_unlock_irqrestore(&sp,flags);
 
     i=0;
     while(i < num_temp){
-        //add(&(temp[i]));
-     // if(sscanf(temp[i],"%i\n",&r)==1){
-       // add(r);
-         printk("\nvalor metido es %i\n",r);
+        add(temp[i]);
+       //  printk("\nvalor metido es %i\n",r);
           i++;
       }
      
@@ -127,9 +125,7 @@ static void fire_timer(unsigned long data)
     int numero_cpu =  smp_processor_id();
     unsigned int num_aleatorio=5;
     unsigned long flags = 0;
-   char* ini;
-    char* a=ini;
-    //int len=0;
+      
 
     /*num_aleatorio = (unsigned int)(get_random_int());
  
@@ -137,24 +133,28 @@ static void fire_timer(unsigned long data)
         num_aleatorio = get_random_int();
     }*/
 
-    
-     //a+=sprintf(a,"%i\n",num_aleatorio);
+       // char* a=(char*)(&num_aleatorio);
 
-     //len= a-ini;
-     printk("\nvalor de len es %i\n",a);
+    
+    char ini[sizeof(num_aleatorio)+1];
+    char* dest=ini;
+    int len=0;
+     dest+=sprintf(dest,"%i\n",num_aleatorio);
+     len=dest-ini;
+
+     printk("\nvalor de len es %i y dest es %i y ini es %i\n",len,dest,ini);
      int num_elem=size_cbuffer_t (cbuffer);
      int porcentaje = (((float)num_elem)/capacidad)*100;
            /* Insertar en el buffer */
     // printk("\nnumero de cpu es %i\n",numero_cpu);
      
-     if(porcentaje < emergency_threshold){
+     if(porcentaje <= emergency_threshold){
         printk("\nporcentaje es %i\n",porcentaje);
 
 //entra sesion critica
          write_lock_irqsave(&sp,flags);
 
-        // insert_items_cbuffer_t(cbuffer,a,len);
-          
+        insert_items_cbuffer_t(cbuffer,dest,len);
 
          printk("\nNo esta lleno\n");
         write_unlock_irqrestore(&sp,flags);

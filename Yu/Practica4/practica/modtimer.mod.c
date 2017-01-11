@@ -24,6 +24,7 @@ __attribute__((section("__versions"))) = {
 	{ 0x593a99b, __VMLINUX_SYMBOL_STR(init_timer_key) },
 	{ 0x999e8297, __VMLINUX_SYMBOL_STR(vfree) },
 	{ 0x54efb5d6, __VMLINUX_SYMBOL_STR(cpu_number) },
+	{ 0x91715312, __VMLINUX_SYMBOL_STR(sprintf) },
 	{ 0x7d11c268, __VMLINUX_SYMBOL_STR(jiffies) },
 	{ 0x168f1082, __VMLINUX_SYMBOL_STR(_raw_write_unlock_irqrestore) },
 	{ 0xd5f2172f, __VMLINUX_SYMBOL_STR(del_timer_sync) },
