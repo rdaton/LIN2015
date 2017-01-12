@@ -8,11 +8,15 @@
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include "cbuffer.h"
+#include <linux/list.h>
+#include <asm-generic/uaccess.h>
 
 
 #define MAX_ITEMS_CBUF  10
-DEFINE_RWLOCK(sp);
+#define BUFFER_LENGTH  PAGE_SIZE
 
+DEFINE_RWLOCK(sp);
+DEFINE_RWLOCK(rwl);
 
 MODULE_LICENSE("GPL");
 
@@ -49,17 +53,21 @@ static void limpiar(struct list_head* list){
 }
 
 void print_list(struct list_head *list) {
+  //printk("\nentra print\n");
         tNodo* item=NULL;
   struct list_head* cur_node=NULL;
   //trace_printk(KERN_INFO "%s\n","imprimiendo");
   
   //sección critica lista de enteros
   //read_lock(&rwl);
+  //char b='v';
   list_for_each(cur_node, list) 
   {
+    
   // item points to the structure wherein the links are embedded 
     item = list_entry(cur_node,tNodo, list);
-  //trace_printk(KERN_INFO "%i\n",item->data);
+    //&b=item->data;
+    printk("valor es %c\n",*(item->data));
   }
   //read_unlock(&rwl);
   //fin sección critica lista de enteros
@@ -72,14 +80,18 @@ static int add(char* valor)
   if (unNodo==NULL){
     if (valor!=NULL)
         vfree(valor);
+
         vfree(unNodo);
      return -ENOMEM;    
   }
-    
+ // printk("\n-------\n");
+  //char* temp=valor;
+   // printk("\nvalor es %c\n",*temp);
+
   unNodo->data = valor;
   list_add_tail(&(unNodo->list), &modlist);
   printk("\nse ha metido el nuevo dato\n");
-  print_list(&modlist);
+  //print_list(&modlist);
   return 0;
 }
 
@@ -92,32 +104,140 @@ static void copy_items_into_list ( struct work_struct *work )
     char temp[num_temp];
     int i= 0;
     unsigned long flags = 0;
-    int r;
+    
+    //char c= 'a';
+    //char* c_puntero=&c;
       read_lock_irqsave(&sp,flags);
     /* Obtener el primer elemento del buffer y eliminarlo */
     while(!is_empty_cbuffer_t ( cbuffer ) && i < num_temp){
        temp[i] =remove_cbuffer_t (cbuffer); 
+      // c_puntero=&temp[i];
+       //c_puntero = head_cbuffer_t(cbuffer);
+       //printk("\nvalor de temp[i] es %c \n",*c_puntero);
         i++;
     }
+
      read_unlock_irqrestore(&sp,flags);
 
     i=0;
     while(i < num_temp){
-        add(temp[i]);
-       //  printk("\nvalor metido es %i\n",r);
+//      printk("\nadd nuevo valor\n");
+      printk("\nvalor de temp[i] es %c \n",temp[i]);
+       //add(&c);
+      add(&temp[i]);
           i++;
       }
      
-      printk(KERN_INFO "\ncopiar elementos a la lista\n");
+  //    printk(KERN_INFO "\ncopiar elementos a la lista\n");
       print_list(&modlist);
 
    
 }
 
-int timer_period_ms=1;
-int emergency_threshold=80;//por centaje 80%
-int max_random= 100;
+static int timer_period_ms=1;
+static int emergency_threshold=80;//por centaje 80%
+static int max_random= 100;
 
+
+int generaVector(char* unBuffer,struct list_head* list){
+  //struct list_head* list=&Modlist;
+    tNodo* item=NULL;
+  struct list_head* cur_node=NULL;
+  //trace_printk(KERN_INFO "%s\n","imprimiendo");
+  
+  char* dest=unBuffer;
+  list_for_each(cur_node, list) 
+  {
+  // item points to the structure wherein the links are embedded 
+
+  item = list_entry(cur_node,tNodo, list);
+  //trace_printk(KERN_INFO "%i\n",item->data);
+  
+  dest+=sprintf(dest,"%s\n",item->data);
+  
+  
+  }
+  return dest-unBuffer;
+}
+
+static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
+    int num_elem;
+    //!!!!!!!!tipo de unBuffer igual podemos declararlo directamente con tipo int que facilita luego al rellenarlo con
+    //los valores de tipo int. Es mas, Supongo que el metodo copy_to_user recibe cualquier tipo 
+  char* unBuffer;
+    if ((*off) > 0) /* Tell the application that there is nothing left to read */
+        return 0;
+
+   unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
+
+  num_elem=generaVector(unBuffer,&modlist);
+ 
+  //nr_bytes=strlen(unBuffer);
+
+  if (len<num_elem){
+    vfree(unBuffer);
+    return -ENOSPC;
+  }
+    
+
+  //unBuffer[nr_bytes]='\0';
+    /* Transfer data from the kernel to userspace */  
+  if (copy_to_user(buf, unBuffer,num_elem)){
+      vfree(unBuffer);
+     return -EINVAL;
+  }
+   
+
+  print_list(&modlist);
+  limpiar(&modlist);
+    
+  (*off)+=len;  /* Update the file pointer */
+
+  vfree(unBuffer);
+  return num_elem; 
+
+
+   
+};
+
+static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
+  int r;
+  
+  char* unBuffer;
+    if ((*off) > 0) /* The application can write in this entry just once !! */
+    return 0;
+    
+    
+    /* Transfer data from user to kernel space */
+    unBuffer=(char *)vmalloc( BUFFER_LENGTH );  
+    if (copy_from_user( &unBuffer[0], buf, len )){
+      vfree(unBuffer);
+      return -EFAULT;
+    }  
+    
+    //timer_period_ms 500
+
+
+  unBuffer[len]='\0';
+
+   if(sscanf(unBuffer,"timer_period_ms %i",&r)==1){
+        timer_period_ms = r;
+        printk("\nHe insertado: %d\n",r);
+      }
+    else{
+      //trace_printk(unBuffer);
+      //trace_printk("error de introccion de comando");
+      vfree(unBuffer);
+      return -EFAULT;
+    };
+    
+
+    *off+=len;            /* Update the file pointer */
+    vfree(unBuffer);
+   
+    
+    return len;
+};
 /* Function invoked when timer expires (fires) */
 static void fire_timer(unsigned long data)
 {   
@@ -139,10 +259,14 @@ static void fire_timer(unsigned long data)
     char ini[sizeof(num_aleatorio)+1];
     char* dest=ini;
     int len=0;
-     dest+=sprintf(dest,"%i\n",num_aleatorio);
-     len=dest-ini;
+     //dest+=sprintf(dest,"%i\n",num_aleatorio);
+     //len=dest-ini;
 
-     printk("\nvalor de len es %i y dest es %i y ini es %i\n",len,dest,ini);
+     len=sprintf(dest,"%i\n",num_aleatorio);
+     //si uso %s sale bien el valor, si uso c%, sale otro
+     //pero en la funcion copy_items_into_list tengo que hacerlo reves!!
+    printk("\nvalor de dest es %s\n",dest);
+    
      int num_elem=size_cbuffer_t (cbuffer);
      int porcentaje = (((float)num_elem)/capacidad)*100;
            /* Insertar en el buffer */
@@ -154,7 +278,8 @@ static void fire_timer(unsigned long data)
 //entra sesion critica
          write_lock_irqsave(&sp,flags);
 
-        insert_items_cbuffer_t(cbuffer,dest,len);
+        //insert_items_cbuffer_t(cbuffer,dest,len);
+         insert_cbuffer_t(cbuffer,*dest);
 
          printk("\nNo esta lleno\n");
         write_unlock_irqrestore(&sp,flags);
@@ -179,6 +304,15 @@ static void fire_timer(unsigned long data)
     mod_timer( &(my_timer), jiffies + HZ); 
 }
 
+
+
+//operaciones de entrada salida
+static const struct file_operations proc_entry_fops = {
+    .read = modlist_read,
+    .write = modlist_write,    
+};
+
+
 int init_timer_module( void )
 {
    
@@ -201,13 +335,13 @@ int init_timer_module( void )
 
     int ret = 0;
     INIT_LIST_HEAD(&modlist); /* Initialize the list */
-  /*  proc_entry = proc_create( "modlist", 0666, NULL, &proc_entry_fops);
+    proc_entry = proc_create( "modconfig", 0666, NULL, &proc_entry_fops);
     if (proc_entry == NULL) 
     {
         ret = -ENOMEM;
     }   
     return ret;
-    */
+  
 }
 
 
@@ -219,8 +353,8 @@ void cleanup_timer_module( void ){
   destroy_cbuffer_t(cbuffer);
   /* Wait until completion of the timer function (if it's currently running) and delete timer */
   
-  print_list(&modlist);
-  limpiar(&modlist);
+  //print_list(&modlist);
+ // limpiar(&modlist);
 }
 
 module_init( init_timer_module );

@@ -29,11 +29,13 @@ __attribute__((section("__versions"))) = {
 	{ 0x168f1082, __VMLINUX_SYMBOL_STR(_raw_write_unlock_irqrestore) },
 	{ 0xd5f2172f, __VMLINUX_SYMBOL_STR(del_timer_sync) },
 	{ 0x27e1a049, __VMLINUX_SYMBOL_STR(printk) },
+	{ 0x20c55ae0, __VMLINUX_SYMBOL_STR(sscanf) },
 	{ 0x8834396c, __VMLINUX_SYMBOL_STR(mod_timer) },
 	{ 0xbe2c0274, __VMLINUX_SYMBOL_STR(add_timer) },
 	{ 0x1790d76b, __VMLINUX_SYMBOL_STR(_raw_read_lock_irqsave) },
 	{ 0x703b4352, __VMLINUX_SYMBOL_STR(_raw_read_unlock_irqrestore) },
 	{ 0xbdfb6dbb, __VMLINUX_SYMBOL_STR(__fentry__) },
+	{ 0x245505fd, __VMLINUX_SYMBOL_STR(proc_create_data) },
 	{ 0x801678, __VMLINUX_SYMBOL_STR(flush_scheduled_work) },
 	{ 0x2e0d2f7f, __VMLINUX_SYMBOL_STR(queue_work_on) },
 };

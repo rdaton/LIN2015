@@ -205,11 +205,8 @@ void clear_cbuffer_t (cbuffer_t* cbuffer) {
 /* Returns the first element in the buffer */
 char* head_cbuffer_t ( cbuffer_t* cbuffer )
 {
-	if ( cbuffer->size !=0 ){
-		printk("\nentro\n");
+	if ( cbuffer->size !=0 )
 		return &cbuffer->data[cbuffer->head];
-	}
-		
 	else{
 		return NULL;
 	}
