@@ -1,0 +1,3 @@
+escribir de 4 en 4 bytes; (conversión de char* con & )
+leer a un array entero (unsigned int)
+en un semaforo, si se puede hacer vmalloc 
