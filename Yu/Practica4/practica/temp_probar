@@ -58,6 +58,9 @@ void print_list(struct list_head *list) {
   struct list_head* cur_node=NULL;
   //trace_printk(KERN_INFO "%s\n","imprimiendo");
   
+  //sección critica lista de enteros
+  //read_lock(&rwl);
+  //char b='v';
   list_for_each(cur_node, list) 
   {
     
@@ -75,10 +78,14 @@ static int add(char valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
-  
+    //if (valor!=NULL)
+       // vfree(valor);
         vfree(unNodo);
      return -ENOMEM;    
   }
+ // printk("\n-------\n");
+  //char* temp=valor;
+   // printk("\nvalor es %c\n",*temp);
 
   unNodo->data = &valor;
   list_add_tail(&(unNodo->list), &modlist);
@@ -87,6 +94,50 @@ static int add(char valor)
   return 0;
 }
 
+
+
+/* Work's handler function */
+static void copy_items_into_list ( struct work_struct *work )
+{
+    int num_temp=size_cbuffer_t (cbuffer);
+    char kbuff[num_temp];
+    
+    unsigned long flags = 0;
+    
+
+    //char c= 'a';
+    //char* c_puntero=&c;
+      read_lock_irqsave(&sp,flags);
+      remove_items_cbuffer_t (cbuffer, kbuff, num_temp); 
+    /* Obtener el primer elemento del buffer y eliminarlo
+    while(!is_empty_cbuffer_t ( cbuffer ) && i < num_temp){
+       temp[i] =remove_cbuffer_t (cbuffer); 
+      // c_puntero=&temp[i];
+       //c_puntero = head_cbuffer_t(cbuffer);
+       //printk("\nvalor de temp[i] es %c \n",*c_puntero);
+        i++;
+    }
+ */
+     read_unlock_irqrestore(&sp,flags);
+
+    int i= 0;
+    while(i < num_temp){
+//      printk("\nadd nuevo valor\n");
+     // printk("\nvalor de temp[i] es %c \n",kbuff[i]);
+       //add(&c);
+      add(kbuff[i]);
+          i++;
+      }
+     
+  
+      print_list(&modlist);
+    printk("\nTermino de copiar elementos a la lista despues de volcar elementos a cbuffer\n");
+   
+}
+
+static int timer_period_ms=1;
+static int emergency_threshold=80;//por centaje 80%
+static int max_random= 100;
 
 
 int generaVector(char* unBuffer,struct list_head* list){
@@ -116,20 +167,16 @@ int generaVector(char* unBuffer,struct list_head* list){
 }
 
 static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
-    
-      printk("\nentro leer e imprimo la lista\n");
-      print_list(&modlist);
-       printk("\ntermino de  leer e imprimo la lista\n");
-
-
     int num_elem;
-
+    //!!!!!!!!tipo de unBuffer igual podemos declararlo directamente con tipo int que facilita luego al rellenarlo con
+    //los valores de tipo int. Es mas, Supongo que el metodo copy_to_user recibe cualquier tipo 
   char* unBuffer;
     if ((*off) > 0) /* Tell the application that there is nothing left to read */
         return 0;
 
-       
-
+        printk("\nentro leer e imprimo la lista\n");
+        print_list(&modlist);
+       printk("\ntermino de  leer e imprimo la lista\n");
    unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
 
   num_elem=generaVector(unBuffer,&modlist);
@@ -143,8 +190,10 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
   }
     
 
+  //unBuffer[nr_bytes]='\0';
     /* Transfer data from the kernel to userspace */  
   if (copy_to_user(buf, unBuffer,num_elem)){
+  //  printk("\nentra read 2\n");
       vfree(unBuffer);
      return -EINVAL;
   }
@@ -152,13 +201,13 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
 
  printk("\nentro leer e imprimo la lista otra vez\n");
   print_list(&modlist);
-
+  //limpiar(&modlist);
     
   (*off)+=len;  /* Update the file pointer */
 
 printk("\nentra -------------\n");
   vfree(unBuffer);
-  printk("\nsalgo...............\n");
+  printk("\nentra ...............\n");
   return num_elem; 
    
 };
@@ -201,36 +250,6 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
     
     return len;
 };
-
-/* Work's handler function */
-static void copy_items_into_list ( struct work_struct *work )
-{
-    int num_temp=size_cbuffer_t (cbuffer);
-    char kbuff[num_temp];
-    
-    unsigned long flags = 0;
-    
-//entra sesion critica
-      read_lock_irqsave(&sp,flags);
-      remove_items_cbuffer_t (cbuffer, kbuff, num_temp); 
-     read_unlock_irqrestore(&sp,flags);
-//sale de sesion critica
-
-    int i= 0;
-    while(i < num_temp){
-      add(kbuff[i]);
-          i++;
-      }
-     
-  
-      print_list(&modlist);
-    printk("\nTermino de copiar elementos a la lista despues de volcar elementos a cbuffer\n");
-   
-}
-
-static int timer_period_ms=1;
-static int emergency_threshold=80;//por centaje 80%
-static int max_random= 100;
 /* Function invoked when timer expires (fires) */
 static void fire_timer(unsigned long data)
 {   
@@ -252,6 +271,8 @@ static void fire_timer(unsigned long data)
     char ini[sizeof(num_aleatorio)];
     char* dest=ini;
     int len=0;
+     //dest+=sprintf(dest,"%i\n",num_aleatorio);
+     //len=dest-ini;
 
      len=sprintf(dest,"%i\n",num_aleatorio);
      //si uso %s sale bien el valor, si uso c%, sale otro
@@ -288,6 +309,9 @@ static void fire_timer(unsigned long data)
 
      }
       
+     
+    //printk("valor de numero es %i \n",num_aleatorio);
+        
         /* Re-activate the timer one second from now */
     mod_timer( &(my_timer), jiffies + HZ); 
 }

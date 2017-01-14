@@ -372,7 +372,7 @@ int init_modlist_module( void )
   
   int ret = 0;
   INIT_LIST_HEAD(&modlist); /* Initialize the list */
-  proc_entry = proc_create( "modlist", 0666, NULL, &proc_entry_fops);
+  proc_entry = proc_create( "modlist_mio", 0666, NULL, &proc_entry_fops);
   if (proc_entry == NULL) {
   ret = -ENOMEM;
   //trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
@@ -391,7 +391,7 @@ module_init( init_modlist_module );
 
 void exit_modlist_module( void )
 {
-  remove_proc_entry("modlist", NULL);
+  remove_proc_entry("modlist_mio", NULL);
   limpiar(&modlist);
   //trace_printk(KERN_INFO "modlist: Module unloaded.\n");
   print_list(&modlist);
