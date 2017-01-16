@@ -40,17 +40,34 @@ static int add(char*  valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
-
-	if (valor!=NULL)
+	if (valor!=NULL){
 		vfree(valor);
-
-  	 vfree(unNodo);
- 	 return -ENOMEM;	
+	}
+		vfree(unNodo);
+ 	 	return -ENOMEM;	
   }
-	
+
   unNodo->data = valor;
   list_add_tail(&(unNodo->list), &modlist);
   return 0;
+  /*	
+	 char* tem_char=(char *)vmalloc( sizeof(char));
+     char ini='9';
+    // tem_char=&ini;
+      
+    if (sscanf(&ini,"%s",tem_char)==1){
+    	printk("\nentro add se ha copiado bien\n");
+    	printk("\nentro add valor de tem_char es %c\n",*tem_char);
+    	printk("\nentro add valor de valor es %c\n",*valor);
+
+    }
+    else{
+    	    	printk("\nNo se ha copiado bien\n");
+
+    }
+	 unNodo->data = tem_char;
+  
+*/
 }
 
 static int push (char* valor) 
@@ -117,54 +134,7 @@ static void limpiar(struct list_head* list){
 	}
 
 }
-/*
-int mayor (
-#ifdef PARTE_OPCIONAL
-char* a, char *b
-#else
-int a, int b
-#endif
-     )
-{
-#ifdef PARTE_OPCIONAL
-  return (strcmp(a,b)==1);
-#else
-return (a>b);
-#endif
-}
-  
-*/
-/*
-static void sort(struct list_head *list) {
-	tNodo* item=NULL;
-	struct list_head* cur_node=NULL;
-	//trace_printk(KERN_INFO "%s\n","imprimiendo");
-#ifdef PARTE_OPCIONAL
-	char* aux;
-#else	
-	int aux=0;
-#endif
-	list_for_each(cur_node, list) 
-	{
-	//item points to the structure wherein the links are embedded 
-		item = list_entry(cur_node,tNodo, list);
-		//segundo bucle para comparar
-		tNodo* item2=NULL;
-		struct list_head* cur_node2=NULL;
-		list_for_each(cur_node2, list) 
-		{
-			//item points to the structure wherein the links are embedded 
-			item2 = list_entry(cur_node2,tNodo,list);
-			if(mayor(item2->data,item->data)){
-				aux=item->data;
-				item->data=item2->data;
-				item2->data=aux;
-			}
-		}
-	
-	}
-}
-*/
+
 static int remove (char* valor,  struct list_head* list){
 	tNodo* item=NULL;
 	struct list_head* cur_node=NULL;
@@ -227,14 +197,52 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 	  }  
 		
 
-	unBuffer[len]='\0';
+		unBuffer[len]='\0';
 		//trace_printk(unBuffer);
+	char* tem_char1=(char *)vmalloc( sizeof(char));
+	char* tem_char2=(char *)vmalloc( sizeof(char));
+	char* tem_char3=(char *)vmalloc( sizeof(char));
+	char* tem_char4=(char *)vmalloc( sizeof(char));
+
+
+    //char ini[3]={'a','\n','b'};
+    char ini1={'a'};
+    char ini2={'b'};
+    char ini3={'c'};
+    char ini4={'0'};
+
+    if (sscanf(&ini1,"%c\n",tem_char1)==1){
+    	printk("\nse ha copiado bien\n");
+    	printk("\nvalor de tem_char1 es %c\n",*tem_char1);}
+    else{printk("\nNo se ha copiado bien\n");}
+
+     if (sscanf(&ini2,"%c\n",tem_char2)==1){
+    	printk("\nse ha copiado bien\n");
+    	printk("\nvalor de tem_char2 es %c\n",*tem_char2);}
+    else{printk("\nNo se ha copiado bien\n");}
+     if (sscanf(&ini3,"%c\n",tem_char3)==1){
+    	printk("\nse ha copiado bien\n");
+    	printk("\nvalor de tem_char3 es %c\n",*tem_char3);}
+    else{printk("\nNo se ha copiado bien\n");}
+
+    if (sscanf(&ini4,"%s\n",tem_char4)==1){
+    	printk("\nse ha copiado bien\n");
+    	printk("\nvalor de tem_char4 es %c\n",*tem_char4);}
+    else{printk("\nNo se ha copiado bien\n");}
+
+   //  tem_char=&ini;
 
 		//trace_printk("add opt"); 
-	  if(sscanf(unBuffer,"add %s",r)==1){
-	  		add(r);
+	  if(sscanf(unBuffer,"add %c",r)==1){
+	  	printk("\nvalor de r es %c\n",*r);
+	  //	char* rr=r+(sizeof(char));
+	 // 	printk("\nvalor de r es %s\n",*rr);
+	  		//add(r);
+	  	add(tem_char1);
+	  	add(tem_char2);
+	  	add(tem_char3);
+	  	add(tem_char4);
 	  		//trace_printk("He insertado: %d\n",r);
-
 	  }
 	  else 
 	
@@ -322,7 +330,7 @@ int generaVector(char* unBuffer,struct list_head* list){
 
 
 static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
-    int num_elem;
+    int nr_bytes;
    
 	char* unBuffer;
 	  if ((*off) > 0) /* Tell the application that there is nothing left to read */
@@ -330,19 +338,28 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
 
 	 unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
  	
- 	num_elem=generaVector(unBuffer,&modlist);
+ 	nr_bytes=generaVector(unBuffer,&modlist);
  	
  	//nr_bytes=strlen(unBuffer);
 
-	if (len<num_elem){
+	if (len<nr_bytes){
 		vfree(unBuffer);
 		return -ENOSPC;
 	}
-    
+    limpiar(&modlist);
 
+   int num_aleatorio =111; 
+   char tmp[]="Hola mundo";
+   char ini[sizeof(num_aleatorio)];
+   char* valor=ini;
+ 
+  sprintf(valor,"%i\n",num_aleatorio);
+ 	strcat(&tmp,num_aleatorio);
   //unBuffer[nr_bytes]='\0';
+  sprintf(unBuffer,"%s\n",&tmp);
+  
     /* Transfer data from the kernel to userspace */  
-  if (copy_to_user(buf, unBuffer,num_elem)){
+  if (copy_to_user(buf, unBuffer,20)){//el numero es valor en bytes
   		vfree(unBuffer);
   	 return -EINVAL;
   }
@@ -353,7 +370,7 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
   (*off)+=len;  /* Update the file pointer */
 
 	vfree(unBuffer);
-  return num_elem; 
+  return nr_bytes; 
 
 
 	 
@@ -377,7 +394,7 @@ int init_modlist_module( void )
   ret = -ENOMEM;
   //trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
   }// else   
-  //trace_printk(KERN_INFO "modlist: Module loaded\n");
+  printk("modlist: Module loaded\n");
   return ret;
  
 

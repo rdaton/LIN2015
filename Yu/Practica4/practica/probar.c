@@ -24,6 +24,10 @@ struct timer_list my_timer; /* Structure that describes the kernel timer */
 cbuffer_t* cbuffer; /* Buffer circular */ 
 struct work_struct my_work;/* Work descriptor */
 static struct proc_dir_entry *proc_entry ;
+static int timer_period_ms=1;
+static int emergency_threshold=80;//por centaje 80%
+static int max_random= 100;
+static int longitud=0;
 
 /* Tipo de nodo */
 typedef struct{
@@ -37,19 +41,30 @@ struct list_head modlist;
 
 static void limpiar(struct list_head* list){
     tNodo* item=NULL;
+    tNodo* listaNodos[longitud];
     struct list_head* cur_node=NULL;
     struct list_head* lista_aux=NULL;
+
+
+  int i=0;
+  int longitud_aux=0;
+  longitud_aux=longitud;
+      write_lock(&rwl);
     //trace_printk(KERN_INFO "%s\n","limpiando");
     list_for_each_safe(cur_node,lista_aux,list) 
     {
     /* item points to the structure wherein the links are embedded */
-    item = list_entry(cur_node,tNodo, list);
-    list_del(cur_node);
-        if (item->data!=NULL){
-            //vfree (item->data);
-            vfree(item); 
-        }
+      item = list_entry(cur_node,tNodo, list);
+      list_del(cur_node);
+      listaNodos[i]=item;
+      i++;   
     }
+    longitud=0;
+    write_unlock(&rwl);
+
+    //hago el vfree fuera del spinlock
+  for (i=0;i<longitud_aux;i++)
+    vfree(listaNodos[i]);
 }
 
 void print_list(struct list_head *list) {
@@ -71,18 +86,27 @@ void print_list(struct list_head *list) {
   
 }
 
-static int add(char valor) 
+static int add(char* valor) 
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
-  
-        vfree(unNodo);
-     return -ENOMEM;    
+    if (valor!=NULL){
+      vfree(valor);
+    }
+      vfree(unNodo);
+      return -ENOMEM; 
   }
 
-  unNodo->data = &valor;
+  unNodo->data = valor;
+
+   //sección critica lista de enteros
+  write_lock(&rwl);
   list_add_tail(&(unNodo->list), &modlist);
+  longitud++;
   printk("\nse ha metido el nuevo dato\n");
+  write_unlock(&rwl);
+  //fin sección critica lista de enteros
+
   print_list(&modlist);
   return 0;
 }
@@ -97,6 +121,9 @@ int generaVector(char* unBuffer,struct list_head* list){
   //trace_printk(KERN_INFO "%s\n","imprimiendo");
   
   char* dest=unBuffer;
+
+  //sección critica
+  read_lock(&rwl);
   list_for_each(cur_node, list) 
   {
   // item points to the structure wherein the links are embedded 
@@ -108,14 +135,56 @@ int generaVector(char* unBuffer,struct list_head* list){
   
   }
   printk("\nentro leer e imprimo la lista\n");
-        print_list(&modlist);
-       printk("\ntermino de  leer e imprimo la lista\n");
-   printk("\nsalgo de  generate vector\n");
+  print_list(&modlist);
+  printk("\ntermino de  leer e imprimo la lista\n");
+  printk("\nsalgo de  generate vector\n");
   
+  read_unlock(&rwl);
+  //fin sección critica
   return dest-unBuffer;
 }
 
-static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
+
+static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff_t *off) {
+    
+
+
+    int num_elem;
+
+    char* unBuffer;
+    if ((*off) > 0) /* Tell the application that there is nothing left to read */
+        return 0;
+
+       
+
+   unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
+
+  num_elem=generaVector(unBuffer,&modlist);
+ 
+  //nr_bytes=strlen(unBuffer);
+
+  if (len<num_elem){
+//    printk("\nentra read 1\n");
+    vfree(unBuffer);
+    return -ENOSPC;
+  }
+    
+
+    /* Transfer data from the kernel to userspace */  
+  if (copy_to_user(buf, unBuffer,num_elem)){
+      vfree(unBuffer);
+     return -EINVAL;
+  }
+   
+  (*off)+=len;  /* Update the file pointer */
+
+  vfree(unBuffer);
+  return num_elem; 
+   
+};
+
+
+static ssize_t read_timer(struct file *filp, char __user *buf, size_t len, loff_t *off) {
     
       printk("\nentro leer e imprimo la lista\n");
       print_list(&modlist);
@@ -150,20 +219,21 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
   }
    
 
- printk("\nentro leer e imprimo la lista otra vez\n");
+  printk("\nentro leer e imprimo la lista otra vez\n");
   print_list(&modlist);
-
-    
+  limpiar(&modlist);
+  printk("\ndespues de limpiar voy a imprimir\n");
+  print_list(&modlist);
   (*off)+=len;  /* Update the file pointer */
 
-printk("\nentra -------------\n");
+  printk("\nentra -------------\n");
   vfree(unBuffer);
   printk("\nsalgo...............\n");
   return num_elem; 
    
 };
 
-static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
+static ssize_t write_config(struct file *filp, const char __user *buf, size_t len, loff_t *off) {
   int r;
   
   char* unBuffer;
@@ -183,7 +253,7 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 
   unBuffer[len]='\0';
 
-   if(sscanf(unBuffer,"add %i",&r)==1){
+   if(sscanf(unBuffer,"timer_period_ms %i",&r)==1){
         timer_period_ms = r;
         printk("\n----------------------He insertado: %d\n",r);
       }
@@ -206,31 +276,36 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 static void copy_items_into_list ( struct work_struct *work )
 {
     int num_temp=size_cbuffer_t (cbuffer);
-    char kbuff[num_temp];
+    char temp[num_temp];
+    
     
     unsigned long flags = 0;
     
 //entra sesion critica
       read_lock_irqsave(&sp,flags);
-      remove_items_cbuffer_t (cbuffer, kbuff, num_temp); 
+      remove_items_cbuffer_t (cbuffer, temp, num_temp); 
      read_unlock_irqrestore(&sp,flags);
 //sale de sesion critica
-
-    int i= 0;
-    while(i < num_temp){
-      add(kbuff[i]);
-          i++;
+    int i;
+    for(i=0;i<num_temp;i++){
+        char* kbuff=(char *)vmalloc(sizeof(char));
+      if (sscanf(&temp[i],"%c\n",kbuff)==1){
+          printk("\nse ha copiado bien\n");
+          printk("\nvalor de tem_char es %c\n",*kbuff);
+          add(kbuff);
       }
+    }
+
+   
+
      
   
-      print_list(&modlist);
+    print_list(&modlist);
     printk("\nTermino de copiar elementos a la lista despues de volcar elementos a cbuffer\n");
    
 }
 
-static int timer_period_ms=1;
-static int emergency_threshold=80;//por centaje 80%
-static int max_random= 100;
+
 /* Function invoked when timer expires (fires) */
 static void fire_timer(unsigned long data)
 {   
@@ -295,9 +370,15 @@ static void fire_timer(unsigned long data)
 
 
 //operaciones de entrada salida
-static const struct file_operations proc_entry_fops = {
-    .read = modlist_read,
-    .write = modlist_write,    
+static const struct file_operations proc_entry_modtimer = {
+    .read = read_timer,
+    //.write = modlist_write,    
+};
+
+//operaciones de entrada salida
+static const struct file_operations proc_entry_modconfig = {
+    .write = write_config,
+    .read = read_config,
 };
 
 
@@ -323,7 +404,14 @@ int init_timer_module( void )
 
     int ret = 0;
     INIT_LIST_HEAD(&modlist); /* Initialize the list */
-    proc_entry = proc_create( "modconfig", 0666, NULL, &proc_entry_fops);
+    proc_entry = proc_create( "modconfig", 0666, NULL, &proc_entry_modconfig);
+    if (proc_entry == NULL) 
+    {
+      printk("\nse ha generado el modulo\n");
+        ret = -ENOMEM;
+    } 
+
+     proc_entry = proc_create( "modtimer", 0666, NULL, &proc_entry_modtimer);
     if (proc_entry == NULL) 
     {
       printk("\nse ha generado el modulo\n");
