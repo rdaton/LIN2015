@@ -353,24 +353,29 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
    char tmp2[]="adios mundo";
 
    char tmp3[50];
-   char ini[sizeof(num_aleatorio)];
-   char* valor=ini;
- 
-  	sprintf(valor,"%i\n",num_aleatorio);
+   //char ini[sizeof(num_aleatorio)];
+   //char* valor=ini;
+ 	char valor[400];
+  	sprintf(valor,"%i",num_aleatorio);
 
   	printk("\nvalor de valor es %s\n",valor);
+  	strcat(valor,tmp);
+  	printk("--------------%s\n",valor);
  	//strcat(&tmp,&tmp2);
+
  	printk("\nvalor de temp es %s\n",tmp);
- 	sprintf(tmp3,"%i__%s",num_aleatorio,tmp2);
+ 	//sprintf(tmp3,"%i__%s",num_aleatorio,tmp2);
 
  	printk("\nvalor de temp es %s\n",tmp);
  	printk("\nvalor de temp2 es %s\n",tmp2);
  	printk("\nvalor de temp3 es %s\n",tmp3);
   //unBuffer[nr_bytes]='\0';
-  sprintf(unBuffer,"%s\n",&tmp3);
+  sprintf(unBuffer,"%s\n",valor);
+  unBuffer[50]='\0';
   printk("\nvalor de unbuffer es %s\n",unBuffer);
     /* Transfer data from the kernel to userspace */  
-  if (copy_to_user(buf, unBuffer,50)){//el numero es valor en bytes
+  if (copy_to_user(buf, unBuffer,400))//el numero es valor en bytes
+  		{
   		vfree(unBuffer);
   	 return -EINVAL;
   }
