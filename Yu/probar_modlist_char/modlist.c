@@ -350,16 +350,27 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
 
    int num_aleatorio =111; 
    char tmp[]="Hola mundo";
+   char tmp2[]="adios mundo";
+
+   char tmp3[50];
    char ini[sizeof(num_aleatorio)];
    char* valor=ini;
  
-  sprintf(valor,"%i\n",num_aleatorio);
- 	strcat(&tmp,num_aleatorio);
+  	sprintf(valor,"%i\n",num_aleatorio);
+
+  	printk("\nvalor de valor es %s\n",valor);
+ 	//strcat(&tmp,&tmp2);
+ 	printk("\nvalor de temp es %s\n",tmp);
+ 	sprintf(tmp3,"%i__%s",num_aleatorio,tmp2);
+
+ 	printk("\nvalor de temp es %s\n",tmp);
+ 	printk("\nvalor de temp2 es %s\n",tmp2);
+ 	printk("\nvalor de temp3 es %s\n",tmp3);
   //unBuffer[nr_bytes]='\0';
-  sprintf(unBuffer,"%s\n",&tmp);
-  
+  sprintf(unBuffer,"%s\n",&tmp3);
+  printk("\nvalor de unbuffer es %s\n",unBuffer);
     /* Transfer data from the kernel to userspace */  
-  if (copy_to_user(buf, unBuffer,20)){//el numero es valor en bytes
+  if (copy_to_user(buf, unBuffer,50)){//el numero es valor en bytes
   		vfree(unBuffer);
   	 return -EINVAL;
   }
@@ -367,7 +378,7 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
 
   print_list(&modlist);
     
-  (*off)+=len;  /* Update the file pointer */
+  (*off)+=50;  /* Update the file pointer */
 
 	vfree(unBuffer);
   return nr_bytes; 
