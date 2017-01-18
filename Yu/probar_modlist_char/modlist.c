@@ -350,15 +350,15 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
 
    int num_aleatorio =111; 
    char tmp[]="Hola mundo";
-   char tmp2[]="adios mundo";
+   //char tmp2[]="adios mundo";
 
-   char tmp3[50];
+   //char tmp3[50];
    //char ini[sizeof(num_aleatorio)];
    //char* valor=ini;
  	char valor[400];
-  	sprintf(valor,"%i",num_aleatorio);
+  	int tam_valor=sprintf(valor,"%i",num_aleatorio);
 
-  	printk("\nvalor de valor es %s\n",valor);
+  	printk("\nvalor de valor es %s, tamanio es %i\n",valor,tam_valor);
   	strcat(valor,tmp);
   	printk("--------------%s\n",valor);
  	//strcat(&tmp,&tmp2);
@@ -366,27 +366,30 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
  	printk("\nvalor de temp es %s\n",tmp);
  	//sprintf(tmp3,"%i__%s",num_aleatorio,tmp2);
 
- 	printk("\nvalor de temp es %s\n",tmp);
- 	printk("\nvalor de temp2 es %s\n",tmp2);
- 	printk("\nvalor de temp3 es %s\n",tmp3);
+ 	
+ 	//printk("\nvalor de temp2 es %s\n",tmp2);
+ 	//printk("\nvalor de temp3 es %s\n",tmp3);
   //unBuffer[nr_bytes]='\0';
-  sprintf(unBuffer,"%s\n",valor);
+  int tam_buf=sprintf(unBuffer,"%s\n",valor);
+  
   unBuffer[50]='\0';
-  printk("\nvalor de unbuffer es %s\n",unBuffer);
+  printk("\nvalor de unbuffer es %s, tamanio de buf es %i\n",unBuffer,tam_buf);
     /* Transfer data from the kernel to userspace */  
-  if (copy_to_user(buf, unBuffer,400))//el numero es valor en bytes
+  if (copy_to_user(buf, unBuffer,tam_buf))//el numero es valor en bytes
   		{
   		vfree(unBuffer);
   	 return -EINVAL;
   }
    
-
+ 
+ printk("\n%s----------------\n",buf);
+  printk("%s",unBuffer);
   print_list(&modlist);
     
   (*off)+=50;  /* Update the file pointer */
 
 	vfree(unBuffer);
-  return nr_bytes; 
+  return tam_buf; 
 
 
 	 
