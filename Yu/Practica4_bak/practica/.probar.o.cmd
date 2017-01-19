@@ -1,8 +1,8 @@
-cmd_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o := gcc -Wp,-MD,/home/kernel/LIN2015/Yu/Practica4/practica/.probar.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.7/include -I/home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include -Iarch/x86/include/generated  -Iinclude -I/home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/home/kernel/LIN2015/Yu/linux-3.14.1/include/uapi -Iinclude/generated/uapi -include /home/kernel/LIN2015/Yu/linux-3.14.1/include/linux/kconfig.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -Wno-maybe-uninitialized -m64 -mno-mmx -mno-sse -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -Wframe-larger-than=2048 -fno-stack-protector -Wno-unused-but-set-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(probar)"  -D"KBUILD_MODNAME=KBUILD_STR(modtimer)" -c -o /home/kernel/LIN2015/Yu/Practica4/practica/.tmp_probar.o /home/kernel/LIN2015/Yu/Practica4/practica/probar.c
+cmd_/home/kernel/LIN2015/Yu/Practica4_bak/practica/probar.o := gcc -Wp,-MD,/home/kernel/LIN2015/Yu/Practica4_bak/practica/.probar.o.d  -nostdinc -isystem /usr/lib/gcc/x86_64-linux-gnu/4.7/include -I/home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include -Iarch/x86/include/generated  -Iinclude -I/home/kernel/LIN2015/Yu/linux-3.14.1/arch/x86/include/uapi -Iarch/x86/include/generated/uapi -I/home/kernel/LIN2015/Yu/linux-3.14.1/include/uapi -Iinclude/generated/uapi -include /home/kernel/LIN2015/Yu/linux-3.14.1/include/linux/kconfig.h -D__KERNEL__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -fno-common -Werror-implicit-function-declaration -Wno-format-security -fno-delete-null-pointer-checks -Os -Wno-maybe-uninitialized -m64 -mno-mmx -mno-sse -mtune=generic -mno-red-zone -mcmodel=kernel -funit-at-a-time -maccumulate-outgoing-args -DCONFIG_AS_CFI=1 -DCONFIG_AS_CFI_SIGNAL_FRAME=1 -DCONFIG_AS_CFI_SECTIONS=1 -DCONFIG_AS_FXSAVEQ=1 -DCONFIG_AS_AVX=1 -DCONFIG_AS_AVX2=1 -pipe -Wno-sign-compare -fno-asynchronous-unwind-tables -mno-sse -mno-mmx -mno-sse2 -mno-3dnow -mno-avx -Wframe-larger-than=2048 -fno-stack-protector -Wno-unused-but-set-variable -fno-omit-frame-pointer -fno-optimize-sibling-calls -g -pg -mfentry -DCC_USING_FENTRY -Wdeclaration-after-statement -Wno-pointer-sign -fno-strict-overflow -fconserve-stack -Werror=implicit-int -Werror=strict-prototypes -DCC_HAVE_ASM_GOTO  -DMODULE  -D"KBUILD_STR(s)=\#s" -D"KBUILD_BASENAME=KBUILD_STR(probar)"  -D"KBUILD_MODNAME=KBUILD_STR(modtimer)" -c -o /home/kernel/LIN2015/Yu/Practica4_bak/practica/.tmp_probar.o /home/kernel/LIN2015/Yu/Practica4_bak/practica/probar.c
 
-source_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o := /home/kernel/LIN2015/Yu/Practica4/practica/probar.c
+source_/home/kernel/LIN2015/Yu/Practica4_bak/practica/probar.o := /home/kernel/LIN2015/Yu/Practica4_bak/practica/probar.c
 
-deps_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o := \
+deps_/home/kernel/LIN2015/Yu/Practica4_bak/practica/probar.o := \
   include/linux/module.h \
     $(wildcard include/config/sysfs.h) \
     $(wildcard include/config/modules.h) \
@@ -610,7 +610,7 @@ deps_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o := \
   include/linux/slub_def.h \
     $(wildcard include/config/slub/stats.h) \
     $(wildcard include/config/memcg/kmem.h) \
-  /home/kernel/LIN2015/Yu/Practica4/practica/cbuffer.h \
+  /home/kernel/LIN2015/Yu/Practica4_bak/practica/cbuffer.h \
   include/asm-generic/uaccess.h \
   include/linux/sched.h \
     $(wildcard include/config/sched/debug.h) \
@@ -730,6 +730,6 @@ deps_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o := \
   include/linux/selinux.h \
     $(wildcard include/config/security/selinux.h) \
 
-/home/kernel/LIN2015/Yu/Practica4/practica/probar.o: $(deps_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o)
+/home/kernel/LIN2015/Yu/Practica4_bak/practica/probar.o: $(deps_/home/kernel/LIN2015/Yu/Practica4_bak/practica/probar.o)
 
-$(deps_/home/kernel/LIN2015/Yu/Practica4/practica/probar.o):
+$(deps_/home/kernel/LIN2015/Yu/Practica4_bak/practica/probar.o):

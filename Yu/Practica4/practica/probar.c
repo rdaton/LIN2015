@@ -48,55 +48,7 @@ struct list_head modlist;
 
 
 
-//struct inode *inode, struct file *file
-/* Se invoca al hacer open() de entrada /proc */ 
-static int _open(struct inode *inode, struct file *file)
-{
-    
-   
-     if (down_interruptible(&mtx))
-        {
-        return -EINTR;
-        }
 
-    if (file->f_mode & FMODE_READ)  
-    { 
-      /* Acceso a la crítica */
-
-       
-        /* Bloquearse mientras no haya productor preparado */
-        while (longitud==0)
-        {
-          printk("\nesta vacioooooo!!!!\n");
-          /* Incremento de consumidores esperando */
-          nr_cons_waiting++;
-          up(&mtx);
-         
-          /* Bloqueo en cola de espera */   
-          if (down_interruptible(&sem_cons)){  
-           
-             down(&mtx);
-            nr_cons_waiting--;
-            up(&mtx);
-            return -EINTR;
-          }
-            if(down_interruptible(&mtx))
-            {
-              return -EINTR;
-            }     
-        }
-         /* Despertar a los consumidores bloqueados (si hay alguno) */
-          if (nr_cons_waiting>0)
-          {
-          up(&sem_cons);  
-          nr_cons_waiting--;
-          }
-    } 
-  /* Salir de la sección crítica */
-  up(&mtx);
-  return 0;
-
-}
 
 
 static void limpiar(struct list_head* list){
@@ -216,7 +168,6 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
         return 0;
 
        
-
   unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
 
   num_elem=generaVector(unBuffer,&modlist);
@@ -259,8 +210,12 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
    
   (*off)+=len;  /* Update the file pointer */
 
-  limpiar(&modlist);
-  vfree(unBuffer);
+    limpiar(&modlist);
+    vfree(unBuffer);
+    
+    if(num_elem==0){
+      num_elem++;
+    }
   return num_elem; 
    
 };
@@ -469,6 +424,60 @@ static void fire_timer(unsigned long data)
     mod_timer( &(my_timer), jiffies + HZ); 
 }
 
+//struct inode *inode, struct file *file
+/* Se invoca al hacer open() de entrada /proc */ 
+static int _open(struct inode *inode, struct file *file)
+{
+    
+   
+     if (down_interruptible(&mtx))
+        {
+        return -EINTR;
+        }
+
+    if (file->f_mode & FMODE_READ)  
+    { 
+      /* Acceso a la crítica */
+
+
+       
+   
+        /* Activate the timer for the first time */
+    add_timer(&my_timer); 
+
+        /* Bloquearse mientras no haya productor preparado */
+        while (longitud==0)
+        {
+          printk("\nesta vacioooooo!!!!\n");
+          /* Incremento de consumidores esperando */
+          nr_cons_waiting++;
+          up(&mtx);
+         
+          /* Bloqueo en cola de espera */   
+          if (down_interruptible(&sem_cons)){  
+           
+             down(&mtx);
+            nr_cons_waiting--;
+            up(&mtx);
+            return -EINTR;
+          }
+            if(down_interruptible(&mtx))
+            {
+              return -EINTR;
+            }     
+        }
+         /* Despertar a los consumidores bloqueados (si hay alguno) */
+          if (nr_cons_waiting>0)
+          {
+          up(&sem_cons);  
+          nr_cons_waiting--;
+          }
+    } 
+  /* Salir de la sección crítica */
+  up(&mtx);
+  return 0;
+
+}
 
 
 //operaciones de entrada salida
@@ -497,14 +506,12 @@ int init_timer_module( void )
   if (!cbuffer) {
     return -ENOMEM;
   }
-    /* Create timer */
+     /* Create timer */
     init_timer(&my_timer);
     /* Initialize field */
     my_timer.data=0;
     my_timer.function=fire_timer;
     my_timer.expires=jiffies + HZ;  /* Activate it one second from now */
-    /* Activate the timer for the first time */
-    add_timer(&my_timer); 
     /* Initialize work structure (with function) */
     INIT_WORK(&my_work, copy_items_into_list );
 
