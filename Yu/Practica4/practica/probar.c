@@ -63,7 +63,17 @@ static int _open(struct inode *inode, struct file *file)
     { 
       /* Acceso a la crítica */
 
-       
+
+        /* Create timer */
+    init_timer(&my_timer);
+    /* Initialize field */
+    my_timer.data=0;
+    my_timer.function=fire_timer;
+    my_timer.expires=jiffies + HZ;  /* Activate it one second from now */
+   
+        /* Activate the timer for the first time */
+    add_timer(&my_timer); 
+
         /* Bloquearse mientras no haya productor preparado */
         while (longitud==0)
         {
@@ -216,7 +226,6 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
         return 0;
 
        
-
   unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
 
   num_elem=generaVector(unBuffer,&modlist);
@@ -259,8 +268,12 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
    
   (*off)+=len;  /* Update the file pointer */
 
-  limpiar(&modlist);
-  vfree(unBuffer);
+    limpiar(&modlist);
+    vfree(unBuffer);
+    
+    if(num_elem==0){
+      num_elem++;
+    }
   return num_elem; 
    
 };
@@ -497,14 +510,7 @@ int init_timer_module( void )
   if (!cbuffer) {
     return -ENOMEM;
   }
-    /* Create timer */
-    init_timer(&my_timer);
-    /* Initialize field */
-    my_timer.data=0;
-    my_timer.function=fire_timer;
-    my_timer.expires=jiffies + HZ;  /* Activate it one second from now */
-    /* Activate the timer for the first time */
-    add_timer(&my_timer); 
+    
     /* Initialize work structure (with function) */
     INIT_WORK(&my_work, copy_items_into_list );
 

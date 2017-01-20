@@ -373,16 +373,24 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
   int tam_buf=sprintf(unBuffer,"%s\n",valor);
   
   unBuffer[50]='\0';
-  printk("\nvalor de unbuffer es %s, tamanio de buf es %i\n",unBuffer,tam_buf);
+
+
+int numero=12;
+  char* ttt;
+  ttt=(char*)(vmalloc(sizeof(numero)));
+  ttt=(char*)(&numero);
+  //unbuffer=ttt;
+int n=*(int*)ttt;
+  printk("\nvalor de ttt es %i, tamanio de buf es %i\n",n,tam_buf);
     /* Transfer data from the kernel to userspace */  
-  if (copy_to_user(buf, unBuffer,tam_buf))//el numero es valor en bytes
+  if (copy_to_user(buf, ttt,sizeof(numero)))//el numero es valor en bytes
   		{
   		vfree(unBuffer);
   	 return -EINVAL;
   }
    
  
- printk("\n%s----------------\n",buf);
+  printk("\n%s----------------\n",buf);
   printk("%s",unBuffer);
   print_list(&modlist);
     
@@ -390,8 +398,6 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
 
 	vfree(unBuffer);
   return tam_buf; 
-
-
 	 
 };
 
@@ -414,6 +420,14 @@ int init_modlist_module( void )
   //trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
   }// else   
   printk("modlist: Module loaded\n");
+
+/*  int num=12;
+  char* c=(char*)(&num);
+  printk("valor de c es %c\n",c);
+  int* tmp=(int*)(c);
+  printk("\nvalor de tmp es %i\n",tmp);
+*/
+
   return ret;
  
 

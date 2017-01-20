@@ -333,6 +333,13 @@ int init_modlist_module( void )
   ret = -ENOMEM;
   //trace_printk(KERN_INFO "modlist: Can't create /proc entry\n");
   } else   
+
+  int num=12;
+  char* c=(char*)(&num);
+  printk("valor de c es %c\n",c);
+  int* tmp=(int*)(c);
+  printk("\nvalor de tmp es %i\n",tmp);
+
   return ret;
  
 
