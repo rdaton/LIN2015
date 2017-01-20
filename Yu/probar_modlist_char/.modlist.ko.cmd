@@ -1,1 +1,0 @@
-cmd_/home/kernel/LIN2015/Yu/probar_modlist_char/modlist.ko := ld -r -m elf_x86_64 -T /home/kernel/LIN2015/Yu/linux-3.14.1/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Yu/probar_modlist_char/modlist.ko /home/kernel/LIN2015/Yu/probar_modlist_char/modlist.o /home/kernel/LIN2015/Yu/probar_modlist_char/modlist.mod.o

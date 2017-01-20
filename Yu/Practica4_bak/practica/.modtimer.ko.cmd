@@ -1,0 +1,1 @@
+cmd_/home/kernel/LIN2015/Yu/Practica4_bak/practica/modtimer.ko := ld -r -m elf_x86_64 -T /home/kernel/LIN2015/Yu/linux-3.14.1/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Yu/Practica4_bak/practica/modtimer.ko /home/kernel/LIN2015/Yu/Practica4_bak/practica/modtimer.o /home/kernel/LIN2015/Yu/Practica4_bak/practica/modtimer.mod.o
