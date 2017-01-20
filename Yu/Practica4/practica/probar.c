@@ -38,9 +38,10 @@ static int longitud=0;
 
 /* Tipo de nodo */
 typedef struct{
-    struct list_head list;
-    char* data;
+struct list_head list;
+int data;
 } tNodo;
+
 
 /* Lista enlazada */
 struct list_head modlist;
@@ -91,14 +92,14 @@ void print_list(struct list_head *list) {
   // item points to the structure wherein the links are embedded 
     item = list_entry(cur_node,tNodo, list);
     //&b=item->data;
-      printk("valor es %c\n",*(item->data));
+      printk("valor es %i\n",*(item->data));
   }
   //read_unlock(&rwl);
   //fin sección critica lista de enteros
   
 }
 
-static int add(char* valor) 
+static int add(int valor) 
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
@@ -112,11 +113,11 @@ static int add(char* valor)
   unNodo->data = valor;
 
    //sección critica lista de enteros
-  down(&mtx);
+  //down(&mtx);
   list_add_tail(&(unNodo->list), &modlist);
   longitud++;
   printk("\nse ha metido el nuevo dato\n");
-  up(&mtx);
+  //up(&mtx);
   //fin sección critica lista de enteros
 
   print_list(&modlist);
@@ -127,37 +128,40 @@ static int add(char* valor)
 
 int generaVector(char* unBuffer,struct list_head* list){
   //struct list_head* list=&Modlist;
-  printk("\nentro generate vector\n");
-    tNodo* item=NULL;
+  tNodo* item=NULL;
   struct list_head* cur_node=NULL;
   //trace_printk(KERN_INFO "%s\n","imprimiendo");
-  
+  int long_max_buffer=9;
+  char miniBuffer[long_max_buffer]; 
   char* dest=unBuffer;
-
+  int nr_chars,len;
+  nr_chars=0;
+  len=0;
   //sección critica
-  down(&mtx);
+  //read_lock(&rwl);
+  
   list_for_each(cur_node, list) 
   {
-  // item points to the structure wherein the links are embedded 
+    // item points to the structure wherein the links are embedded 
 
-  item = list_entry(cur_node,tNodo, list);
-  //trace_printk(KERN_INFO "%i\n",item->data);
+    item = list_entry(cur_node,tNodo, list);
+    //trace_printk(KERN_INFO "%i\n",item->data);
   
-  dest+=sprintf(dest,"%s\n",item->data);
-  
+    //AQUI HAY QUE HACER UNA CONVERSION ASIGNANDO EL VALOR A LA VARIABLE C
+    len=sprintf(miniBuffer,"%i\n",item->data);
+    if ((len+nr_chars) > BUFFER_LENGTH )
+      break;
+    dest+=sprintf(dest,"%i\n",item->data);
+    nr_chars+=len;
+    
   }
-  //printk("\nentro leer e imprimo la lista\n");
-  //print_list(&modlist);
-  //printk("\ntermino de  leer e imprimo la lista\n");
-  //printk("\nsalgo de  generate vector\n");
-  
-  up(&mtx);
+  //read_unlock(&rwl);
   //fin sección critica
   return dest-unBuffer;
 }
 
 
-static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff_t *off) {
+static ssize_t read_timer(struct file *filp, char __user *buf, size_t len, loff_t *off) {
     
 
 
@@ -181,6 +185,10 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
   }
   
 
+     if (down_interruptible(&mtx))
+        {
+        return -EINTR;
+        }
  /* Bloquearse mientras buffer esté vacío */
       while (longitud<=0)
       {
@@ -207,21 +215,19 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
       vfree(unBuffer);
      return -EINVAL;
   }
-   
+
+  limpiar(&modlist);
+      
   (*off)+=len;  /* Update the file pointer */
 
-    limpiar(&modlist);
-    vfree(unBuffer);
-    
-    if(num_elem==0){
-      num_elem++;
-    }
+  vfree(unBuffer);
+  up(&mtx);
   return num_elem; 
    
 };
 
 
-static ssize_t read_timer(struct file *filp, char __user *buf, size_t len, loff_t *off) {
+static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff_t *off) {
     
       printk("\nentro leer e imprimo la lista\n");
       print_list(&modlist);
@@ -339,6 +345,8 @@ static void copy_items_into_list ( struct work_struct *work )
       remove_items_cbuffer_t (cbuffer, temp, num_temp); 
      read_unlock_irqrestore(&sp,flags);
 //sale de sesion critica
+
+
     int i;
     for(i=0;i<num_temp;i++){
         char* kbuff=(char *)vmalloc(sizeof(char));
@@ -391,7 +399,7 @@ static void fire_timer(unsigned long data)
     printk("\nvalor de dest es %s\n y el len es %i",dest,len);
     
      int num_elem=size_cbuffer_t (cbuffer);
-     int porcentaje = (((float)num_elem)/capacidad)*100;
+     int porcentaje = (100*num_elem)/capacidad;
            /* Insertar en el buffer */
     // printk("\nnumero de cpu es %i\n",numero_cpu);
      
@@ -429,6 +437,8 @@ static void fire_timer(unsigned long data)
 static int _open(struct inode *inode, struct file *file)
 {
     
+    /* Activate the timer for the first time */
+        add_timer(&my_timer); 
    
      if (down_interruptible(&mtx))
         {
@@ -437,13 +447,7 @@ static int _open(struct inode *inode, struct file *file)
 
     if (file->f_mode & FMODE_READ)  
     { 
-      /* Acceso a la crítica */
-
-
-       
-   
-        /* Activate the timer for the first time */
-    add_timer(&my_timer); 
+      /* Acceso a la crítica *
 
         /* Bloquearse mientras no haya productor preparado */
         while (longitud==0)
