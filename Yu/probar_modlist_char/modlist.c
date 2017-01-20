@@ -380,8 +380,8 @@ int numero=12;
   ttt=(char*)(vmalloc(sizeof(numero)));
   ttt=(char*)(&numero);
   //unbuffer=ttt;
-int n=*(int*)ttt;
-  printk("\nvalor de ttt es %i, tamanio de buf es %i\n",n,tam_buf);
+
+  printk("\nvalor de unbuffer es %s, tamanio de buf es %i\n",unBuffer,tam_buf);
     /* Transfer data from the kernel to userspace */  
   if (copy_to_user(buf, ttt,sizeof(numero)))//el numero es valor en bytes
   		{
