@@ -31,16 +31,15 @@ struct work_struct my_work;/* Work descriptor */
 int nr_cons_waiting=0;
 static struct proc_dir_entry *proc_entry1 ;
 static struct proc_dir_entry *proc_entry2 ;
-static int timer_period_ms=1000;
+static int timer_period_ms=1;
 static int emergency_threshold=80;//por centaje 80%
 static int max_random= 100;
 static int longitud=0;
 
 /* Tipo de nodo */
-/* Tipo de nodo */
 typedef struct{
-struct list_head list;
-int data;
+    struct list_head list;
+    char* data;
 } tNodo;
 
 /* Lista enlazada */
@@ -48,58 +47,8 @@ struct list_head modlist;
 
 
 
-//struct inode *inode, struct file *file
-/* Se invoca al hacer open() de entrada /proc */ 
-static int _open(struct inode *inode, struct file *file)
-{
-       
-    /* Acceso a la crítica */   
-    
-     if (down_interruptible(&mtx))
-        {
-        return -EINTR;
-        }
-	//incremento contador del módulo
-	try_module_get(THIS_MODULE);
-	
-    if (file->f_mode & FMODE_READ)  
-    {      
-        /* Activate the timer for the first time */
-    add_timer(&my_timer); 
 
-        /* Bloquearse mientras no haya productor preparado */
-        while (longitud==0)
-        {
-          printk("\nesta vacioooooo!!!!\n");
-          /* Incremento de consumidores esperando */
-          nr_cons_waiting++;
-          up(&mtx);
-         
-          /* Bloqueo en cola de espera */   
-          if (down_interruptible(&sem_cons)){  
-           
-             down(&mtx);
-            nr_cons_waiting--;
-            up(&mtx);
-            return -EINTR;
-          }
-            if(down_interruptible(&mtx))
-            {
-              return -EINTR;
-            }     
-        }
-         /* Despertar a los consumidores bloqueados (si hay alguno) */
-          if (nr_cons_waiting>0)
-          {
-          up(&sem_cons);  
-          nr_cons_waiting--;
-          }
-    } 
-  /* Salir de la sección crítica */
-  up(&mtx);
-  return 0;
 
-}
 
 
 static void limpiar(struct list_head* list){
@@ -116,7 +65,7 @@ static void limpiar(struct list_head* list){
     //trace_printk(KERN_INFO "%s\n","limpiando");
     list_for_each_safe(cur_node,lista_aux,list) 
     {
-    // item points to the structure wherein the links are embedded 
+    /* item points to the structure wherein the links are embedded */
       item = list_entry(cur_node,tNodo, list);
       list_del(cur_node);
       listaNodos[i]=item;
@@ -142,7 +91,7 @@ void print_list(struct list_head *list) {
   // item points to the structure wherein the links are embedded 
     item = list_entry(cur_node,tNodo, list);
     //&b=item->data;
-      printk("valor es %i\n",(item->data));
+      printk("valor es %c\n",*(item->data));
   }
   //read_unlock(&rwl);
   //fin sección critica lista de enteros
@@ -153,15 +102,26 @@ static int add(char* valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
-    vfree(unNodo);
-    return -ENOMEM; 
+    if (valor!=NULL){
+      vfree(valor);
+    }
+      vfree(unNodo);
+      return -ENOMEM; 
   }
+
   unNodo->data = valor;
+
+   //sección critica lista de enteros
+  down(&mtx);
   list_add_tail(&(unNodo->list), &modlist);
+  longitud++;
+  printk("\nse ha metido el nuevo dato\n");
+  up(&mtx);
+  //fin sección critica lista de enteros
+
+  print_list(&modlist);
   return 0;
 }
-
-
 
 
 
@@ -183,7 +143,7 @@ int generaVector(char* unBuffer,struct list_head* list){
   item = list_entry(cur_node,tNodo, list);
   //trace_printk(KERN_INFO "%i\n",item->data);
   
-  dest+=sprintf(dest,"%i\n",item->data);
+  dest+=sprintf(dest,"%s\n",item->data);
   
   }
   //printk("\nentro leer e imprimo la lista\n");
@@ -431,9 +391,7 @@ static void fire_timer(unsigned long data)
     printk("\nvalor de dest es %s\n y el len es %i",dest,len);
     
      int num_elem=size_cbuffer_t (cbuffer);
-    
-     //int porcentaje =(100*num_elem/capacidad);
-     int porcentaje=(100*num_elem)/(int)capacidad;
+     int porcentaje = (((float)num_elem)/capacidad)*100;
            /* Insertar en el buffer */
     // printk("\nnumero de cpu es %i\n",numero_cpu);
      
@@ -463,9 +421,63 @@ static void fire_timer(unsigned long data)
      }
       
         /* Re-activate the timer one second from now */
-    mod_timer( &(my_timer), jiffies + msecs_to_jiffies(timer_period_ms)); 
+    mod_timer( &(my_timer), jiffies + HZ); 
 }
 
+//struct inode *inode, struct file *file
+/* Se invoca al hacer open() de entrada /proc */ 
+static int _open(struct inode *inode, struct file *file)
+{
+    
+   
+     if (down_interruptible(&mtx))
+        {
+        return -EINTR;
+        }
+
+    if (file->f_mode & FMODE_READ)  
+    { 
+      /* Acceso a la crítica */
+
+
+       
+   
+        /* Activate the timer for the first time */
+    add_timer(&my_timer); 
+
+        /* Bloquearse mientras no haya productor preparado */
+        while (longitud==0)
+        {
+          printk("\nesta vacioooooo!!!!\n");
+          /* Incremento de consumidores esperando */
+          nr_cons_waiting++;
+          up(&mtx);
+         
+          /* Bloqueo en cola de espera */   
+          if (down_interruptible(&sem_cons)){  
+           
+             down(&mtx);
+            nr_cons_waiting--;
+            up(&mtx);
+            return -EINTR;
+          }
+            if(down_interruptible(&mtx))
+            {
+              return -EINTR;
+            }     
+        }
+         /* Despertar a los consumidores bloqueados (si hay alguno) */
+          if (nr_cons_waiting>0)
+          {
+          up(&sem_cons);  
+          nr_cons_waiting--;
+          }
+    } 
+  /* Salir de la sección crítica */
+  up(&mtx);
+  return 0;
+
+}
 
 
 //operaciones de entrada salida
@@ -488,20 +500,18 @@ static const struct file_operations proc_entry_modconfig = {
 int init_timer_module( void )
 {
    
-    /* Create timer */
-    init_timer(&my_timer);
-    /* Initialize field */
-    my_timer.data=0;
-    my_timer.function=fire_timer;
-    my_timer.expires=jiffies + msecs_to_jiffies(timer_period_ms);  /* Activate it one second from now */
-    
     /* Inicialización del buffer */  
     cbuffer = create_cbuffer_t(MAX_ITEMS_CBUF);
 
   if (!cbuffer) {
     return -ENOMEM;
   }
-    
+     /* Create timer */
+    init_timer(&my_timer);
+    /* Initialize field */
+    my_timer.data=0;
+    my_timer.function=fire_timer;
+    my_timer.expires=jiffies + HZ;  /* Activate it one second from now */
     /* Initialize work structure (with function) */
     INIT_WORK(&my_work, copy_items_into_list );
 

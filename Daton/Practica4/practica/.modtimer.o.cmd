@@ -1,0 +1,1 @@
+cmd_/home/osboxes/LIN2015/Daton/Practica4/practica/modtimer.o := ld -m elf_x86_64   -r -o /home/osboxes/LIN2015/Daton/Practica4/practica/modtimer.o /home/osboxes/LIN2015/Daton/Practica4/practica/cbuffer.o /home/osboxes/LIN2015/Daton/Practica4/practica/probar.o 

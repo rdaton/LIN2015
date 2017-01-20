@@ -1,1 +1,0 @@
-cmd_/home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.ko := ld -r -m elf_x86_64 -T /home/kernel/LIN2015/Yu/linux-3.14.1/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.ko /home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.o /home/kernel/LIN2015/Yu/Practica4/Example_timer/example_timer.mod.o
