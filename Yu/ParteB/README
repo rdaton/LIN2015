@@ -1,8 +1,8 @@
 productor:
 
-./fifotest -f /proc/modfifo -s < test.txt
+./chat -f /proc/modfifo -s < test.txt
 
 consumidor:
 
-./fifotest -f /proc/modfifo -r
+./chat -f /proc/modfifo -r
 

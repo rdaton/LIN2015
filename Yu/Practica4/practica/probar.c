@@ -10,20 +10,27 @@
 #include "cbuffer.h"
 #include <linux/list.h>
 #include <asm-generic/uaccess.h>
+#include <linux/semaphore.h>
 
 
 #define MAX_ITEMS_CBUF  10
 #define BUFFER_LENGTH  PAGE_SIZE
 
 DEFINE_RWLOCK(sp);
-DEFINE_RWLOCK(rwl);
+//DEFINE_RWLOCK(rwl);
 
 MODULE_LICENSE("GPL");
+
+struct semaphore sem_cons; /* cola de espera para consumidor(es) */ 
+struct semaphore mtx; /* para garantizar Exclusión Mutua */ 
+
 
 struct timer_list my_timer; /* Structure that describes the kernel timer */
 cbuffer_t* cbuffer; /* Buffer circular */ 
 struct work_struct my_work;/* Work descriptor */
-static struct proc_dir_entry *proc_entry ;
+int nr_cons_waiting=0;
+static struct proc_dir_entry *proc_entry1 ;
+static struct proc_dir_entry *proc_entry2 ;
 static int timer_period_ms=1;
 static int emergency_threshold=80;//por centaje 80%
 static int max_random= 100;
@@ -39,6 +46,59 @@ typedef struct{
 struct list_head modlist;
 
 
+
+
+//struct inode *inode, struct file *file
+/* Se invoca al hacer open() de entrada /proc */ 
+static int _open(struct inode *inode, struct file *file)
+{
+    
+   
+     if (down_interruptible(&mtx))
+        {
+        return -EINTR;
+        }
+
+    if (file->f_mode & FMODE_READ)  
+    { 
+      /* Acceso a la crítica */
+
+       
+        /* Bloquearse mientras no haya productor preparado */
+        while (longitud==0)
+        {
+          printk("\nesta vacioooooo!!!!\n");
+          /* Incremento de consumidores esperando */
+          nr_cons_waiting++;
+          up(&mtx);
+         
+          /* Bloqueo en cola de espera */   
+          if (down_interruptible(&sem_cons)){  
+           
+             down(&mtx);
+            nr_cons_waiting--;
+            up(&mtx);
+            return -EINTR;
+          }
+            if(down_interruptible(&mtx))
+            {
+              return -EINTR;
+            }     
+        }
+         /* Despertar a los consumidores bloqueados (si hay alguno) */
+          if (nr_cons_waiting>0)
+          {
+          up(&sem_cons);  
+          nr_cons_waiting--;
+          }
+    } 
+  /* Salir de la sección crítica */
+  up(&mtx);
+  return 0;
+
+}
+
+
 static void limpiar(struct list_head* list){
     tNodo* item=NULL;
     tNodo* listaNodos[longitud];
@@ -49,7 +109,7 @@ static void limpiar(struct list_head* list){
   int i=0;
   int longitud_aux=0;
   longitud_aux=longitud;
-      write_lock(&rwl);
+      down(&mtx);
     //trace_printk(KERN_INFO "%s\n","limpiando");
     list_for_each_safe(cur_node,lista_aux,list) 
     {
@@ -60,7 +120,7 @@ static void limpiar(struct list_head* list){
       i++;   
     }
     longitud=0;
-    write_unlock(&rwl);
+    up(&mtx);
 
     //hago el vfree fuera del spinlock
   for (i=0;i<longitud_aux;i++)
@@ -100,11 +160,11 @@ static int add(char* valor)
   unNodo->data = valor;
 
    //sección critica lista de enteros
-  write_lock(&rwl);
+  down(&mtx);
   list_add_tail(&(unNodo->list), &modlist);
   longitud++;
   printk("\nse ha metido el nuevo dato\n");
-  write_unlock(&rwl);
+  up(&mtx);
   //fin sección critica lista de enteros
 
   print_list(&modlist);
@@ -123,7 +183,7 @@ int generaVector(char* unBuffer,struct list_head* list){
   char* dest=unBuffer;
 
   //sección critica
-  read_lock(&rwl);
+  down(&mtx);
   list_for_each(cur_node, list) 
   {
   // item points to the structure wherein the links are embedded 
@@ -134,12 +194,12 @@ int generaVector(char* unBuffer,struct list_head* list){
   dest+=sprintf(dest,"%s\n",item->data);
   
   }
-  printk("\nentro leer e imprimo la lista\n");
-  print_list(&modlist);
-  printk("\ntermino de  leer e imprimo la lista\n");
-  printk("\nsalgo de  generate vector\n");
+  //printk("\nentro leer e imprimo la lista\n");
+  //print_list(&modlist);
+  //printk("\ntermino de  leer e imprimo la lista\n");
+  //printk("\nsalgo de  generate vector\n");
   
-  read_unlock(&rwl);
+  up(&mtx);
   //fin sección critica
   return dest-unBuffer;
 }
@@ -157,7 +217,7 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
 
        
 
-   unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
+  unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
 
   num_elem=generaVector(unBuffer,&modlist);
  
@@ -178,6 +238,7 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
    
   (*off)+=len;  /* Update the file pointer */
 
+  limpiar(&modlist);
   vfree(unBuffer);
   return num_elem; 
    
@@ -219,16 +280,16 @@ static ssize_t read_timer(struct file *filp, char __user *buf, size_t len, loff_
   }
    
 
-  printk("\nentro leer e imprimo la lista otra vez\n");
-  print_list(&modlist);
-  limpiar(&modlist);
-  printk("\ndespues de limpiar voy a imprimir\n");
-  print_list(&modlist);
+  //printk("\nentro leer e imprimo la lista otra vez\n");
+  //print_list(&modlist);
+  //limpiar(&modlist);
+  //printk("\ndespues de limpiar voy a imprimir\n");
+  //print_list(&modlist);
   (*off)+=len;  /* Update the file pointer */
 
-  printk("\nentra -------------\n");
+  //printk("\nentra -------------\n");
   vfree(unBuffer);
-  printk("\nsalgo...............\n");
+  //printk("\nsalgo...............\n");
   return num_elem; 
    
 };
@@ -250,10 +311,11 @@ static ssize_t write_config(struct file *filp, const char __user *buf, size_t le
     
     //timer_period_ms 500
 
-
+    printk("\nentro escribir\n");
   unBuffer[len]='\0';
 
-   if(sscanf(unBuffer,"timer_period_ms %i",&r)==1){
+   //if(sscanf(unBuffer,"timer_period_ms %i",&r)==1){
+     if(sscanf(unBuffer,"add %i",&r)==1){
         timer_period_ms = r;
         printk("\n----------------------He insertado: %d\n",r);
       }
@@ -271,6 +333,21 @@ static ssize_t write_config(struct file *filp, const char __user *buf, size_t le
     
     return len;
 };
+
+
+/* Se invoca al hacer close() de entrada /proc */ 
+static int _release(struct inode *inodo, struct file *file)
+{
+  down(&mtx);
+  if (file->f_mode & FMODE_READ){
+    nr_cons_waiting--;
+    up(&sem_cons);
+  }
+
+  up(&mtx);
+  return 0;
+}
+
 
 /* Work's handler function */
 static void copy_items_into_list ( struct work_struct *work )
@@ -297,9 +374,13 @@ static void copy_items_into_list ( struct work_struct *work )
     }
 
    
-
-     
-  
+    /* Despertar a los consumidores bloqueados (si hay alguno) */
+          if (nr_cons_waiting>0)
+          {
+            up(&sem_cons);  
+            nr_cons_waiting--;
+          }
+          
     print_list(&modlist);
     printk("\nTermino de copiar elementos a la lista despues de volcar elementos a cbuffer\n");
    
@@ -372,6 +453,8 @@ static void fire_timer(unsigned long data)
 //operaciones de entrada salida
 static const struct file_operations proc_entry_modtimer = {
     .read = read_timer,
+    .open = _open,
+    .release = _release,
     //.write = modlist_write,    
 };
 
@@ -379,6 +462,8 @@ static const struct file_operations proc_entry_modtimer = {
 static const struct file_operations proc_entry_modconfig = {
     .write = write_config,
     .read = read_config,
+    .release = _release,
+
 };
 
 
@@ -402,17 +487,21 @@ int init_timer_module( void )
     /* Initialize work structure (with function) */
     INIT_WORK(&my_work, copy_items_into_list );
 
+    //inicializar los semaforos
+      sema_init(&mtx,1);
+      sema_init(&sem_cons,0);
+
     int ret = 0;
     INIT_LIST_HEAD(&modlist); /* Initialize the list */
-    proc_entry = proc_create( "modconfig", 0666, NULL, &proc_entry_modconfig);
-    if (proc_entry == NULL) 
+    proc_entry1= proc_create( "modconfig", 0666, NULL, &proc_entry_modconfig);
+    if (proc_entry1 == NULL) 
     {
       printk("\nse ha generado el modulo\n");
         ret = -ENOMEM;
     } 
 
-     proc_entry = proc_create( "modtimer", 0666, NULL, &proc_entry_modtimer);
-    if (proc_entry == NULL) 
+     proc_entry2 = proc_create( "modtimer", 0666, NULL, &proc_entry_modtimer);
+    if (proc_entry2 == NULL) 
     {
       printk("\nse ha generado el modulo\n");
         ret = -ENOMEM;
