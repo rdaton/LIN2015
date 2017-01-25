@@ -58,23 +58,14 @@ static int _open(struct inode *inode, struct file *file)
         return -EINTR;
         }
 
-<<<<<<< HEAD
-=======
        printk("\nabro fichero\n");
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
     if (file->f_mode & FMODE_READ)  
     { 
       /* Acceso a la crítica */
 
-<<<<<<< HEAD
-       
-        /* Bloquearse mientras no haya productor preparado */
-        while (longitud==0)
-=======
        printk("\nlongitud es %i\n",longitud);
         /* Bloquearse mientras no haya productor preparado */
         while (longitud<=0)
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
         {
           printk("\nesta vacioooooo!!!!\n");
           /* Incremento de consumidores esperando */
@@ -94,15 +85,6 @@ static int _open(struct inode *inode, struct file *file)
               return -EINTR;
             }     
         }
-<<<<<<< HEAD
-         /* Despertar a los consumidores bloqueados (si hay alguno) */
-          if (nr_cons_waiting>0)
-          {
-          up(&sem_cons);  
-          nr_cons_waiting--;
-          }
-=======
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
     } 
   /* Salir de la sección crítica */
   up(&mtx);
@@ -111,10 +93,7 @@ static int _open(struct inode *inode, struct file *file)
 }
 
 
-<<<<<<< HEAD
-=======
 /*
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
 static void limpiar(struct list_head* list){
     tNodo* item=NULL;
     tNodo* listaNodos[longitud];
@@ -170,20 +149,7 @@ static int add(char* valor)
     return -ENOMEM; 
   }
   unNodo->data = valor;
-<<<<<<< HEAD
-
-   //sección critica lista de enteros
-  down(&mtx);
   list_add_tail(&(unNodo->list), &modlist);
-  longitud++;
-  printk("\nse ha metido el nuevo dato\n");
-  up(&mtx);
-  //fin sección critica lista de enteros
-
-  print_list(&modlist);
-=======
-  list_add_tail(&(unNodo->list), &modlist);
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
   return 0;
 }
 
@@ -234,10 +200,6 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
         return 0;
 
        
-<<<<<<< HEAD
-
-=======
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
   unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
 
   num_elem=generaVector(unBuffer,&modlist);
@@ -285,7 +247,6 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
     
   (*off)+=len;  /* Update the file pointer */
 
-  limpiar(&modlist);
   vfree(unBuffer);
   return num_elem; 
    
@@ -430,11 +391,7 @@ static void copy_items_into_list ( struct work_struct *work )
             up(&sem_cons);  
             nr_cons_waiting--;
           }
-<<<<<<< HEAD
-          
-=======
 
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
     print_list(&modlist);
     printk("\nTermino de copiar elementos a la lista despues de volcar elementos a cbuffer\n");
    

@@ -289,7 +289,7 @@ static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, lof
 		vfree(unBuffer);
 		return -ENOSPC;
 	}
-    
+    z
 
   //unBuffer[nr_bytes]='\0';
     /* Transfer data from the kernel to userspace */  

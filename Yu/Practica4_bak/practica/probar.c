@@ -47,8 +47,6 @@ struct list_head modlist;
 
 
 
-//struct inode *inode, struct file *file
-/* Se invoca al hacer open() de entrada /proc */ 
 static int _open(struct inode *inode, struct file *file)
 {
     
@@ -58,23 +56,18 @@ static int _open(struct inode *inode, struct file *file)
         return -EINTR;
         }
 
-<<<<<<< HEAD
-=======
-       printk("\nabro fichero\n");
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
     if (file->f_mode & FMODE_READ)  
     { 
       /* Acceso a la crítica */
 
-<<<<<<< HEAD
-       
+
+     
+   
+        /* Activate the timer for the first time */
+   // add_timer(&my_timer); 
+
         /* Bloquearse mientras no haya productor preparado */
         while (longitud==0)
-=======
-       printk("\nlongitud es %i\n",longitud);
-        /* Bloquearse mientras no haya productor preparado */
-        while (longitud<=0)
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
         {
           printk("\nesta vacioooooo!!!!\n");
           /* Incremento de consumidores esperando */
@@ -94,15 +87,12 @@ static int _open(struct inode *inode, struct file *file)
               return -EINTR;
             }     
         }
-<<<<<<< HEAD
          /* Despertar a los consumidores bloqueados (si hay alguno) */
           if (nr_cons_waiting>0)
           {
           up(&sem_cons);  
           nr_cons_waiting--;
           }
-=======
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
     } 
   /* Salir de la sección crítica */
   up(&mtx);
@@ -110,11 +100,7 @@ static int _open(struct inode *inode, struct file *file)
 
 }
 
-
-<<<<<<< HEAD
-=======
 /*
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
 static void limpiar(struct list_head* list){
     tNodo* item=NULL;
     tNodo* listaNodos[longitud];
@@ -144,21 +130,15 @@ static void limpiar(struct list_head* list){
 }
 */
 void print_list(struct list_head *list) {
-  //printk("\nentra print\n");
         tNodo* item=NULL;
   struct list_head* cur_node=NULL;
   //trace_printk(KERN_INFO "%s\n","imprimiendo");
-  
   list_for_each(cur_node, list) 
   {
-    
-  // item points to the structure wherein the links are embedded 
-    item = list_entry(cur_node,tNodo, list);
-    //&b=item->data;
-      printk("valor es %i\n",*(item->data));
+  /* item points to the structure wherein the links are embedded */
+  item = list_entry(cur_node,tNodo, list);
+    printk("%i\n",item->data);
   }
-  //read_unlock(&rwl);
-  //fin sección critica lista de enteros
   
 }
 
@@ -170,20 +150,7 @@ static int add(char* valor)
     return -ENOMEM; 
   }
   unNodo->data = valor;
-<<<<<<< HEAD
-
-   //sección critica lista de enteros
-  down(&mtx);
   list_add_tail(&(unNodo->list), &modlist);
-  longitud++;
-  printk("\nse ha metido el nuevo dato\n");
-  up(&mtx);
-  //fin sección critica lista de enteros
-
-  print_list(&modlist);
-=======
-  list_add_tail(&(unNodo->list), &modlist);
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
   return 0;
 }
 
@@ -234,10 +201,6 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
         return 0;
 
        
-<<<<<<< HEAD
-
-=======
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
   unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
 
   num_elem=generaVector(unBuffer,&modlist);
@@ -285,7 +248,6 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
     
   (*off)+=len;  /* Update the file pointer */
 
-  limpiar(&modlist);
   vfree(unBuffer);
   return num_elem; 
    
@@ -410,11 +372,16 @@ static void copy_items_into_list ( struct work_struct *work )
       remove_items_cbuffer_t (cbuffer, (char*)temp, num_temp); 
      read_unlock_irqrestore(&sp,flags);
 //sale de sesion critica
-    int i;
+
+     int i;
+     for(i=0;i<num_temp;i++){
+        printk("valor es %i",temp[i]);
+     }
+    
     for(i=0;i<num_temp;i++){
         int* elem=(int*)vmalloc(sizeof(temp[i]));
-        elem=(&temp[i]);
-        printk("\nadd valor de tmp es %i\n",elem);
+        elem=(temp[i]);
+        printk("\nadd valor de tmp es %i\n",*elem);
         add(*elem);
     }
      /* if (sscanf(&temp[i],"%c\n",kbuff)==1){
@@ -430,16 +397,11 @@ static void copy_items_into_list ( struct work_struct *work )
             up(&sem_cons);  
             nr_cons_waiting--;
           }
-<<<<<<< HEAD
-          
-=======
 
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
     print_list(&modlist);
     printk("\nTermino de copiar elementos a la lista despues de volcar elementos a cbuffer\n");
    
 }
-
 
 /* Function invoked when timer expires (fires) */
 static void fire_timer(unsigned long data)

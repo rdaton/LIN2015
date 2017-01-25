@@ -36,9 +36,10 @@ static int emergency_threshold=80;//por centaje 80%
 static int max_random= 100;
 static int longitud=0;
 
+/* Tipo de nodo */
 typedef struct{
-struct list_head list;
-int data;
+    struct list_head list;
+    char* data;
 } tNodo;
 
 /* Lista enlazada */
@@ -47,74 +48,9 @@ struct list_head modlist;
 
 
 
-//struct inode *inode, struct file *file
-/* Se invoca al hacer open() de entrada /proc */ 
-static int _open(struct inode *inode, struct file *file)
-{
-    
-   
-     if (down_interruptible(&mtx))
-        {
-        return -EINTR;
-        }
-
-<<<<<<< HEAD
-=======
-       printk("\nabro fichero\n");
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
-    if (file->f_mode & FMODE_READ)  
-    { 
-      /* Acceso a la crítica */
-
-<<<<<<< HEAD
-       
-        /* Bloquearse mientras no haya productor preparado */
-        while (longitud==0)
-=======
-       printk("\nlongitud es %i\n",longitud);
-        /* Bloquearse mientras no haya productor preparado */
-        while (longitud<=0)
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
-        {
-          printk("\nesta vacioooooo!!!!\n");
-          /* Incremento de consumidores esperando */
-          nr_cons_waiting++;
-          up(&mtx);
-         
-          /* Bloqueo en cola de espera */   
-          if (down_interruptible(&sem_cons)){  
-           
-             down(&mtx);
-            nr_cons_waiting--;
-            up(&mtx);
-            return -EINTR;
-          }
-            if(down_interruptible(&mtx))
-            {
-              return -EINTR;
-            }     
-        }
-<<<<<<< HEAD
-         /* Despertar a los consumidores bloqueados (si hay alguno) */
-          if (nr_cons_waiting>0)
-          {
-          up(&sem_cons);  
-          nr_cons_waiting--;
-          }
-=======
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
-    } 
-  /* Salir de la sección crítica */
-  up(&mtx);
-  return 0;
-
-}
 
 
-<<<<<<< HEAD
-=======
-/*
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
+
 static void limpiar(struct list_head* list){
     tNodo* item=NULL;
     tNodo* listaNodos[longitud];
@@ -129,7 +65,7 @@ static void limpiar(struct list_head* list){
     //trace_printk(KERN_INFO "%s\n","limpiando");
     list_for_each_safe(cur_node,lista_aux,list) 
     {
-    // item points to the structure wherein the links are embedded 
+    /* item points to the structure wherein the links are embedded */
       item = list_entry(cur_node,tNodo, list);
       list_del(cur_node);
       listaNodos[i]=item;
@@ -142,7 +78,7 @@ static void limpiar(struct list_head* list){
   for (i=0;i<longitud_aux;i++)
     vfree(listaNodos[i]);
 }
-*/
+
 void print_list(struct list_head *list) {
   //printk("\nentra print\n");
         tNodo* item=NULL;
@@ -155,7 +91,7 @@ void print_list(struct list_head *list) {
   // item points to the structure wherein the links are embedded 
     item = list_entry(cur_node,tNodo, list);
     //&b=item->data;
-      printk("valor es %i\n",*(item->data));
+      printk("valor es %c\n",*(item->data));
   }
   //read_unlock(&rwl);
   //fin sección critica lista de enteros
@@ -166,11 +102,14 @@ static int add(char* valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
-    vfree(unNodo);
-    return -ENOMEM; 
+    if (valor!=NULL){
+      vfree(valor);
+    }
+      vfree(unNodo);
+      return -ENOMEM; 
   }
+
   unNodo->data = valor;
-<<<<<<< HEAD
 
    //sección critica lista de enteros
   down(&mtx);
@@ -181,13 +120,8 @@ static int add(char* valor)
   //fin sección critica lista de enteros
 
   print_list(&modlist);
-=======
-  list_add_tail(&(unNodo->list), &modlist);
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
   return 0;
 }
-
-
 
 
 
@@ -209,7 +143,7 @@ int generaVector(char* unBuffer,struct list_head* list){
   item = list_entry(cur_node,tNodo, list);
   //trace_printk(KERN_INFO "%i\n",item->data);
   
-  dest+=sprintf(dest,"%i\n",item->data);
+  dest+=sprintf(dest,"%s\n",item->data);
   
   }
   //printk("\nentro leer e imprimo la lista\n");
@@ -234,10 +168,6 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
         return 0;
 
        
-<<<<<<< HEAD
-
-=======
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
   unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
 
   num_elem=generaVector(unBuffer,&modlist);
@@ -272,21 +202,20 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
       }
 
 
-   
-  //unBuffer[nr_bytes]='\0';
     /* Transfer data from the kernel to userspace */  
   if (copy_to_user(buf, unBuffer,num_elem)){
       vfree(unBuffer);
      return -EINVAL;
   }
    
-
-  print_list(&modlist);
-    
   (*off)+=len;  /* Update the file pointer */
 
-  limpiar(&modlist);
-  vfree(unBuffer);
+    limpiar(&modlist);
+    vfree(unBuffer);
+    
+    if(num_elem==0){
+      num_elem++;
+    }
   return num_elem; 
    
 };
@@ -400,29 +329,26 @@ static int _release(struct inode *inodo, struct file *file)
 static void copy_items_into_list ( struct work_struct *work )
 {
     int num_temp=size_cbuffer_t (cbuffer);
-    int temp[num_temp];
+    char temp[num_temp];
     
     
     unsigned long flags = 0;
     
 //entra sesion critica
       read_lock_irqsave(&sp,flags);
-      remove_items_cbuffer_t (cbuffer, (char*)temp, num_temp); 
+      remove_items_cbuffer_t (cbuffer, temp, num_temp); 
      read_unlock_irqrestore(&sp,flags);
 //sale de sesion critica
     int i;
     for(i=0;i<num_temp;i++){
-        int* elem=(int*)vmalloc(sizeof(temp[i]));
-        elem=(&temp[i]);
-        printk("\nadd valor de tmp es %i\n",elem);
-        add(*elem);
-    }
-     /* if (sscanf(&temp[i],"%c\n",kbuff)==1){
+        char* kbuff=(char *)vmalloc(sizeof(char));
+      if (sscanf(&temp[i],"%c\n",kbuff)==1){
           printk("\nse ha copiado bien\n");
           printk("\nvalor de tem_char es %c\n",*kbuff);
           add(kbuff);
       }
-      */
+    }
+
    
     /* Despertar a los consumidores bloqueados (si hay alguno) */
           if (nr_cons_waiting>0)
@@ -430,11 +356,7 @@ static void copy_items_into_list ( struct work_struct *work )
             up(&sem_cons);  
             nr_cons_waiting--;
           }
-<<<<<<< HEAD
-          
-=======
 
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
     print_list(&modlist);
     printk("\nTermino de copiar elementos a la lista despues de volcar elementos a cbuffer\n");
    
@@ -456,15 +378,22 @@ static void fire_timer(unsigned long data)
         num_aleatorio = get_random_int();
     }*/
 
-        char* a=(char*)(&num_aleatorio);
+       // char* a=(char*)(&num_aleatorio);
 
     
-    
-    int len=(sizeof(num_aleatorio));
+    char ini[sizeof(num_aleatorio)];
+    char* dest=ini;
+    int len=0;
+
+     len=sprintf(dest,"%i\n",num_aleatorio);
+     //si uso %s sale bien el valor, si uso c%, sale otro
+     //pero en la funcion copy_items_into_list tengo que hacerlo reves!!
+    printk("\nvalor de dest es %s\n y el len es %i",dest,len);
     
      int num_elem=size_cbuffer_t (cbuffer);
-     int porcentaje = (100*num_elem)/capacidad;
+     int porcentaje = (((float)num_elem)/capacidad)*100;
            /* Insertar en el buffer */
+    // printk("\nnumero de cpu es %i\n",numero_cpu);
      
      if(porcentaje <= emergency_threshold){
         printk("\nporcentaje es %i\n",porcentaje);
@@ -472,7 +401,7 @@ static void fire_timer(unsigned long data)
 //entra sesion critica
          write_lock_irqsave(&sp,flags);
 
-        insert_items_cbuffer_t(cbuffer,a,len);
+        insert_items_cbuffer_t(cbuffer,dest,1);
          //insert_cbuffer_t(cbuffer,*dest);
 
          printk("\nNo esta lleno\n");
@@ -495,6 +424,60 @@ static void fire_timer(unsigned long data)
     mod_timer( &(my_timer), jiffies + HZ); 
 }
 
+//struct inode *inode, struct file *file
+/* Se invoca al hacer open() de entrada /proc */ 
+static int _open(struct inode *inode, struct file *file)
+{
+    
+   
+     if (down_interruptible(&mtx))
+        {
+        return -EINTR;
+        }
+
+    if (file->f_mode & FMODE_READ)  
+    { 
+      /* Acceso a la crítica */
+
+
+       
+   
+        /* Activate the timer for the first time */
+    add_timer(&my_timer); 
+
+        /* Bloquearse mientras no haya productor preparado */
+        while (longitud==0)
+        {
+          printk("\nesta vacioooooo!!!!\n");
+          /* Incremento de consumidores esperando */
+          nr_cons_waiting++;
+          up(&mtx);
+         
+          /* Bloqueo en cola de espera */   
+          if (down_interruptible(&sem_cons)){  
+           
+             down(&mtx);
+            nr_cons_waiting--;
+            up(&mtx);
+            return -EINTR;
+          }
+            if(down_interruptible(&mtx))
+            {
+              return -EINTR;
+            }     
+        }
+         /* Despertar a los consumidores bloqueados (si hay alguno) */
+          if (nr_cons_waiting>0)
+          {
+          up(&sem_cons);  
+          nr_cons_waiting--;
+          }
+    } 
+  /* Salir de la sección crítica */
+  up(&mtx);
+  return 0;
+
+}
 
 
 //operaciones de entrada salida
@@ -523,14 +506,12 @@ int init_timer_module( void )
   if (!cbuffer) {
     return -ENOMEM;
   }
-    /* Create timer */
+     /* Create timer */
     init_timer(&my_timer);
     /* Initialize field */
     my_timer.data=0;
     my_timer.function=fire_timer;
     my_timer.expires=jiffies + HZ;  /* Activate it one second from now */
-    /* Activate the timer for the first time */
-    add_timer(&my_timer); 
     /* Initialize work structure (with function) */
     INIT_WORK(&my_work, copy_items_into_list );
 
@@ -543,14 +524,14 @@ int init_timer_module( void )
     proc_entry1= proc_create( "modconfig", 0666, NULL, &proc_entry_modconfig);
     if (proc_entry1 == NULL) 
     {
-      printk("\nno se ha generado el modulo\n");
+      printk("\nse ha generado el modulo\n");
         ret = -ENOMEM;
     } 
 
      proc_entry2 = proc_create( "modtimer", 0666, NULL, &proc_entry_modtimer);
     if (proc_entry2 == NULL) 
     {
-      printk("\nno se ha generado el modulo\n");
+      printk("\nse ha generado el modulo\n");
         ret = -ENOMEM;
     }   
     return ret;
@@ -576,3 +557,4 @@ module_exit( cleanup_timer_module );
 
 
 MODULE_DESCRIPTION("timermod Module");
+

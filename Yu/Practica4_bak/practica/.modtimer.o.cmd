@@ -1,0 +1,1 @@
+cmd_/home/kernel/LIN2015/Yu/Practica4_bak/practica/modtimer.o := ld -m elf_x86_64   -r -o /home/kernel/LIN2015/Yu/Practica4_bak/practica/modtimer.o /home/kernel/LIN2015/Yu/Practica4_bak/practica/cbuffer.o /home/kernel/LIN2015/Yu/Practica4_bak/practica/probar.o 

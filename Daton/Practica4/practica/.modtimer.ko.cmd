@@ -1,0 +1,1 @@
+cmd_/home/osboxes/LIN2015/Daton/Practica4/practica/modtimer.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.16.0-4-common/scripts/module-common.lds --build-id  -o /home/osboxes/LIN2015/Daton/Practica4/practica/modtimer.ko /home/osboxes/LIN2015/Daton/Practica4/practica/modtimer.o /home/osboxes/LIN2015/Daton/Practica4/practica/modtimer.mod.o
