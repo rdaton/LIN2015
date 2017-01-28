@@ -1,11 +1,11 @@
-TARGET = fifotest
+TARGET = chat
 
 CC = gcc
 CPPSYMBOLS=
 CFLAGS = -g -Wall $(CPPSYMBOLS)
 LDFLAGS = 
 
-OBJS = fifotest.o
+OBJS = chat.o
 
 all: $(TARGET)
 
