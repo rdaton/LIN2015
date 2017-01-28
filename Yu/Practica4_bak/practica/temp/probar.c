@@ -36,9 +36,10 @@ static int emergency_threshold=80;//por centaje 80%
 static int max_random= 100;
 static int longitud=0;
 
+/* Tipo de nodo */
 typedef struct{
-struct list_head list;
-int data;
+    struct list_head list;
+    char* data;
 } tNodo;
 
 /* Lista enlazada */
@@ -58,32 +59,14 @@ static int _open(struct inode *inode, struct file *file)
         return -EINTR;
         }
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
        printk("\nabro fichero\n");
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
->>>>>>> e8b223b112ca5758ff3d0993189abe44096bf9c9
     if (file->f_mode & FMODE_READ)  
     { 
       /* Acceso a la crítica */
 
-<<<<<<< HEAD
-       
-        /* Bloquearse mientras no haya productor preparado */
-        while (longitud==0)
-=======
-<<<<<<< HEAD
-       
-        /* Bloquearse mientras no haya productor preparado */
-        while (longitud==0)
-=======
        printk("\nlongitud es %i\n",longitud);
         /* Bloquearse mientras no haya productor preparado */
         while (longitud<=0)
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
->>>>>>> e8b223b112ca5758ff3d0993189abe44096bf9c9
         {
           printk("\nesta vacioooooo!!!!\n");
           /* Incremento de consumidores esperando */
@@ -103,21 +86,6 @@ static int _open(struct inode *inode, struct file *file)
               return -EINTR;
             }     
         }
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
->>>>>>> e8b223b112ca5758ff3d0993189abe44096bf9c9
-         /* Despertar a los consumidores bloqueados (si hay alguno) */
-          if (nr_cons_waiting>0)
-          {
-          up(&sem_cons);  
-          nr_cons_waiting--;
-          }
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
->>>>>>> e8b223b112ca5758ff3d0993189abe44096bf9c9
     } 
   /* Salir de la sección crítica */
   up(&mtx);
@@ -126,13 +94,6 @@ static int _open(struct inode *inode, struct file *file)
 }
 
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-/*
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
->>>>>>> e8b223b112ca5758ff3d0993189abe44096bf9c9
 static void limpiar(struct list_head* list){
     tNodo* item=NULL;
     tNodo* listaNodos[longitud];
@@ -143,24 +104,24 @@ static void limpiar(struct list_head* list){
   int i=0;
   int longitud_aux=0;
   longitud_aux=longitud;
-      down(&mtx);
+      
     //trace_printk(KERN_INFO "%s\n","limpiando");
     list_for_each_safe(cur_node,lista_aux,list) 
     {
-    // item points to the structure wherein the links are embedded 
+    /* item points to the structure wherein the links are embedded */
       item = list_entry(cur_node,tNodo, list);
       list_del(cur_node);
       listaNodos[i]=item;
       i++;   
     }
     longitud=0;
-    up(&mtx);
+    
 
     //hago el vfree fuera del spinlock
   for (i=0;i<longitud_aux;i++)
     vfree(listaNodos[i]);
 }
-*/
+
 void print_list(struct list_head *list) {
   //printk("\nentra print\n");
         tNodo* item=NULL;
@@ -173,7 +134,7 @@ void print_list(struct list_head *list) {
   // item points to the structure wherein the links are embedded 
     item = list_entry(cur_node,tNodo, list);
     //&b=item->data;
-      printk("valor es %i\n",*(item->data));
+      printk("valor es %c\n",*(item->data));
   }
   //read_unlock(&rwl);
   //fin sección critica lista de enteros
@@ -184,28 +145,26 @@ static int add(char* valor)
 {
   tNodo* unNodo=(tNodo*)(vmalloc(sizeof (tNodo)));
   if (unNodo==NULL){
-    vfree(unNodo);
-    return -ENOMEM; 
+    if (valor!=NULL){
+      vfree(valor);
+    }
+      vfree(unNodo);
+      return -ENOMEM; 
   }
+
   unNodo->data = valor;
-<<<<<<< HEAD
 
    //sección critica lista de enteros
-  down(&mtx);
+  //down(&mtx);
   list_add_tail(&(unNodo->list), &modlist);
-  longitud++;
+  
   printk("\nse ha metido el nuevo dato\n");
-  up(&mtx);
+  //up(&mtx);
   //fin sección critica lista de enteros
 
   print_list(&modlist);
-=======
-  list_add_tail(&(unNodo->list), &modlist);
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
   return 0;
 }
-
-
 
 
 
@@ -219,7 +178,7 @@ int generaVector(char* unBuffer,struct list_head* list){
   char* dest=unBuffer;
 
   //sección critica
-  down(&mtx);
+  //down(&mtx);
   list_for_each(cur_node, list) 
   {
   // item points to the structure wherein the links are embedded 
@@ -227,21 +186,21 @@ int generaVector(char* unBuffer,struct list_head* list){
   item = list_entry(cur_node,tNodo, list);
   //trace_printk(KERN_INFO "%i\n",item->data);
   
-  dest+=sprintf(dest,"%i\n",item->data);
+  dest+=sprintf(dest,"%s\n",item->data);
   
   }
   //printk("\nentro leer e imprimo la lista\n");
   //print_list(&modlist);
   //printk("\ntermino de  leer e imprimo la lista\n");
-  //printk("\nsalgo de  generate vector\n");
+  printk("\nsalgo de  generate vector\n");
   
-  up(&mtx);
+  //up(&mtx);
   //fin sección critica
   return dest-unBuffer;
 }
 
 
-static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff_t *off) {
+static ssize_t read_timer(struct file *filp, char __user *buf, size_t len, loff_t *off) {
     
 
 
@@ -252,15 +211,11 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
         return 0;
 
        
-<<<<<<< HEAD
 
-<<<<<<< HEAD
-=======
-=======
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
->>>>>>> e8b223b112ca5758ff3d0993189abe44096bf9c9
   unBuffer=(char *)vmalloc( BUFFER_LENGTH);//aqui somo uno mas es para poder poner final de array un '\0'
 
+down(&mtx);
+printk("\nentro sesion critica de leer \n");
   num_elem=generaVector(unBuffer,&modlist);
  
   //nr_bytes=strlen(unBuffer);
@@ -272,48 +227,26 @@ static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff
   }
   
 
- /* Bloquearse mientras buffer esté vacío */
-      while (longitud<=0)
-      {
-      /* Incremento de consumidores esperando */
-        nr_cons_waiting++;
-        /* Liberar el 'mutex' antes de bloqueo*/
-        up(&mtx);
-        /* Bloqueo en cola de espera */   
-        if (down_interruptible(&sem_cons)){ 
-          down(&mtx);
-          nr_cons_waiting--;
-          up(&mtx);   
-          return -EINTR;
-        }
-        if (down_interruptible(&mtx))
-        {
-          return -EINTR;
-        }  
-      }
-
-
-   
-  //unBuffer[nr_bytes]='\0';
+printk("\ncopy to user\n");
     /* Transfer data from the kernel to userspace */  
   if (copy_to_user(buf, unBuffer,num_elem)){
       vfree(unBuffer);
      return -EINVAL;
   }
    
-
-  print_list(&modlist);
-    
   (*off)+=len;  /* Update the file pointer */
 
   limpiar(&modlist);
+
+    up(&mtx);
+    printk("\nsalgo de seccion critica de leer\n");
   vfree(unBuffer);
   return num_elem; 
    
 };
 
 
-static ssize_t read_timer(struct file *filp, char __user *buf, size_t len, loff_t *off) {
+static ssize_t read_config(struct file *filp, char __user *buf, size_t len, loff_t *off) {
     
       printk("\nentro leer e imprimo la lista\n");
       print_list(&modlist);
@@ -355,7 +288,7 @@ static ssize_t read_timer(struct file *filp, char __user *buf, size_t len, loff_
   //print_list(&modlist);
   (*off)+=len;  /* Update the file pointer */
 
-  //printk("\nentra -------------\n");
+  //("\nentra -------------\n");
   vfree(unBuffer);
   //printk("\nsalgo...............\n");
   return num_elem; 
@@ -406,13 +339,7 @@ static ssize_t write_config(struct file *filp, const char __user *buf, size_t le
 /* Se invoca al hacer close() de entrada /proc */ 
 static int _release(struct inode *inodo, struct file *file)
 {
-  down(&mtx);
-  if (file->f_mode & FMODE_READ){
-    nr_cons_waiting--;
-    up(&sem_cons);
-  }
-
-  up(&mtx);
+  
   return 0;
 }
 
@@ -421,29 +348,31 @@ static int _release(struct inode *inodo, struct file *file)
 static void copy_items_into_list ( struct work_struct *work )
 {
     int num_temp=size_cbuffer_t (cbuffer);
-    int temp[num_temp];
+    char temp[num_temp];
     
     
     unsigned long flags = 0;
     
 //entra sesion critica
       read_lock_irqsave(&sp,flags);
-      remove_items_cbuffer_t (cbuffer, (char*)temp, num_temp); 
+      remove_items_cbuffer_t (cbuffer, temp, num_temp); 
      read_unlock_irqrestore(&sp,flags);
 //sale de sesion critica
     int i;
+
+
+    down(&mtx);
     for(i=0;i<num_temp;i++){
-        int* elem=(int*)vmalloc(sizeof(temp[i]));
-        elem=(&temp[i]);
-        printk("\nadd valor de tmp es %i\n",elem);
-        add(*elem);
-    }
-     /* if (sscanf(&temp[i],"%c\n",kbuff)==1){
-          printk("\nse ha copiado bien\n");
+        char* kbuff=(char *)vmalloc(sizeof(char));
+      if (sscanf(&temp[i],"%c\n",kbuff)==1){
+          //printk("\nse ha copiado bien\n");
           printk("\nvalor de tem_char es %c\n",*kbuff);
           add(kbuff);
+          longitud=longitud+1;
+          printk("\nvalor de longitud es %i\n",longitud);
       }
-      */
+    }
+
    
     /* Despertar a los consumidores bloqueados (si hay alguno) */
           if (nr_cons_waiting>0)
@@ -451,18 +380,11 @@ static void copy_items_into_list ( struct work_struct *work )
             up(&sem_cons);  
             nr_cons_waiting--;
           }
-<<<<<<< HEAD
-          
-=======
-<<<<<<< HEAD
-          
-=======
 
->>>>>>> 775ed1419be166aecfd84fd4fc5a7d357b0bb666
->>>>>>> e8b223b112ca5758ff3d0993189abe44096bf9c9
     print_list(&modlist);
     printk("\nTermino de copiar elementos a la lista despues de volcar elementos a cbuffer\n");
-   
+   up(&mtx);
+
 }
 
 
@@ -481,15 +403,22 @@ static void fire_timer(unsigned long data)
         num_aleatorio = get_random_int();
     }*/
 
-        char* a=(char*)(&num_aleatorio);
+       // char* a=(char*)(&num_aleatorio);
 
     
-    
-    int len=(sizeof(num_aleatorio));
+    char ini[sizeof(num_aleatorio)];
+    char* dest=ini;
+    int len=0;
+
+     len=sprintf(dest,"%i\n",num_aleatorio);
+     //si uso %s sale bien el valor, si uso c%, sale otro
+     //pero en la funcion copy_items_into_list tengo que hacerlo reves!!
+    printk("\nvalor de dest es %s\n y el len es %i",dest,len);
     
      int num_elem=size_cbuffer_t (cbuffer);
-     int porcentaje = (100*num_elem)/capacidad;
+     int porcentaje = (((float)num_elem)/capacidad)*100;
            /* Insertar en el buffer */
+    // printk("\nnumero de cpu es %i\n",numero_cpu);
      
      if(porcentaje <= emergency_threshold){
         printk("\nporcentaje es %i\n",porcentaje);
@@ -497,7 +426,7 @@ static void fire_timer(unsigned long data)
 //entra sesion critica
          write_lock_irqsave(&sp,flags);
 
-        insert_items_cbuffer_t(cbuffer,a,len);
+        insert_items_cbuffer_t(cbuffer,dest,1);
          //insert_cbuffer_t(cbuffer,*dest);
 
          printk("\nNo esta lleno\n");
@@ -517,7 +446,7 @@ static void fire_timer(unsigned long data)
      }
       
         /* Re-activate the timer one second from now */
-    mod_timer( &(my_timer), jiffies + HZ); 
+   // mod_timer( &(my_timer), jiffies + HZ); 
 }
 
 
@@ -601,3 +530,4 @@ module_exit( cleanup_timer_module );
 
 
 MODULE_DESCRIPTION("timermod Module");
+

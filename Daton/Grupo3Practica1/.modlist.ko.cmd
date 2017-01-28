@@ -1,1 +1,0 @@
-cmd_/home/kernel/LIN2015/Daton/Grupo3Practica1/modlist.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.14.1.lin/scripts/module-common.lds --build-id  -o /home/kernel/LIN2015/Daton/Grupo3Practica1/modlist.ko /home/kernel/LIN2015/Daton/Grupo3Practica1/modlist.o /home/kernel/LIN2015/Daton/Grupo3Practica1/modlist.mod.o

@@ -1,8 +1,0 @@
-if (down_interruptible(&sem))
-	return -EINTR;
-seccion critica
-up(&sem)
-
-
-
-//si ocurre un down_iterruptpble hay que deshacer lo que hecmos hecho (if down interruptible)

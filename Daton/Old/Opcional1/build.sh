@@ -1,3 +1,0 @@
-#!/bin/bash
- make EXTRA_CFLAGS=-DPARTE_OPCIONAL
-

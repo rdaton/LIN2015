@@ -1,1 +1,0 @@
-cmd_/home/osboxes/LIN2015/Daton/Practica3/copy/pcmod1.o := ld -m elf_x86_64   -r -o /home/osboxes/LIN2015/Daton/Practica3/copy/pcmod1.o /home/osboxes/LIN2015/Daton/Practica3/copy/cbuffer.o /home/osboxes/LIN2015/Daton/Practica3/copy/prodcons1.o 

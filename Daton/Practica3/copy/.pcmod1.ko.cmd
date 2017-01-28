@@ -1,1 +1,0 @@
-cmd_/home/osboxes/LIN2015/Daton/Practica3/copy/pcmod1.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-3.16.0-4-common/scripts/module-common.lds --build-id  -o /home/osboxes/LIN2015/Daton/Practica3/copy/pcmod1.ko /home/osboxes/LIN2015/Daton/Practica3/copy/pcmod1.o /home/osboxes/LIN2015/Daton/Practica3/copy/pcmod1.mod.o
