@@ -258,13 +258,13 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
           }
 
           /* Detectar fin de comunicación por error (lector de cbuffer1 cierra FIFO antes) */ 
-          if (fifo1_lectura==0) 
+        /*  if (fifo1_lectura==0) 
           {
             //up(&mtx_lectura1);
             up(&mtx1);
             return -EPIPE;
           } 
-          
+          */
              /* Insertar en el buffer */
           insert_items_cbuffer_t(cbuffer1,kbuf,len);
 
@@ -286,13 +286,13 @@ static ssize_t fifoproc_write(struct file *flip, const char *buf, size_t len, lo
           }
 
           /* Detectar fin de comunicación por error (lector de cbuffer1 cierra FIFO antes) */ 
-          if (fifo0_lectura==0) 
+          /*if (fifo0_lectura==0) 
           {
             //up(&mtx_lectura1);
             up(&mtx0);
             return -EPIPE;
           } 
-          
+          */
              /* Insertar en el buffer */
           insert_items_cbuffer_t(cbuffer0,kbuf,len);
 
